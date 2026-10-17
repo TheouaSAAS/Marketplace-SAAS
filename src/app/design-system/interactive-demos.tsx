@@ -1,10 +1,59 @@
 "use client";
 
 import { useState } from "react";
+import { CalendarDays, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ActiveFilter, FilterBar, FilterChip } from "@/components/ui/filter-chip";
+import { Tabs } from "@/components/ui/tabs";
+import { EmptyState } from "@/components/ui/feedback";
 import { Modal } from "@/components/ui/modal";
 import { Popover } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/toast";
+
+const QUICK_FILTERS = ["Aujourd’hui", "Ce week-end", "Gratuit", "Vérifié"] as const;
+
+/** Onglets de résultats et filtres rapides (démonstration, aucune donnée réelle). */
+export function TabsAndFiltersDemo() {
+  const [selected, setSelected] = useState<string[]>(["Ce week-end"]);
+  const toggle = (filter: string) =>
+    setSelected((current) => (current.includes(filter) ? current.filter((item) => item !== filter) : [...current, filter]));
+
+  return (
+    <div className="flex flex-col gap-4">
+      <FilterBar label="Filtres rapides">
+        {QUICK_FILTERS.map((filter, index) => (
+          <FilterChip
+            key={filter}
+            selected={selected.includes(filter)}
+            onClick={() => toggle(filter)}
+            icon={index === 0 ? <Sun aria-hidden className="h-4 w-4" /> : index === 1 ? <CalendarDays aria-hidden className="h-4 w-4" /> : undefined}
+          >
+            {filter}
+          </FilterChip>
+        ))}
+        <FilterChip disabled>Autour de moi</FilterChip>
+      </FilterBar>
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {selected.map((filter) => (
+            <ActiveFilter key={filter} onRemove={() => toggle(filter)}>
+              {filter}
+            </ActiveFilter>
+          ))}
+        </div>
+      )}
+      <Tabs
+        label="Type de résultat"
+        items={[
+          { id: "annonces", label: "Annonces", count: 0, content: <EmptyState title="Aucune annonce" description="Élargissez vos critères." /> },
+          { id: "lieux", label: "Lieux", count: 0, content: <EmptyState title="Aucun lieu" /> },
+          { id: "evenements", label: "Événements", count: 0, content: <EmptyState title="Aucun événement" /> },
+          { id: "emploi", label: "Emploi", disabled: true, content: null },
+        ]}
+      />
+    </div>
+  );
+}
 
 export function InteractiveDemos() {
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { MapPin, Plus } from "lucide-react";
 import { CONTENT_STATUSES } from "@/domain/content-status";
+import { VERIFICATION_STATUSES } from "@/domain/verification";
+import { Avatar } from "@/components/ui/avatar";
 import { Badge, SoonBadge, SponsoredBadge, StatusBadge } from "@/components/ui/badge";
+import { Checkbox, Radio, RadioGroup, Switch } from "@/components/ui/choice-controls";
+import { FreshnessNote, ToConfirm, VerificationBadge } from "@/components/ui/verification";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Alert, EmptyState, ErrorState } from "@/components/ui/feedback";
 import { Field, Input, Select, Textarea } from "@/components/ui/form-controls";
 import { Skeleton, Spinner } from "@/components/ui/spinner";
-import { InteractiveDemos } from "./interactive-demos";
+import { InteractiveDemos, TabsAndFiltersDemo } from "./interactive-demos";
 
 export const metadata: Metadata = {
   title: "Système de design",
@@ -159,6 +163,75 @@ export default function DesignSystemPage() {
           <Alert tone="danger" title="Erreur">Le formulaire contient des erreurs.</Alert>
           <EmptyState title="Aucun résultat" description="Élargissez le rayon ou changez de catégorie." />
           <ErrorState offline title="Vous êtes hors ligne" description="Les résultats seront actualisés au retour de la connexion." />
+        </div>
+      </Section>
+
+      <Section title="Vérification des données locales">
+        <p className="max-w-2xl text-sm text-ink-muted">
+          Distincte de la modération : une annonce publiée n’est pas une information vérifiée. Chaque statut combine icône, libellé et couleur.
+          Voir docs/data-governance.md.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {VERIFICATION_STATUSES.map((status) => (
+            <VerificationBadge key={status} status={status} />
+          ))}
+        </div>
+        <div className="flex flex-col gap-2">
+          <FreshnessNote status="verified" verifiedAt="2026-10-12T10:00:00Z" source="Exemple de source" />
+          <FreshnessNote status="pending_validation" />
+          <FreshnessNote status="placeholder" />
+          <p className="text-sm">
+            Horaires : <ToConfirm />
+          </p>
+        </div>
+      </Section>
+
+      <Section title="Onglets et filtres">
+        <TabsAndFiltersDemo />
+      </Section>
+
+      <Section title="Choix et préférences">
+        <div className="grid max-w-3xl gap-6 sm:grid-cols-3">
+          <div>
+            <Checkbox label="Meublé" defaultChecked />
+            <Checkbox label="Parking" description="Place privative" />
+            <Checkbox label="Climatisation" disabled />
+          </div>
+          <RadioGroup legend="Type de transaction">
+            <Radio name="transaction" label="Location" defaultChecked />
+            <Radio name="transaction" label="Vente" />
+            <Radio name="transaction" label="Location temporaire" />
+          </RadioGroup>
+          <div>
+            <Switch label="Alertes par e-mail" defaultChecked />
+            <Switch label="Afficher mon téléphone" description="Désactivé par défaut" />
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Avatars">
+        <div className="flex flex-wrap items-center gap-3">
+          <Avatar name="Awa Koné" size="sm" />
+          <Avatar name="Awa Koné" />
+          <Avatar name="Awa Koné" size="lg" />
+          <Avatar name="Quincaillerie Exemple" shape="square" size="lg" />
+        </div>
+      </Section>
+
+      <Section title="États désactivé et hors ligne">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Alert tone="warning" title="Vous êtes hors ligne">
+            Bandeau affiché automatiquement sous l’en-tête lorsque la connexion est perdue ; les actions reprennent au retour du réseau.
+          </Alert>
+          <Card>
+            <CardBody>
+              <CardTitle>Fonction indisponible</CardTitle>
+              <p className="text-sm text-ink-muted">Un service non configuré est désactivé et expliqué, jamais simulé.</p>
+              <Button disabled title="Bientôt disponible">
+                Payer avec Mobile Money
+              </Button>
+            </CardBody>
+          </Card>
         </div>
       </Section>
 

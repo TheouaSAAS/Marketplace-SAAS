@@ -50,5 +50,11 @@ Deux axes : la **modération** (cycle de publication des contenus d'utilisateurs
 ## D16 — Données de démonstration étiquetées
 Autorisées par le second cahier des charges, à condition d'être `placeholder`, affichées « Exemple / à valider localement », isolées dans un seed distinct et supprimables en une opération.
 
+## D17 — Mode hors ligne expérimental de Next.js (niveau 1)
+`experimental.useOffline` détecte la perte de réseau et relance automatiquement navigations et actions bloquées : précieux sur réseau mobile instable. Risque : API expérimentale susceptible d'évoluer ; l'usage est confiné à `OfflineBanner` et peut être retiré sans impact fonctionnel.
+
+## D18 — Émission complète des jetons (`@theme static`)
+Tailwind 4 n'émet que les variables utilisées par des classes ; l'aperçu du design system et les styles en ligne affichaient des couleurs vides. Toutes les variables sont désormais émises (coût : quelques centaines d'octets).
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL).

@@ -16,7 +16,9 @@
  * Contraste : brand-600 et accent-600 sur blanc ≥ 4,5:1 (WCAG AA texte normal).
  */
 
-@theme {
+/* « static » : toutes les variables sont émises, même si aucune classe ne les
+   utilise encore (aperçu du design system, styles en ligne, composants tiers). */
+@theme static {
   /* Typographie */
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 

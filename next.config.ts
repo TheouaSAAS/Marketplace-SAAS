@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  experimental: {
+    // Détection hors ligne + relance automatique des navigations et actions (réseau mobile instable).
+    useOffline: true,
+  },
   turbopack: {
     rules: {
       "*.css": {
