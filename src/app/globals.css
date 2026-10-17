@@ -1,26 +1,145 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Système de design — Carrefour des Possibles
+ * --------------------------------------------
+ * Source unique des jetons visuels. Les composants utilisent ces jetons via
+ * les classes Tailwind générées (bg-brand-600, text-ink-muted, rounded-card…).
+ * Toute modification ici touche TOUTES les pages : vérifier /design-system et
+ * les pages existantes avant de valider (voir docs/CONVENTIONS.md).
+ *
+ * Palette :
+ *  - brand  : bleu océan (port et littoral de San Pedro) — actions principales.
+ *  - accent : orange (couleur ivoirienne) — appels à l'action forts, mise en avant.
+ *  - lagoon : vert lagune — nature, tourisme, statut positif.
+ *  - sand   : neutres chauds — fonds, bordures, texte.
+ * Contraste : brand-600 et accent-600 sur blanc ≥ 4,5:1 (WCAG AA texte normal).
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* Typographie */
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --text-display: 2.75rem;
+  --text-display--line-height: 1.1;
+  --text-display--font-weight: 800;
+
+  /* Couleurs de marque */
+  --color-brand-50: #ecf8fa;
+  --color-brand-100: #cfeef3;
+  --color-brand-200: #a2dde8;
+  --color-brand-300: #69c4d6;
+  --color-brand-400: #34a3bb;
+  --color-brand-500: #1b87a1;
+  --color-brand-600: #146c86;
+  --color-brand-700: #13576d;
+  --color-brand-800: #14485a;
+  --color-brand-900: #143c4c;
+  --color-brand-950: #082733;
+
+  --color-accent-50: #fff7ed;
+  --color-accent-100: #ffedd5;
+  --color-accent-200: #fed7aa;
+  --color-accent-300: #fdba74;
+  --color-accent-400: #fb923c;
+  --color-accent-500: #f97316;
+  --color-accent-600: #c2410c;
+  --color-accent-700: #9a3412;
+  --color-accent-800: #7c2d12;
+  --color-accent-900: #431407;
+
+  --color-lagoon-50: #ecfdf5;
+  --color-lagoon-100: #d1fae5;
+  --color-lagoon-500: #10b981;
+  --color-lagoon-600: #047857;
+  --color-lagoon-700: #065f46;
+
+  --color-sand-50: #faf9f7;
+  --color-sand-100: #f4f2ee;
+  --color-sand-200: #e7e3dc;
+  --color-sand-300: #d4cec4;
+  --color-sand-400: #a8a093;
+  --color-sand-500: #7a7266;
+  --color-sand-600: #5c554b;
+  --color-sand-700: #433e37;
+  --color-sand-800: #2c2924;
+  --color-sand-900: #1b1916;
+
+  /* Couleurs sémantiques (à préférer dans les composants) */
+  --color-surface: #ffffff;
+  --color-surface-muted: var(--color-sand-50);
+  --color-surface-sunken: var(--color-sand-100);
+  --color-border: var(--color-sand-200);
+  --color-border-strong: var(--color-sand-300);
+  --color-ink: var(--color-sand-900);
+  --color-ink-muted: var(--color-sand-600);
+  --color-ink-subtle: var(--color-sand-500);
+  --color-focus: var(--color-brand-500);
+
+  --color-success: var(--color-lagoon-600);
+  --color-success-soft: var(--color-lagoon-50);
+  --color-warning: #a16207;
+  --color-warning-soft: #fefce8;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fef2f2;
+  --color-info: var(--color-brand-700);
+  --color-info-soft: var(--color-brand-50);
+
+  /* Rayons */
+  --radius-control: 0.625rem;
+  --radius-card: 1rem;
+  --radius-pill: 9999px;
+
+  /* Ombres */
+  --shadow-card: 0 1px 2px rgb(27 25 22 / 0.05), 0 1px 3px rgb(27 25 22 / 0.08);
+  --shadow-raised: 0 4px 6px -1px rgb(27 25 22 / 0.08), 0 10px 24px -6px rgb(27 25 22 / 0.14);
+  --shadow-overlay: 0 20px 48px -12px rgb(27 25 22 / 0.3);
+
+  /* Animations */
+  --animate-fade-in: fade-in 150ms ease-out;
+  --animate-slide-up: slide-up 200ms ease-out;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(0.5rem); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--color-surface-muted);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-200);
+  }
+
+  dialog::backdrop {
+    background-color: rgb(27 25 22 / 0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
