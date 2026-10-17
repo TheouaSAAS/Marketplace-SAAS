@@ -2,7 +2,20 @@
 
 PostgreSQL (Supabase) avec PostGIS. Schéma : `supabase/migrations/`. Référentiel : `supabase/seed.sql`.
 
-**État : migrations écrites et validées syntaxiquement par le parseur officiel de PostgreSQL (tests automatiques), PAS encore exécutées sur une base réelle** — en attente des identifiants Supabase.
+**État (2026-10-17)** : migrations **appliquées** sur le projet Supabase `towkxqwdvjdajlohevxt` (PostgreSQL 17.11, région eu-west-1), données de référence chargées, **34 vérifications de sécurité réussies sur la base réelle** (`npm run db:verify`).
+
+## Outil `scripts/db.mjs`
+
+| Commande | Effet |
+| --- | --- |
+| `npm run db:status` | Version, extensions, tables, migrations appliquées ou en attente (lecture seule) |
+| `npm run db:migrate` | Applique les migrations en attente, chacune dans une transaction (tout ou rien), tracées dans `supabase_migrations.schema_migrations` |
+| `npm run db:seed` | Rejoue `supabase/seed.sql` (idempotent) ; `node scripts/db.mjs seed <fichier>` pour un autre fichier |
+| `npm run db:verify` | Exécute `supabase/tests/*.sql` : scénarios visiteur / membre / modérateur dans une transaction **annulée** (aucune trace) |
+
+Connexion : `DATABASE_URL` (PostgreSQL direct ou pooler) ou, à défaut, `SUPABASE_ACCESS_TOKEN` (API d'administration Supabase en HTTPS). Le jeton d'accès donne accès à tout le compte Supabase : le révoquer quand il n'est plus nécessaire.
+
+**Règle** : une migration appliquée n'est jamais modifiée ; toute correction passe par une nouvelle migration (exemple : `20261017000300_fix_audit_log_access.sql`).
 
 ## Tables
 

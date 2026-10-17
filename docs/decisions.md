@@ -56,5 +56,11 @@ Autorisées par le second cahier des charges, à condition d'être `placeholder`
 ## D18 — Émission complète des jetons (`@theme static`)
 Tailwind 4 n'émet que les variables utilisées par des classes ; l'aperçu du design system et les styles en ligne affichaient des couleurs vides. Toutes les variables sont désormais émises (coût : quelques centaines d'octets).
 
+## D19 — Migrations par l'API d'administration Supabase
+Le port PostgreSQL direct est devenu inaccessible depuis le poste (bannissement automatique après des échecs d'authentification) et le mot de passe de base n'était pas disponible. `scripts/db.mjs` accepte donc deux transports : `DATABASE_URL` (préféré en CI) ou `SUPABASE_ACCESS_TOKEN` (API HTTPS). Même traçabilité que la CLI Supabase. Le jeton est sensible : à révoquer après usage.
+
+## D20 — Tests de sécurité sur la base réelle
+La validation syntaxique ne suffit pas : la première exécution réelle a révélé qu'un membre pouvait écrire dans le journal d'administration (fonction `SECURITY DEFINER` où `current_user` vaut le propriétaire). Les règles d'accès sont désormais vérifiées par scénarios SQL (`supabase/tests/*.sql`, `npm run db:verify`) exécutés dans une transaction annulée. Règle ajoutée : dans une fonction `SECURITY DEFINER`, le contexte système se teste avec `is_service_request()` (rôle du jeton), jamais avec `current_user`.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL).

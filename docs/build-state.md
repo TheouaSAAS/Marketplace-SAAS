@@ -9,8 +9,8 @@
 | --- | --- | --- |
 | 0 | Architecture, stack et fondations | ✅ terminé |
 | 1 | Design system et identité visuelle | ✅ terminé (voir docs/design-system.md) |
-| 2 | Base de données, gouvernance et rôles | ⛔ attend les clés Supabase pour l'exécution réelle (schéma v1 écrit) |
-| 3 | Authentification | ⛔ dépend du niveau 2 |
+| 2 | Base de données, gouvernance et rôles | ⏭️ en cours — Supabase connecté, schéma v1 appliqué et vérifié (34/34) ; extension v2 à faire |
+| 3 | Authentification | dépend du niveau 2 |
 | 4 | Shell et navigation | partiel (en-tête, pied de page, menu mobile existants ; passage aux 4 entrées à faire) |
 | 5 | Accueil dynamique | partiel (version fondations) |
 | 6–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
@@ -32,7 +32,7 @@
 - **Conventions** : `ActionResult` et `AppError` (`src/lib/errors.ts`), `apiData`/`apiError` (`src/lib/api.ts`), `logger` JSON avec masquage (`src/lib/logger.ts`), `proxy.ts` pour les contrôles avant rendu.
 - **Design system** : 30 composants (`src/components/ui`, documentés dans `docs/design-system.md`, aperçu `/design-system`), dont badges de vérification (`verified`, `pending_validation`, `placeholder`…), onglets, filtres, cases, interrupteurs, avatars, bandeau hors ligne. Contraste AA vérifié par test.
 - **Domaine** : `src/domain/verification.ts` (fiabilité et expiration des vérifications), `src/lib/format.ts` (dates, prix FCFA).
-- **Données** : schéma v1 (19 tables, RLS) écrit, **jamais exécuté** ; sera révisé au niveau 2 (vérification, organisations, rôles étendus, RAG…).
+- **Données** : Supabase `towkxqwdvjdajlohevxt` connecté (PostgreSQL 17, eu-west-1). Schéma v1 (19 tables, RLS) **appliqué** + correctif `…000300` ; référentiel chargé ; `npm run db:verify` : 34/34 sur la base réelle. À étendre au niveau 2 (vérification, organisations, rôles étendus, RAG…).
 
 ## Tests (dernière exécution : 2026-10-17)
 
@@ -48,7 +48,8 @@
 
 ## Problèmes connus
 
-- Supabase non connecté : migrations jamais exécutées.
+- Accès PostgreSQL direct bloqué depuis le poste (bannissement réseau Supabase) : migrations passées par l'API d'administration (`SUPABASE_ACCESS_TOKEN`, **à révoquer** en fin de chantier base de données).
+- `npm run db:verify` n'est pas dans la CI (pas d'identifiants en CI) : à lancer manuellement après chaque migration.
 - `npm audit` : 5 alertes dans l'outillage ESLint (développement uniquement) ; 0 en production.
 - Suivi d'erreurs externe non branché (journal JSON seulement).
 - Section 4.7 (indicateurs) du premier cahier des charges non fournie.
