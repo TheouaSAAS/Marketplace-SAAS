@@ -8,22 +8,47 @@
  * chaque nouvelle page livrée (tableau PAGES ci-dessous).
  */
 import { spawn } from "node:child_process";
+import { randomBytes } from "node:crypto";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const PORT = Number(process.env.SMOKE_PORT ?? 3100);
 const external = process.env.SMOKE_BASE_URL;
 const BASE = external ?? `http://localhost:${PORT}`;
+// Jeton éphémère pour le serveur local ; sur un déploiement, fournir SMOKE_STATUS_TOKEN.
+const STATUS_TOKEN = external ? process.env.SMOKE_STATUS_TOKEN : randomBytes(24).toString("hex");
 
 const SLOGAN = "Votre ville, mille opportunités";
 
 /** Pages validées : chemin, statut HTTP attendu, textes qui doivent apparaître. */
 const PAGES = [
-  { path: "/", status: 200, includes: [SLOGAN, "Carrefour des Possibles", "Découvrir", "Trouver", "Entreprendre", "San Pedro"] },
+  { path: "/", status: 200, includes: [SLOGAN, "Carrefour des Possibles", "San Pedro"] },
   { path: "/design-system", status: 200, includes: ["Système de design", "noindex"] },
   { path: "/page-qui-n-existe-pas", status: 404, includes: ["Cette page est introuvable"] },
   { path: "/robots.txt", status: 200, includes: ["Disallow: /admin", "Sitemap:"] },
-  { path: "/sitemap.xml", status: 200, includes: ["<loc>"], excludes: ["/design-system", "/admin"] },
+  { path: "/sitemap.xml", status: 200, includes: ["<loc>"], excludes: ["/design-system", "/admin", "/interne"] },
+  { path: "/api/health", status: 200, includes: ['"status":"ok"'], excludes: ["SUPABASE", "KEY"] },
+  { path: "/interne/statut", status: 404, excludes: ["Fonctionnalités (drapeaux)"] },
+  ...(STATUS_TOKEN
+    ? [{ path: `/interne/statut?token=${STATUS_TOKEN}`, status: 200, includes: ["Statut interne", "Fonctionnalités (drapeaux)", "renseignée"] }]
+    : []),
 ];
+
+/** Noms de variables secrètes qui ne doivent jamais apparaître dans le code envoyé au navigateur. */
+const SECRET_NAMES = ["SUPABASE_SECRET_KEY", "AI_API_KEY", "PAYMENT_API_KEY", "PAYMENT_WEBHOOK_SECRET", "EMAIL_API_KEY", "INTERNAL_STATUS_TOKEN"];
+
+function scanClientBundle() {
+  const root = fileURLToPath(new URL("../.next/static", import.meta.url));
+  const files = readdirSync(root, { recursive: true }).filter((file) => String(file).endsWith(".js"));
+  const leaks = [];
+  for (const file of files) {
+    const content = readFileSync(join(root, String(file)), "utf8");
+    for (const name of SECRET_NAMES) if (content.includes(name)) leaks.push(`${name} dans ${file}`);
+  }
+  console.log(`${leaks.length ? "✗" : "✓"} bundle navigateur (${files.length} fichiers) — ${leaks.length ? leaks.join(" ; ") : "aucun nom de secret"}`);
+  return leaks.length === 0;
+}
 
 const REQUIRED_HEADERS = {
   "x-content-type-options": "nosniff",
@@ -51,12 +76,13 @@ async function main() {
     const nextBin = fileURLToPath(new URL("../node_modules/next/dist/bin/next", import.meta.url));
     server = spawn(process.execPath, [nextBin, "start", "-p", String(PORT)], {
       stdio: ["ignore", "ignore", "inherit"],
-      env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
+      env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1", INTERNAL_STATUS_TOKEN: STATUS_TOKEN },
     });
     await waitForServer(BASE);
   }
 
   const failures = [];
+  if (!external && !scanClientBundle()) failures.push("bundle");
   for (const page of PAGES) {
     const response = await fetch(BASE + page.path, { redirect: "manual" });
     const body = await response.text();
@@ -71,7 +97,8 @@ async function main() {
       }
       if (response.headers.get("x-powered-by")) problems.push("en-tête x-powered-by exposé");
     }
-    console.log(`${problems.length ? "✗" : "✓"} ${page.path}${problems.length ? ` — ${problems.join(" ; ")}` : ""}`);
+    const shownPath = STATUS_TOKEN ? page.path.replace(STATUS_TOKEN, "<jeton>") : page.path;
+    console.log(`${problems.length ? "✗" : "✓"} ${shownPath}${problems.length ? ` — ${problems.join(" ; ")}` : ""}`);
     if (problems.length) failures.push(page.path);
   }
 

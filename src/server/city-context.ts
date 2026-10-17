@@ -2,6 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { CITY_COOKIE, LAUNCH_CITY, resolveCity, type CitySummary } from "@/domain/city";
 import { publicEnv } from "@/lib/env";
+import { logger } from "@/lib/logger";
 import { listActiveCities } from "./repositories/cities";
 
 export type CitySource = "database" | "not_configured" | "unavailable";
@@ -26,7 +27,7 @@ export async function loadCities(): Promise<{ cities: CitySummary[]; source: Cit
     if (cities.length === 0) return { cities: [getFallbackCity()], source: "unavailable" };
     return { cities, source: "database" };
   } catch (error) {
-    console.error("[villes]", error);
+    logger.warn("Villes indisponibles, repli sur la ville par défaut", { module: "villes", error });
     return { cities: [getFallbackCity()], source: "unavailable" };
   }
 }

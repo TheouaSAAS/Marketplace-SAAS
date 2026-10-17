@@ -12,7 +12,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 À lire avant toute tâche, par toute personne ou tout agent (Claude, Antigravity…) :
 
-1. Lire `docs/PROJECT_PROGRESS.md` puis `docs/CONVENTIONS.md`, et inspecter l'état réel du code : ne jamais supposer qu'une description ancienne est encore exacte.
+1. Lire `docs/build-state.md` puis `docs/conventions.md`, et inspecter l'état réel du code : ne jamais supposer qu'une description ancienne est encore exacte.
 2. Une page à la fois. Ne jamais supprimer, réécrire ou dégrader une page ou un composant validé.
 3. Réutiliser `src/components/ui`, `src/components/layout`, `src/config/routes.ts` ; aucun chemin en dur.
 4. Aucune donnée fictive présentée comme réelle. Nom et slogan via `SITE` (`src/config/site.ts`).

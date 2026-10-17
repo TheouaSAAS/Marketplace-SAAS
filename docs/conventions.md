@@ -2,14 +2,14 @@
 
 ## Méthode pour chaque nouvelle page (§6.5)
 
-1. Lire `docs/PROJECT_PROGRESS.md` et inspecter le code réel.
+1. Lire `docs/build-state.md` et inspecter le code réel.
 2. Définir le périmètre ; lister fichiers à créer / à modifier et risques de régression.
 3. Réutiliser `components/ui`, `components/layout`, `href()` ; ne créer un composant que s'il manque.
 4. Développer uniquement le nécessaire.
 5. Tests : unitaires (`*.test.ts(x)` à côté du code), scénario Playwright dans `e2e/`, ajout de la page dans `scripts/smoke.mjs`.
 6. `npm run check` doit être entièrement vert (typage, lint, tests, build, fumée, navigateur).
 7. Passer la route à `status: "live"` dans `src/config/routes.ts` : menus, pied de page et sitemap s'activent seuls.
-8. Mettre à jour `docs/PROJECT_PROGRESS.md`, puis commit.
+8. Mettre à jour `docs/build-state.md`, puis commit.
 
 Une régression se corrige avant de passer à la page suivante.
 

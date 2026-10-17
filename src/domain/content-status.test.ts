@@ -12,7 +12,7 @@ const securitySql = readFileSync(
 /** Extrait les couples (de, vers) d'un bloc « -- BEGIN nom … -- END nom » de la migration. */
 function sqlPairs(block: string): string[] {
   const match = securitySql.match(new RegExp(`-- BEGIN ${block}([\\s\\S]*?)-- END ${block}`));
-  if (!match) throw new Error(`Bloc ${block} introuvable dans la migration`);
+  if (!match?.[1]) throw new Error(`Bloc ${block} introuvable dans la migration`);
   return [...match[1].matchAll(/\('(\w+)', '(\w+)'\)/g)].map(([, from, to]) => `${from}>${to}`).sort();
 }
 
@@ -72,7 +72,7 @@ describe("cohérence avec la base de données", () => {
       new URL("../../supabase/migrations/20261017000100_schema.sql", import.meta.url),
       "utf8",
     ).match(/create type public\.content_status as enum \(([^)]+)\)/);
-    const sqlStatuses = [...(enumMatch?.[1].matchAll(/'(\w+)'/g) ?? [])].map(([, value]) => value);
+    const sqlStatuses = [...(enumMatch?.[1]?.matchAll(/'(\w+)'/g) ?? [])].map(([, value]) => value);
     expect(sqlStatuses).toEqual([...CONTENT_STATUSES]);
     for (const status of sqlStatuses) expect(CONTENT_STATUS_META[status as ContentStatus].label).toBeTruthy();
   });

@@ -28,7 +28,7 @@ Sans Supabase configuré, l'application démarre quand même : la navigation fon
 4. Créer le premier administrateur : s'inscrire, puis dans l'éditeur SQL :
    `update public.profiles set role = 'admin' where id = '<uuid du compte>';`
 
-Détails : [docs/DATABASE.md](docs/DATABASE.md).
+Détails : [docs/database.md](docs/database.md).
 
 ## Commandes
 
@@ -47,9 +47,10 @@ Détails : [docs/DATABASE.md](docs/DATABASE.md).
 
 | Document | Contenu |
 | --- | --- |
-| [docs/PROJECT_PROGRESS.md](docs/PROJECT_PROGRESS.md) | Journal d'avancement : pages, routes, tests, problèmes connus, prochaine étape |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Structure du code et flux de données |
-| [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | Règles de développement et de non-régression |
-| [docs/DATABASE.md](docs/DATABASE.md) | Modèle de données, sécurité RLS, migrations |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | Décisions techniques et leurs raisons |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Environnements et mise en production |
+| [docs/build-state.md](docs/build-state.md) | Journal d'avancement : pages, routes, tests, problèmes connus, prochaine étape |
+| [docs/architecture.md](docs/architecture.md) | Structure du code et flux de données |
+| [docs/conventions.md](docs/conventions.md) | Règles de développement et de non-régression |
+| [docs/database.md](docs/database.md) | Modèle de données, sécurité RLS, migrations |
+| [docs/decisions.md](docs/decisions.md) | Décisions techniques et leurs raisons |
+| [docs/data-governance.md](docs/data-governance.md) | Statuts de vérification, sources, interdits, données à valider |
+| [docs/deployment.md](docs/deployment.md) | Environnements et mise en production |

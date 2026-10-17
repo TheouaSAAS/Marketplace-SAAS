@@ -49,7 +49,7 @@ export function CitySelector({
           const slug = event.target.value;
           startTransition(async () => {
             const result = await selectCity(slug);
-            if (!result.ok) notify({ tone: "danger", title: result.message });
+            if (!result.ok) notify({ tone: "danger", title: result.error.message });
           });
         }}
         className="cursor-pointer appearance-none bg-transparent pr-1 text-sm font-semibold focus:outline-none"

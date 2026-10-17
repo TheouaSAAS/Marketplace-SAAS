@@ -52,6 +52,7 @@ export const ROUTES = {
   terms: { path: "/conditions-utilisation", label: "Conditions d’utilisation", phase: 2, status: "planned" },
   privacy: { path: "/confidentialite", label: "Politique de confidentialité", phase: 2, status: "planned" },
   designSystem: { path: "/design-system", label: "Système de design", phase: 1, status: "live", private: true },
+  internalStatus: { path: "/interne/statut", label: "Statut interne", phase: 1, status: "live", private: true },
 } as const satisfies Record<string, AppRoute>;
 
 export type RouteKey = keyof typeof ROUTES;

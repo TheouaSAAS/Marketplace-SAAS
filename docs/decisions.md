@@ -32,5 +32,23 @@ Playwright avec `channel: "msedge"` évite le téléchargement de navigateurs. E
 ## D10 — Validation SQL hors ligne
 `libpg-query` (parseur officiel de PostgreSQL en WebAssembly) valide la syntaxe SQL et PL/pgSQL des migrations à chaque `npm test`, sans base. Ne remplace pas l'exécution réelle.
 
+## D11 — Fusion des deux cahiers des charges (2026-10-17, arbitré par le porteur du projet)
+Marque conservée (« Carrefour des Possibles », « Votre ville, mille opportunités ») ; « Tout San Pedro, au même endroit » devient l'accroche de la ville pilote. Navigation en quatre entrées : Annonces & Opportunités, Découvrir & Sortir, Services & Professionnels, 🧭 Nouveau à San Pedro ?. Construction en 28 niveaux.
+
+## D12 — Drapeaux « demandé ET disponible »
+Un drapeau seul permettrait d'afficher comme actif un service sans clé. L'état actif exige les deux. Conséquence : le site est cohérent quel que soit l'environnement, et la page de statut explique ce qui manque.
+
+## D13 — Contrôle d'accès des pages internes dans le proxy
+Avec le pré-rendu partiel, un `notFound()` exécuté dans un `<Suspense>` répond 200 (coque déjà envoyée), défaut détecté par le test de fumée. Les contrôles bloquants passent donc par `src/proxy.ts`, avec un contrôle de seconde ligne dans la page.
+
+## D14 — Domaines métier dans `src/modules`
+Les 18 domaines du plan sont regroupés par dossier avec une structure identique (domain / server / components / index). Les notions transverses restent dans `src/domain`.
+
+## D15 — Vérification distincte de la modération
+Deux axes : la **modération** (cycle de publication des contenus d'utilisateurs) et la **vérification** des données locales (`verified`, `pending_validation`, `placeholder`, `archived`, `rejected`, avec source, date et responsable). Voir `docs/data-governance.md`.
+
+## D16 — Données de démonstration étiquetées
+Autorisées par le second cahier des charges, à condition d'être `placeholder`, affichées « Exemple / à valider localement », isolées dans un seed distinct et supprimables en une opération.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL).

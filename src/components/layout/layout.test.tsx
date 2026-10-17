@@ -40,7 +40,7 @@ describe("MainNav", () => {
     const triggers = within(nav).getAllByRole("button");
     expect(triggers.map((button) => button.textContent)).toEqual(["Découvrir", "Trouver", "Entreprendre"]);
 
-    await userEvent.click(triggers[0]);
+    await userEvent.click(triggers[0]!);
     expect(screen.getByText("Nouveau à San Pedro ?")).toBeInTheDocument();
     expect(screen.getByText("Plages et sites naturels")).toBeInTheDocument();
   });
