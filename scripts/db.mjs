@@ -212,7 +212,65 @@ async function generateTypes() {
   console.log(`src/types/database.ts généré (${types.split("\n").length} lignes).`);
 }
 
+/**
+ * Applique la configuration d'authentification versionnée (configuration as code) :
+ * adresse du site, redirections autorisées, politique de mot de passe, e-mails en français.
+ */
+async function applyAuthConfig() {
+  const token = process.env.SUPABASE_ACCESS_TOKEN;
+  if (!token) throw new Error("SUPABASE_ACCESS_TOKEN requis pour configurer l'authentification.");
+  const ref = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname.split(".")[0];
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const template = (name) => readFileSync(join(root, "supabase", "templates", name), "utf8");
+
+  const desired = {
+    site_url: siteUrl,
+    uri_allow_list: `${siteUrl}/**`,
+    password_min_length: 10,
+    password_required_characters: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ:0123456789",
+    security_update_password_require_reauthentication: true,
+    mailer_secure_email_change_enabled: true,
+    mailer_otp_exp: 3600,
+    mailer_subjects_confirmation: "Confirmez votre adresse e-mail — Carrefour des Possibles",
+    mailer_templates_confirmation_content: template("confirmation.html"),
+    mailer_subjects_recovery: "Réinitialisation de votre mot de passe — Carrefour des Possibles",
+    mailer_templates_recovery_content: template("recovery.html"),
+    mailer_subjects_email_change: "Confirmez votre nouvelle adresse e-mail — Carrefour des Possibles",
+    mailer_templates_email_change_content: template("email-change.html"),
+  };
+
+  const url = `https://api.supabase.com/v1/projects/${ref}/config/auth`;
+  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "User-Agent": "carrefour-des-possibles-db/0.1" };
+  const current = await (await fetch(url, { headers })).json();
+  // Offre gratuite + e-mail Supabase par défaut : modèles non modifiables sans SMTP personnalisé.
+  if (!current.smtp_host) {
+    for (const key of Object.keys(desired)) if (key.startsWith("mailer_subjects_") || key.startsWith("mailer_templates_")) delete desired[key];
+    console.log("Aucun SMTP personnalisé : modèles d'e-mails français NON appliqués (e-mails Supabase par défaut, en anglais).");
+  }
+  const changes = Object.keys(desired).filter((key) => current[key] !== desired[key]);
+  if (changes.length === 0) {
+    console.log("Configuration d'authentification déjà à jour.");
+    return;
+  }
+  const response = await fetch(url, { method: "PATCH", headers, body: JSON.stringify(desired) });
+  if (!response.ok) throw new Error(`HTTP ${response.status} : ${await response.text()}`);
+  console.log(`Configuration d'authentification mise à jour (${changes.length} réglage(s)) :`);
+  for (const key of changes) {
+    const shown = key.includes("templates") ? "(modèle d'e-mail)" : JSON.stringify(desired[key]);
+    console.log(`  ${key} : ${key.includes("templates") ? "" : `${JSON.stringify(current[key])} → `}${shown}`);
+  }
+}
+
 const [command, ...args] = process.argv.slice(2);
+if (command === "auth-config") {
+  try {
+    await applyAuthConfig();
+  } catch (error) {
+    console.error(`Configuration impossible : ${error.message}`);
+    process.exitCode = 1;
+  }
+  process.exit();
+}
 if (command === "types") {
   try {
     await generateTypes();

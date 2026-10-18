@@ -1,14 +1,23 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ChevronDown, LogIn, Menu, Plus } from "lucide-react";
+import { ChevronDown, Menu, Plus } from "lucide-react";
 import { NAV_FAMILIES } from "@/config/navigation";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { NavItemLink, RouteButton } from "./nav-item-link";
 
 /** Menu mobile et tablette : panneau latéral avec recherche, actions et les trois familles. */
-export function MobileNav({ searchSlot, className }: { searchSlot?: ReactNode; className?: string }) {
+export function MobileNav({
+  searchSlot,
+  accountSlot,
+  className,
+}: {
+  searchSlot?: ReactNode;
+  /** Entrée de compte (Connexion ou Mon profil), rendue côté serveur. */
+  accountSlot?: ReactNode;
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -24,9 +33,8 @@ export function MobileNav({ searchSlot, className }: { searchSlot?: ReactNode; c
             <RouteButton route="publish" variant="accent" icon={<Plus aria-hidden className="h-4 w-4" />} onNavigate={close}>
               Publier
             </RouteButton>
-            <RouteButton route="login" variant="secondary" icon={<LogIn aria-hidden className="h-4 w-4" />} onNavigate={close}>
-              Connexion
-            </RouteButton>
+            {/* Un clic dans la zone (lien Connexion ou Mon profil) referme le menu. */}
+            <div onClickCapture={close}>{accountSlot}</div>
           </div>
           <nav aria-label="Navigation principale" className="flex flex-col gap-2">
             {NAV_FAMILIES.map((family, index) => (

@@ -2,7 +2,9 @@
 
 PostgreSQL 17 (Supabase) avec PostGIS, `unaccent`, `pg_trgm`, `vector`. Schéma : `supabase/migrations/`. Référentiel : `supabase/seed.sql`. Types TypeScript générés : `src/types/database.ts`.
 
-**État (2026-10-18)** : 9 migrations **appliquées** sur le projet `towkxqwdvjdajlohevxt` (eu-west-1) ; référentiel et données de démonstration chargés ; **80 vérifications de sécurité réussies sur la base réelle** (`npm run db:verify`).
+**État (2026-10-18)** : 12 migrations **appliquées** sur le projet `towkxqwdvjdajlohevxt` (eu-west-1) ; référentiel et données de démonstration chargés ; **97 vérifications réussies sur la base réelle** (`npm run db:verify`) ; tâches planifiées `expirer-annonces` et `purger-anti-abus` actives.
+
+Comptes (niveau 3) : `handle_new_user` crée profil, préférences et consentements datés ; `become_professional()` / `become_individual()` (journalisés) ; `export_my_data()` ; `consume_rate_limit()` (clé secrète uniquement) sur `rate_limit_buckets` ; suppression de compte : lieux, paiements, abonnements et campagnes conservés détachés du compte. Configuration d'authentification : `npm run db:auth-config`.
 
 ## Outil `scripts/db.mjs`
 
@@ -32,7 +34,7 @@ Connexion : `DATABASE_URL` (PostgreSQL direct ou pooler) ou `SUPABASE_ACCESS_TOK
 
 Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `can_manage_content(auteur, organisation)` = auteur, ou membre `editor` et plus de l'organisation.
 
-## Tables (39, toutes avec RLS)
+## Tables (40, toutes avec RLS)
 
 | Domaine | Tables |
 | --- | --- |
@@ -44,6 +46,7 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 | Interactions | `favorites`, `contact_requests`, `conversations`, `conversation_participants`, `messages`, `reviews`, `job_applications`, `reports`, `guide_suggestions`, `notifications` |
 | Monétisation | `subscriptions`, `payments`, `sponsored_campaigns` |
 | IA | `knowledge_documents`, `knowledge_chunks` (embeddings) |
+| Anti-abus | `rate_limit_buckets` (empreintes HMAC, purgées toutes les heures) |
 
 ## Deux statuts distincts
 
@@ -70,11 +73,12 @@ Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_servi
 - `supabase/seed.sql` : San Pedro, 42 catégories, 3 offres, paramètres. `supabase/seeds/quartiers_san_pedro.sql` : 10 quartiers **à valider**.
 - `supabase/seeds/demo.sql` : 5 lieux, 4 annonces, 1 événement, 1 article, **tous fictifs** (`placeholder`, titres « Exemple — … », sans téléphone, prix, horaire ni adresse). Suppression : `supabase/seeds/demo_remove.sql`.
 
-## Tâches planifiées (à activer)
+## Tâches planifiées (actives, migration `…000800`)
 
-```sql
-select cron.schedule('expirer-annonces', '15 * * * *', $$select public.expire_listings()$$);
-```
+| Tâche | Horaire | Effet |
+| --- | --- | --- |
+| `expirer-annonces` | chaque heure à :15 | passe en `expired` les annonces arrivées à échéance |
+| `purger-anti-abus` | chaque heure à :45 | supprime les empreintes anti-abus de plus de 24 h |
 
 ## Sauvegardes
 

@@ -29,6 +29,14 @@ const PAGES = [
   { path: "/robots.txt", status: 200, includes: ["Disallow: /admin", "Sitemap:"] },
   { path: "/sitemap.xml", status: 200, includes: ["<loc>"], excludes: ["/design-system", "/admin", "/interne"] },
   { path: "/api/health", status: 200, includes: ['"status":"ok"'], excludes: ["SUPABASE", "KEY"] },
+  { path: "/connexion", status: 200, includes: ["Connexion", "Mot de passe oublié"] },
+  { path: "/inscription", status: 200, includes: ["Créer un compte", "conditions d’utilisation"] },
+  { path: "/mot-de-passe-oublie", status: 200, includes: ["Mot de passe oublié"] },
+  { path: "/profil", status: 307, includes: [] },
+  { path: "/profil/export", status: 307, includes: [] },
+  { path: "/conditions-utilisation", status: 200, includes: ["Document provisoire"] },
+  { path: "/confidentialite", status: 200, includes: ["Document provisoire", "2013-450"] },
+  { path: "/mentions-legales", status: 200, includes: ["Document provisoire"] },
   { path: "/interne/statut", status: 404, excludes: ["Fonctionnalités (drapeaux)"] },
   ...(STATUS_TOKEN
     ? [{ path: `/interne/statut?token=${STATUS_TOKEN}`, status: 200, includes: ["Statut interne", "Fonctionnalités (drapeaux)", "renseignée"] }]

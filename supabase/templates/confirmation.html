@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+  <body style="margin:0;padding:24px;background:#faf9f7;font-family:Arial,Helvetica,sans-serif;color:#1b1916">
+    <table role="presentation" width="100%" style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e7e3dc;border-radius:12px">
+      <tr>
+        <td style="padding:28px">
+          <p style="margin:0 0 4px;font-size:14px;font-weight:bold;color:#146c86">Carrefour des Possibles</p>
+          <h1 style="margin:0 0 16px;font-size:20px">Confirmez votre adresse e-mail</h1>
+          <p style="margin:0 0 20px;font-size:15px;line-height:1.5">
+            Bienvenue ! Pour activer votre compte, confirmez votre adresse en cliquant sur le bouton ci-dessous.
+          </p>
+          <p style="margin:0 0 24px">
+            <a href="{{ .SiteURL }}/auth/confirmation?token_hash={{ .TokenHash }}&type=email&suivant=/profil"
+               style="display:inline-block;background:#146c86;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:10px">
+              Confirmer mon adresse
+            </a>
+          </p>
+          <p style="margin:0;font-size:13px;line-height:1.5;color:#5c554b">
+            Ce lien est valable une heure. Si vous n’êtes pas à l’origine de cette inscription, ignorez ce message : aucun compte ne sera activé.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

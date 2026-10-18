@@ -37,6 +37,9 @@ export const serverEnvSchema = z.object({
   ERROR_TRACKING_DSN: blankAsUndefined(z.url().optional()),
   LOG_LEVEL: blankAsUndefined(z.enum(["debug", "info", "warn", "error"]).default("info")),
 
+  /** Multiplicateur des limites anti-abus. TESTS AUTOMATISÉS UNIQUEMENT ; jamais en production. */
+  RATE_LIMIT_SCALE: blankAsUndefined(z.coerce.number().int().min(1).max(1000).default(1)),
+
   /** Jeton d'accès à /interne/statut. Obligatoire en production pour consulter la page. */
   INTERNAL_STATUS_TOKEN: blankAsUndefined(z.string().min(24, "24 caractères minimum").optional()),
 

@@ -1766,7 +1766,7 @@ export type Database = {
         Row: {
           city_id: string
           created_at: string
-          created_by: string
+          created_by: string | null
           id: string
           is_suspended: boolean
           kind: Database["public"]["Enums"]["organization_kind"]
@@ -1777,7 +1777,7 @@ export type Database = {
         Insert: {
           city_id: string
           created_at?: string
-          created_by: string
+          created_by?: string | null
           id?: string
           is_suspended?: boolean
           kind?: Database["public"]["Enums"]["organization_kind"]
@@ -1788,7 +1788,7 @@ export type Database = {
         Update: {
           city_id?: string
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           id?: string
           is_suspended?: boolean
           kind?: Database["public"]["Enums"]["organization_kind"]
@@ -1827,7 +1827,7 @@ export type Database = {
           status: Database["public"]["Enums"]["payment_status"]
           subscription_id: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           amount_xof: number
@@ -1842,7 +1842,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["payment_status"]
           subscription_id?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           amount_xof?: number
@@ -1857,7 +1857,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["payment_status"]
           subscription_id?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1890,7 +1890,7 @@ export type Database = {
           category_id: string
           city_id: string
           created_at: string
-          created_by: string
+          created_by: string | null
           description: string | null
           email: string | null
           id: string
@@ -1924,7 +1924,7 @@ export type Database = {
           category_id: string
           city_id: string
           created_at?: string
-          created_by: string
+          created_by?: string | null
           description?: string | null
           email?: string | null
           id?: string
@@ -1958,7 +1958,7 @@ export type Database = {
           category_id?: string
           city_id?: string
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           description?: string | null
           email?: string | null
           id?: string
@@ -2165,6 +2165,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limit_buckets: {
+        Row: {
+          hits: number
+          key_hash: string
+          window_start: string
+        }
+        Insert: {
+          hits: number
+          key_hash: string
+          window_start: string
+        }
+        Update: {
+          hits?: number
+          key_hash?: string
+          window_start?: string
+        }
+        Relationships: []
       }
       reports: {
         Row: {
@@ -2463,7 +2481,7 @@ export type Database = {
           impressions: number
           listing_id: string | null
           organization_id: string | null
-          owner_id: string
+          owner_id: string | null
           place_id: string | null
           placement: Database["public"]["Enums"]["campaign_placement"]
           starts_at: string
@@ -2483,7 +2501,7 @@ export type Database = {
           impressions?: number
           listing_id?: string | null
           organization_id?: string | null
-          owner_id: string
+          owner_id?: string | null
           place_id?: string | null
           placement: Database["public"]["Enums"]["campaign_placement"]
           starts_at: string
@@ -2503,7 +2521,7 @@ export type Database = {
           impressions?: number
           listing_id?: string | null
           organization_id?: string | null
-          owner_id?: string
+          owner_id?: string | null
           place_id?: string | null
           placement?: Database["public"]["Enums"]["campaign_placement"]
           starts_at?: string
@@ -2581,7 +2599,7 @@ export type Database = {
           plan_id: string
           status: Database["public"]["Enums"]["subscription_status"]
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           business_id?: string | null
@@ -2594,7 +2612,7 @@ export type Database = {
           plan_id: string
           status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           business_id?: string | null
@@ -2607,7 +2625,7 @@ export type Database = {
           plan_id?: string
           status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -2721,6 +2739,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      become_individual: { Args: never; Returns: undefined }
+      become_professional: { Args: never; Returns: undefined }
       business_private_location: {
         Args: { p_business: string }
         Returns: {
@@ -2731,6 +2751,10 @@ export type Database = {
       }
       can_manage_content: {
         Args: { p_organization: string; p_owner: string }
+        Returns: boolean
+      }
+      consume_rate_limit: {
+        Args: { p_key_hash: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
       }
       content_transition_allowed: {
@@ -2748,6 +2772,7 @@ export type Database = {
       }
       demo_content_public: { Args: never; Returns: boolean }
       expire_listings: { Args: never; Returns: number }
+      export_my_data: { Args: never; Returns: Json }
       grant_public_columns: {
         Args: { p_hidden: string[]; p_table: string }
         Returns: undefined
@@ -2795,6 +2820,7 @@ export type Database = {
         Args: { p_role: Database["public"]["Enums"]["organization_role"] }
         Returns: number
       }
+      purge_rate_limits: { Args: never; Returns: number }
       verification_publicly_visible: {
         Args: { p_status: Database["public"]["Enums"]["verification_status"] }
         Returns: boolean

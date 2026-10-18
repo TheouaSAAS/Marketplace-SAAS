@@ -80,6 +80,14 @@ export function describeServices(): ServiceCheck[] {
       detail: env.SMS_PROVIDER !== "none" ? `SMS : ${env.SMS_PROVIDER} déclaré, non intégré.` : "Aucun fournisseur.",
     },
     {
+      name: "Limitation anti-abus",
+      status: env.RATE_LIMIT_SCALE === 1 ? (isSupabaseConfigured() && env.SUPABASE_SECRET_KEY ? "ok" : "not_configured") : "error",
+      detail:
+        env.RATE_LIMIT_SCALE === 1
+          ? "Compteurs en base, empreintes HMAC, purge horaire."
+          : `Limites multipliées par ${env.RATE_LIMIT_SCALE} (RATE_LIMIT_SCALE) : réglage de test, à retirer.`,
+    },
+    {
       name: "Suivi des erreurs",
       status: env.ERROR_TRACKING_DSN ? "partial" : "not_configured",
       detail: env.ERROR_TRACKING_DSN

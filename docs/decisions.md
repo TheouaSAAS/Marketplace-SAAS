@@ -74,5 +74,17 @@ Modération (contenus des membres), éditeurs locaux (données de la ville), adm
 ## D24 — Données de démonstration visibles derrière un paramètre
 Le paramètre `demo.public_placeholders` (activé pendant le pilote) contrôle en base la visibilité des exemples. Le désactiver fait disparaître tous les exemples du public sans les supprimer ; `demo_remove.sql` les supprime.
 
+## D25 — Authentification Supabase, session vérifiée
+Inscription et connexion par e-mail et mot de passe (Supabase Auth). L'identité est toujours établie par `getClaims()` (signature vérifiée), jamais par la session lue dans le cookie. Le proxy rafraîchit la session seulement si un cookie de session existe. Lecture de session précédée de `connection()` : la vérification du jeton lit l'heure, interdit dans un pré-rendu (défaut trouvé par les tests navigateur). Déconnexion locale à l'appareil (`scope: "local"`). Téléphone, OTP et OAuth : non activés (aucun fournisseur configuré), l'architecture (`verifyOtp`, route de confirmation) les accepte.
+
+## D26 — Anti-énumération et anti-abus
+Inscription et mot de passe oublié répondent toujours la même chose ; la connexion ne distingue pas e-mail et mot de passe faux. Limitation de débit par IP et par adresse visée, en base (`consume_rate_limit`, appelable uniquement par le serveur), avec empreintes HMAC purgées toutes les heures (`pg_cron`). `RATE_LIMIT_SCALE` relève les limites pour les tests automatisés seulement.
+
+## D27 — Configuration d'authentification versionnée
+`npm run db:auth-config` applique depuis le dépôt la politique de mot de passe (10 caractères, lettres et chiffres), la ré-authentification pour changer de mot de passe et les adresses de redirection. Les modèles d'e-mails français (`supabase/templates/`) ne sont applicables qu'avec un SMTP personnalisé (refus de Supabase sur l'offre gratuite) ; la route `/auth/confirmation` accepte les deux formats de lien (`token_hash` et `code`).
+
+## D28 — Suppression de compte avec conservation pseudonymisée
+La suppression efface le compte et ses contenus personnels, mais conserve détachés du compte : fiches de lieux (donnée locale), paiements, abonnements et campagnes (obligations comptables). Défaut trouvé en réel : un utilisateur ayant payé ne pouvait pas supprimer son compte (correctif `…000900`).
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

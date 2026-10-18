@@ -1,17 +1,26 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { isSupabaseConfigured } from "@/lib/env";
 import { internalTokenMatches } from "@/lib/internal-token";
+import { hasSupabaseSessionCookie, refreshSupabaseSession } from "@/lib/supabase/proxy-session";
 
 /**
  * Proxy (ex-middleware) : contrôles exécutés AVANT le rendu.
  *
- * Pages internes (/interne/*) : sans autorisation, la requête est réécrite vers
- * une adresse inexistante pour obtenir une vraie réponse 404 (le pré-rendu
- * partiel ne permet plus de changer le code HTTP une fois la page commencée).
- *
- * Le rafraîchissement de session Supabase s'ajoutera ici au niveau 3.
+ * 1. Pages internes (/interne/*) : sans jeton valide, réécriture vers une
+ *    adresse inexistante pour obtenir une vraie 404.
+ * 2. Espaces protégés : sans cookie de session, redirection vers la connexion.
+ *    Contrôle « optimiste » : chaque page et action revérifie la session côté
+ *    serveur ; la base applique ses propres règles d'accès.
+ * 3. Session Supabase : rafraîchie uniquement si un cookie de session existe
+ *    (aucun coût pour les visiteurs anonymes).
  */
-export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/interne")) {
+
+const PROTECTED_PREFIXES = ["/profil", "/espace-pro", "/admin"];
+
+export async function proxy(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
+
+  if (pathname.startsWith("/interne")) {
     const token = request.nextUrl.searchParams.get("token");
     if (!internalTokenMatches(token, process.env.INTERNAL_STATUS_TOKEN || undefined)) {
       return NextResponse.rewrite(new URL("/__introuvable", request.url));
@@ -21,9 +30,24 @@ export function proxy(request: NextRequest) {
     response.headers.set("Cache-Control", "private, no-store");
     return response;
   }
+
+  const hasSession = hasSupabaseSessionCookie(request);
+  const isProtected = PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+  if (isProtected && !hasSession) {
+    const login = new URL("/connexion", request.url);
+    login.searchParams.set("suivant", `${pathname}${search}`);
+    return NextResponse.redirect(login);
+  }
+
+  if (hasSession && isSupabaseConfigured()) {
+    const response = await refreshSupabaseSession(request);
+    if (isProtected) response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/interne/:path*"],
+  // Toutes les pages, sauf fichiers statiques et métadonnées.
+  matcher: ["/((?!_next/static|_next/image|icon.svg|robots.txt|sitemap.xml|api/health|.*\\.(?:svg|png|jpg|jpeg|webp|ico|txt|xml)$).*)"],
 };

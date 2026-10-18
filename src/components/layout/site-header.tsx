@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { LogIn, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { AccountEntry, AccountEntryFallback } from "@/modules/accounts/components/account-entry";
 import { SITE } from "@/config/site";
 import { getCityContext } from "@/server/city-context";
 import { Container } from "@/components/ui/container";
@@ -38,13 +39,23 @@ export function SiteHeader() {
           <Suspense fallback={<CitySelectorFallback />}>
             <CurrentCitySelector />
           </Suspense>
-          <RouteButton route="login" variant="ghost" icon={<LogIn aria-hidden className="h-4 w-4" />} className="hidden lg:inline-flex">
-            Connexion
-          </RouteButton>
+          <div className="hidden lg:block">
+            <Suspense fallback={<AccountEntryFallback variant="desktop" />}>
+              <AccountEntry variant="desktop" />
+            </Suspense>
+          </div>
           <RouteButton route="publish" variant="accent" icon={<Plus aria-hidden className="h-4 w-4" />} className="hidden sm:inline-flex">
             Publier
           </RouteButton>
-          <MobileNav className="lg:hidden" searchSlot={<HeaderSearch id="recherche-menu" />} />
+          <MobileNav
+            className="lg:hidden"
+            searchSlot={<HeaderSearch id="recherche-menu" />}
+            accountSlot={
+              <Suspense fallback={<AccountEntryFallback variant="mobile" />}>
+                <AccountEntry variant="mobile" />
+              </Suspense>
+            }
+          />
         </div>
       </Container>
     </header>
