@@ -1,7 +1,7 @@
 # État de construction — Carrefour des Possibles
 
 > À lire au début de chaque session, puis vérifier l'état réel du code (`git log`, `npm run check`, `npm run db:verify`).
-> Dernière mise à jour : **2026-10-18** — niveau 4 terminé.
+> Dernière mise à jour : **2026-10-18** — niveau 5 terminé.
 
 ## Niveaux
 
@@ -12,14 +12,15 @@
 | 2 | Base de données, gouvernance et rôles | ✅ terminé (voir docs/database.md) |
 | 3 | Authentification et comptes | ✅ terminé |
 | 4 | Shell et navigation | ✅ terminé — 4 entrées, barre basse mobile, assistant (honnête sans IA), fil d'Ariane, 15 rubriques en préparation, aide, vérification, signalement, contact, maintenance (503), hors ligne (service worker) |
-| 5 | Accueil dynamique | ⏭️ prochain (version fondations en place) |
-| 6–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
+| 5 | Accueil dynamique | ✅ terminé — accroche, recherche, 8 accès rapides, 4 sections lues en base avec règles affichées, badges de vérification, avertissement de démonstration, états vides et d'erreur |
+| 6 | Parcours « Nouveau à San Pedro ? » | ⏭️ prochain |
+| 7–28 | Recherche, domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
 
 ## Pages et routes
 
 | Route | Contenu | État |
 | --- | --- | --- |
-| `/` | Accueil, version fondations | live |
+| `/` | Accueil dynamique (sections lues en base par ville) | live |
 | `/connexion`, `/inscription` | Connexion, inscription (particulier / professionnel, consentements) | live |
 | `/mot-de-passe-oublie`, `/mot-de-passe/nouveau` | Récupération d'accès | live |
 | `/auth/confirmation` | Aboutissement des liens e-mail (`token_hash` ou `code`) | live |
@@ -73,4 +74,4 @@ Voir `docs/data-governance.md` (centre de la ville, quartiers, démonstration).
 
 ## Prochaine étape
 
-Niveau 5 — accueil dynamique : accroche « Tout San Pedro, au même endroit », recherche « Que recherchez-vous à San Pedro ? », CTA « Nouveau à San Pedro ? », accès rapides, sections alimentées par la base (annonces récentes, professionnels, découvrir, événements à venir) avec badges de vérification et états vides propres.
+Niveau 6 — parcours « 🧭 Nouveau à San Pedro ? » : introduction, motif (travailler, étudier, visiter, s'installer, entreprendre), préférences, progression sauvegardable, plan personnalisé fondé sur des règles déterministes et des contenus réels, provenance expliquée, suppression du parcours.

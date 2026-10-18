@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const SLOGAN = "Votre ville, mille opportunités";
+const ACCROCHE = "Tout San Pedro, au même endroit.";
 
 async function expectNoHorizontalOverflow(page: Page) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -10,7 +11,9 @@ async function expectNoHorizontalOverflow(page: Page) {
 test.describe("Fondations — tous écrans", () => {
   test("l'accueil affiche la marque officielle sans débordement", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(SLOGAN);
+    // Marque officielle + slogan exact (§2.1), accroche de la ville pilote en titre (décision D11).
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(ACCROCHE);
+    await expect(page.getByText(`Carrefour des Possibles — « ${SLOGAN} »`)).toBeVisible();
     await expect(page).toHaveTitle(`Carrefour des Possibles — ${SLOGAN}`);
     await expect(page.getByText("San Pedro").first()).toBeVisible();
     await expectNoHorizontalOverflow(page);
@@ -30,7 +33,7 @@ test.describe("Fondations — tous écrans", () => {
     expect(response?.status()).toBe(404);
     await expect(page.getByText("Cette page est introuvable")).toBeVisible();
     await page.getByRole("link", { name: "Retour à l’accueil" }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(SLOGAN);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(ACCROCHE);
   });
 
   test("le système de design s'affiche sans débordement", async ({ page }) => {

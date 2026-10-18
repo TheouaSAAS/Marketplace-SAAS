@@ -104,5 +104,14 @@ Le lanceur « Demandez à San Pedro » est présent sur toutes les pages, sans g
 ## D34 — Délai maximal et journalisation des appels Supabase
 Les tests ont révélé qu'une perturbation réseau pouvait figer un formulaire indéfiniment, puis, une fois un délai ajouté, afficher « mot de passe incorrect » ou « e-mail envoyé » à tort. Tous les clients Supabase côté serveur utilisent `fetchWithTimeout` (10 s), qui journalise les appels lents (≥ 3 s) et interrompus (chemin, durée, sans données personnelles). Les actions de compte distinguent la panne réseau (`isAuthRetryableFetchError`) d'un refus réel et affichent « momentanément indisponible ». Les tests navigateur autorisent une nouvelle tentative, signalée « flaky » dans le rapport.
 
+## D35 — Accueil : coque statique, sections dynamiques indépendantes
+L'accroche, la recherche et les accès rapides sont statiques (affichage immédiat, même réseau lent). Les quatre sections (annonces récentes, découvrir, commerces et professionnels, événements à venir) sont lues en parallèle derrière `<Suspense>`, par ville, avec un cache de quelques minutes ; l'échec d'une section n'empêche pas les autres de s'afficher.
+
+## D36 — Recommandations déterministes et affichées
+Pas de profilage ni de mise en avant payante à ce stade. Règles publiques (`src/domain/recommendation.ts`), affichées sous chaque section (« Pourquoi ces contenus ? ») : annonces par date de publication ; lieux par vérification à jour puis mise à jour récente ; événements par proximité dans le temps, jamais passés, annulations signalées.
+
+## D37 — Aucune photo inventée
+Tant qu'un contenu n'a pas de photo réelle, sa carte porte un visuel neutre (icône de catégorie sur fond teinté), jamais une image d'illustration qui pourrait passer pour le lieu réel.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).
