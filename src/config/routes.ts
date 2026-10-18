@@ -25,7 +25,9 @@ export interface AppRoute {
 
 export const ROUTES = {
   home: { path: "/", label: "Accueil", level: 5, status: "live" },
-  newcomer: { path: "/nouveau-arrivant", label: "Nouveau à San Pedro ?", level: 6, status: "preview" },
+  newcomer: { path: "/nouveau-arrivant", label: "Nouveau à San Pedro ?", level: 6, status: "live" },
+  newcomerQuestions: { path: "/nouveau-arrivant/questions", label: "Questionnaire", level: 6, status: "live", private: true },
+  newcomerPlan: { path: "/nouveau-arrivant/plan", label: "Mon plan", level: 6, status: "live", private: true },
   search: { path: "/recherche", label: "Recherche", level: 7, status: "preview" },
 
   // Annonces & opportunités

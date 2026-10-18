@@ -49,6 +49,10 @@ Corriger, vérifier (avec source), dater, publier, archiver, fusionner des doubl
 
 L'IA ne crée aucune donnée locale. Elle ne répond qu'à partir de contenus `verified` (ou, si le contexte l'autorise explicitement, `pending_validation` signalés comme tels), cite ses sources internes et répond « je ne dispose pas d'information vérifiée » en l'absence de source.
 
+## Parcours « Nouveau à San Pedro ? » (niveau 6)
+
+Les conseils du plan sont des textes génériques d'orientation (aucune adresse, aucun prix, aucun horaire, aucun numéro). Les seules données locales affichées sont des contenus publiés en base, avec leur badge ; un bloc dont les contenus ne sont pas vérifiés porte un avertissement, et un bloc sans contenu le dit. Les textes des 17 blocs (`src/modules/newcomer/domain/plan.ts`) sont des choix produit, à relire par une personne connaissant San Pedro.
+
 ## Modération (distincte de la vérification)
 
 Les contenus déposés par les utilisateurs (annonces, vitrines, événements) suivent un cycle de **modération** : brouillon → en attente → publié / rejeté → expiré / archivé. Une annonce publiée n'est pas pour autant « vérifiée » : les deux notions sont affichées séparément.
@@ -60,5 +64,6 @@ Les contenus déposés par les utilisateurs (annonces, vitrines, événements) s
 | Centre approximatif de San Pedro (position par défaut de la carte) | `src/domain/city.ts`, `supabase/seed.sql` | à confirmer |
 | 10 noms de quartiers | `supabase/seeds/quartiers_san_pedro.sql` | à valider (orthographe, découpage, manquants) |
 | Taxonomie des catégories | `supabase/seed.sql` | choix produit, modifiable |
+| Textes des conseils du parcours nouvel arrivant (17 blocs) | `src/modules/newcomer/domain/plan.ts` | à relire localement |
 | Rubriques du guide (11) | migration `…000500_domains.sql` | choix produit, modifiable |
 | Données de démonstration (5 lieux, 4 annonces, 1 événement, 1 article) | `supabase/seeds/demo.sql` | `placeholder`, à supprimer avant le lancement (`demo_remove.sql`) ou masquer (`demo.public_placeholders`) |

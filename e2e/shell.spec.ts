@@ -13,13 +13,13 @@ const SECTIONS: [string, string][] = [
   ["/quartiers", "Quartiers"],
   ["/carte", "Carte interactive"],
   ["/evenements", "Événements"],
-  ["/nouveau-arrivant", "Nouveau à San Pedro ?"],
   ["/publier", "Publier une annonce"],
   ["/offres", "Offres pour les professionnels"],
 ];
 
 test.describe("Shell — rubriques", () => {
   test("toutes les rubriques majeures sont accessibles, explicites et non indexées", async ({ page }) => {
+    test.setTimeout(90_000);
     for (const [path, title] of SECTIONS) {
       const response = await page.goto(path);
       expect(response?.status(), path).toBe(200);

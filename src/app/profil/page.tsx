@@ -5,7 +5,11 @@ import { href } from "@/config/routes";
 import { ROLE_LABELS } from "@/domain/roles";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { buttonClasses } from "@/components/ui/button";
+import { ButtonLink, buttonClasses } from "@/components/ui/button";
+import { formatDate } from "@/lib/format";
+import { DeletePlanForm } from "@/modules/newcomer/components/plan-actions";
+import { answersToSearchParams } from "@/modules/newcomer/domain/answers";
+import { getSavedNewcomerAnswers } from "@/modules/newcomer/server/queries";
 import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Alert } from "@/components/ui/feedback";
@@ -50,6 +54,7 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
     .limit(1)
     .maybeSingle()) ?? { data: null };
 
+  const newcomer = await getSavedNewcomerAnswers();
   const name = account.displayName ?? account.email ?? "Mon compte";
   const isProfessional = account.role === "professional";
 
@@ -116,6 +121,27 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
 
       <Section title="Communications">
         <MarketingConsentForm granted={Boolean(marketing?.granted)} />
+      </Section>
+
+      <Section title="Mon parcours « Nouveau à San Pedro ? »">
+        {newcomer ? (
+          <div className="flex flex-col gap-3">
+            <p className="text-sm text-ink-muted">Enregistré le {formatDate(newcomer.updatedAt)}.</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <ButtonLink href={`${href("newcomerPlan")}?${answersToSearchParams(newcomer.answers).toString()}`} variant="secondary">
+                Voir mon plan
+              </ButtonLink>
+              <DeletePlanForm returnTo="profil" />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-start gap-3">
+            <p className="text-sm text-ink-muted">Aucun parcours enregistré.</p>
+            <ButtonLink href={href("newcomer")} variant="secondary">
+              Commencer le parcours
+            </ButtonLink>
+          </div>
+        )}
       </Section>
 
       <Section title="Mes données">

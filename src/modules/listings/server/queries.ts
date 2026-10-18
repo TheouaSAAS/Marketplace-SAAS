@@ -22,6 +22,29 @@ const listingCardSchema = z.object({
 
 export type ListingCardData = z.infer<typeof listingCardSchema>;
 
+const LISTING_CARD_COLUMNS =
+  "id, slug, title, price, price_unit, availability_status, verification_status, verified_at, published_at, category:categories(name, slug, icon), neighborhood:neighborhoods(name)";
+
+/** Annonces publiées les plus récentes d'une ville, limitées à des catégories (identifiants). */
+export async function listListingsByCategories(cityId: string, categoryIds: readonly string[], limit = 3): Promise<ListingCardData[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(LISTINGS_CACHE_TAG, `${LISTINGS_CACHE_TAG}:${cityId}`);
+
+  const supabase = createPublicSupabaseClient();
+  if (!supabase || categoryIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from("listings")
+    .select(LISTING_CARD_COLUMNS)
+    .eq("city_id", cityId)
+    .eq("status", "published")
+    .in("category_id", [...categoryIds])
+    .order("published_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`Lecture des annonces impossible : ${error.message}`);
+  return z.array(listingCardSchema).parse(data);
+}
+
 /**
  * Annonces publiées les plus récentes d'une ville. Colonnes publiques
  * uniquement (la position exacte et les contacts sont illisibles par l'API).
@@ -37,9 +60,7 @@ export async function listRecentListings(cityId: string, limit = 6): Promise<Lis
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("listings")
-    .select(
-      "id, slug, title, price, price_unit, availability_status, verification_status, verified_at, published_at, category:categories(name, slug, icon), neighborhood:neighborhoods(name)",
-    )
+    .select(LISTING_CARD_COLUMNS)
     .eq("city_id", cityId)
     .eq("status", "published")
     .order("published_at", { ascending: false })

@@ -113,5 +113,8 @@ Pas de profilage ni de mise en avant payante à ce stade. Règles publiques (`sr
 ## D37 — Aucune photo inventée
 Tant qu'un contenu n'a pas de photo réelle, sa carte porte un visuel neutre (icône de catégorie sur fond teinté), jamais une image d'illustration qui pourrait passer pour le lieu réel.
 
+## D38 — Parcours « Nouveau à San Pedro ? » : règles fixes, réponses dans l'adresse
+Le plan est calculé par une fonction pure (`src/modules/newcomer/domain/plan.ts`) à partir de choix catégoriels uniquement (motif, durée, budget sans montant, logement, déplacements, priorités, centres d'intérêt) : aucune donnée personnelle, aucun prix estimé, aucune IA. Les priorités choisies passent en tête ; chaque bloc dit « Pourquoi ce conseil ? » et n'affiche que des contenus réellement publiés dans la ville (avertissement si non vérifiés, état vide sinon). Les réponses voyagent dans l'adresse du plan (partageable, rechargeable, sans compte) ; le brouillon du questionnaire reste dans le navigateur (`localStorage`) ; l'enregistrement dans le compte (`newcomer_plans`) est facultatif, lisible par son seul propriétaire (pas même la modération) et supprimable depuis le plan ou le profil. Une adresse incomplète ou invalide affiche « Ce plan est incomplet » plutôt qu'un plan approximatif.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

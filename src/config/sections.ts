@@ -179,16 +179,6 @@ export const SECTION_PREVIEWS = {
     categories: ["evenements"],
     related: ["discover", "tourism", "publish"],
   },
-  newcomer: {
-    title: "Nouveau à San Pedro ?",
-    intro: "Vous arrivez pour travailler, étudier, visiter, vous installer ou entreprendre ? Un parcours court vous guidera vers l’essentiel.",
-    upcoming: [
-      "Quelques questions : motif, durée, budget indicatif, priorités",
-      "Un plan personnalisé : logement, quartiers, services, déplacements, sorties",
-      "Chaque recommandation indique d’où elle vient ; les données à vérifier sont signalées",
-    ],
-    related: ["guide", "neighborhoods", "realEstate", "discover"],
-  },
 } as const satisfies Partial<Record<RouteKey, SectionPreviewConfig>>;
 
 export type PreviewSectionKey = keyof typeof SECTION_PREVIEWS;

@@ -22,6 +22,32 @@ const placeCardSchema = z.object({
 
 export type PlaceCardData = z.infer<typeof placeCardSchema>;
 
+/** Lieux publiés d'une ville limités à des catégories (identifiants), même classement explicable. */
+export async function listPlacesByCategories(cityId: string, categoryIds: readonly string[], limit = 3): Promise<PlaceCardData[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(PLACES_CACHE_TAG, `${PLACES_CACHE_TAG}:${cityId}`);
+
+  const supabase = createPublicSupabaseClient();
+  if (!supabase || categoryIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from("places")
+    .select(
+      "id, slug, name, summary, kind, verification_status, verified_at, updated_at, category:categories(name, slug, icon, family), neighborhood:neighborhoods(name)",
+    )
+    .eq("city_id", cityId)
+    .eq("status", "published")
+    .in("category_id", [...categoryIds])
+    .order("updated_at", { ascending: false })
+    .limit(limit * 3);
+  if (error) throw new Error(`Lecture des lieux impossible : ${error.message}`);
+  const places = z.array(placeCardSchema).parse(data);
+  return rankPlaces(
+    places.map((place) => ({ ...place, verificationStatus: place.verification_status, verifiedAt: place.verified_at, updatedAt: place.updated_at })),
+    new Date(),
+  ).slice(0, limit);
+}
+
 /**
  * Lieux publiés d'une ville pour une famille de catégories
  * (« decouvrir » : tourisme, restaurants, sorties ; « trouver » : commerces et

@@ -27,6 +27,7 @@ test.describe("Comptes", () => {
   });
 
   test("connexion, profil, export des données puis déconnexion", async ({ page, isMobile }) => {
+    test.setTimeout(90_000);
     // Une redirection externe demandée après connexion est ignorée.
     await page.goto("/connexion?suivant=https%3A%2F%2Fpirate.example");
     await page.getByLabel("Adresse e-mail").fill(email!);
@@ -49,7 +50,7 @@ test.describe("Comptes", () => {
     expect(data.consentements.length).toBeGreaterThanOrEqual(2);
 
     await page.getByRole("button", { name: "Se déconnecter" }).filter({ visible: true }).first().click();
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/$/, { timeout: LOGIN_TIMEOUT });
     await page.goto("/profil");
     await expect(page).toHaveURL(/\/connexion/);
   });

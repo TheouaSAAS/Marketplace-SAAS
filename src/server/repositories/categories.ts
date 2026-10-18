@@ -37,6 +37,22 @@ export async function listCategories(): Promise<Category[]> {
   return z.array(categorySchema).parse(data);
 }
 
+/** Identifiants des catégories demandées ET de toutes leurs sous-catégories. */
+export function categoryIdsWithDescendants(all: Category[], slugs: readonly string[]): string[] {
+  const ids = new Set(all.filter((category) => slugs.includes(category.slug)).map((category) => category.id));
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const category of all) {
+      if (category.parent_id && ids.has(category.parent_id) && !ids.has(category.id)) {
+        ids.add(category.id);
+        grew = true;
+      }
+    }
+  }
+  return [...ids];
+}
+
 /** Catégories demandées (par slug) et leurs sous-catégories, dans l'ordre d'affichage. */
 export function selectCategoryTree(all: Category[], parentSlugs: readonly string[]): { parent: Category; children: Category[] }[] {
   return parentSlugs.flatMap((slug) => {
