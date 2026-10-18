@@ -2,6 +2,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
+import type { Database } from "@/types/database";
 
 /**
  * Client lié à la SESSION de l'utilisateur (cookies d'authentification).
@@ -15,7 +16,7 @@ export async function createSessionSupabaseClient() {
   if (!isSupabaseConfigured()) return null;
   const cookieStore = await cookies();
 
-  return createServerClient(publicEnv.NEXT_PUBLIC_SUPABASE_URL!, publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
+  return createServerClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL!, publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

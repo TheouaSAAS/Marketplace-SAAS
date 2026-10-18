@@ -1,7 +1,7 @@
 # État de construction — Carrefour des Possibles
 
 > À lire au début de chaque session, puis vérifier l'état réel du code (`git log`, `npm run check`).
-> Dernière mise à jour : **2026-10-17** — niveau 1 terminé.
+> Dernière mise à jour : **2026-10-18** — niveau 2 terminé.
 
 ## Niveaux
 
@@ -9,8 +9,8 @@
 | --- | --- | --- |
 | 0 | Architecture, stack et fondations | ✅ terminé |
 | 1 | Design system et identité visuelle | ✅ terminé (voir docs/design-system.md) |
-| 2 | Base de données, gouvernance et rôles | ⏭️ en cours — Supabase connecté, schéma v1 appliqué et vérifié (34/34) ; extension v2 à faire |
-| 3 | Authentification | dépend du niveau 2 |
+| 2 | Base de données, gouvernance et rôles | ✅ terminé — 9 migrations appliquées, 80/80 vérifications sur la base réelle (voir docs/database.md) |
+| 3 | Authentification | ⏭️ prochain |
 | 4 | Shell et navigation | partiel (en-tête, pied de page, menu mobile existants ; passage aux 4 entrées à faire) |
 | 5 | Accueil dynamique | partiel (version fondations) |
 | 6–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
@@ -32,7 +32,7 @@
 - **Conventions** : `ActionResult` et `AppError` (`src/lib/errors.ts`), `apiData`/`apiError` (`src/lib/api.ts`), `logger` JSON avec masquage (`src/lib/logger.ts`), `proxy.ts` pour les contrôles avant rendu.
 - **Design system** : 30 composants (`src/components/ui`, documentés dans `docs/design-system.md`, aperçu `/design-system`), dont badges de vérification (`verified`, `pending_validation`, `placeholder`…), onglets, filtres, cases, interrupteurs, avatars, bandeau hors ligne. Contraste AA vérifié par test.
 - **Domaine** : `src/domain/verification.ts` (fiabilité et expiration des vérifications), `src/lib/format.ts` (dates, prix FCFA).
-- **Données** : Supabase `towkxqwdvjdajlohevxt` connecté (PostgreSQL 17, eu-west-1). Schéma v1 (19 tables, RLS) **appliqué** + correctif `…000300` ; référentiel chargé ; `npm run db:verify` : 34/34 sur la base réelle. À étendre au niveau 2 (vérification, organisations, rôles étendus, RAG…).
+- **Données** : Supabase `towkxqwdvjdajlohevxt` (PostgreSQL 17, eu-west-1). 9 migrations appliquées : 7 rôles, gouvernance (sources, vérification, historique), organisations, confidentialité des positions et contacts par droits de colonnes, domaines (guide versionné, emploi, avis, messagerie, recherches, préférences, consentements, RAG, stockage privé). Types générés (`src/types/database.ts`), clients Supabase typés. Démonstration : 11 éléments `placeholder`.
 
 ## Tests (dernière exécution : 2026-10-17)
 
@@ -60,4 +60,4 @@ Voir `docs/data-governance.md` (centre de la ville, quartiers).
 
 ## Prochaine étape
 
-Niveau 2 — base de données, gouvernance et rôles. **Requiert les clés Supabase dans `.env.local`** pour exécuter les migrations et tester les règles d'accès en réel.
+Niveau 3 — authentification (inscription et connexion par e-mail, vérification, récupération, session dans `proxy.ts`, choix particulier/professionnel, consentements, export et suppression de compte).

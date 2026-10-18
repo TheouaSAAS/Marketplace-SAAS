@@ -24,6 +24,11 @@ if (existsSync(join(root, ".env.local"))) process.loadEnvFile(join(root, ".env.l
 
 const migrationsDir = join(root, "supabase", "migrations");
 
+/** Lit un fichier SQL en retirant l'éventuel BOM UTF-8 (ajouté par certains éditeurs Windows). */
+function readSql(path) {
+  return readFileSync(path, "utf8").replace(/^﻿/, "");
+}
+
 /** Encadre un texte en chaîne SQL littérale sûre (dollar-quoting avec étiquette absente du texte). */
 function dollarQuote(text) {
   let tag = "cdp";
@@ -128,7 +133,7 @@ async function migrate(db) {
     return;
   }
   for (const migration of pending) {
-    const sql = readFileSync(join(migrationsDir, migration.file), "utf8");
+    const sql = readSql(join(migrationsDir, migration.file));
     process.stdout.write(`→ ${migration.file} … `);
     try {
       await db.query(`begin;
@@ -153,7 +158,7 @@ commit;`);
 async function runFiles(db, files, { print = false } = {}) {
   if (files.length === 0) throw new Error("Préciser au moins un fichier SQL.");
   for (const file of files) {
-    const sql = readFileSync(join(root, file), "utf8");
+    const sql = readSql(join(root, file));
     process.stdout.write(`→ ${file} … `);
     try {
       const rows = await db.query(print ? sql : `begin;\n${sql}\n;\ncommit;`);
@@ -179,7 +184,7 @@ async function verify(db) {
   let total = 0;
   for (const file of readdirSync(dir).filter((name) => name.endsWith(".sql")).sort()) {
     console.log(`\n${file}`);
-    const rows = await db.query(readFileSync(join(dir, file), "utf8"));
+    const rows = await db.query(readSql(join(dir, file)));
     for (const row of rows) {
       total += 1;
       if (!row.ok) failures += 1;
@@ -190,7 +195,33 @@ async function verify(db) {
   if (failures > 0 || total === 0) process.exitCode = 1;
 }
 
+/** Génère src/types/database.ts depuis le schéma réel (API d'administration). */
+async function generateTypes() {
+  const token = process.env.SUPABASE_ACCESS_TOKEN;
+  if (!token) throw new Error("SUPABASE_ACCESS_TOKEN requis pour générer les types.");
+  const ref = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname.split(".")[0];
+  const response = await fetch(`https://api.supabase.com/v1/projects/${ref}/types/typescript?included_schemas=public`, {
+    headers: { Authorization: `Bearer ${token}`, "User-Agent": "carrefour-des-possibles-db/0.1" },
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status} : ${await response.text()}`);
+  const { types } = await response.json();
+  const { writeFileSync, mkdirSync } = await import("node:fs");
+  mkdirSync(join(root, "src", "types"), { recursive: true });
+  const header = "// Fichier GÉNÉRÉ par `npm run db:types` depuis le schéma Supabase. Ne pas modifier à la main.\n\n";
+  writeFileSync(join(root, "src", "types", "database.ts"), header + types);
+  console.log(`src/types/database.ts généré (${types.split("\n").length} lignes).`);
+}
+
 const [command, ...args] = process.argv.slice(2);
+if (command === "types") {
+  try {
+    await generateTypes();
+  } catch (error) {
+    console.error(`Génération impossible : ${error.message}`);
+    process.exitCode = 1;
+  }
+  process.exit();
+}
 let db;
 try {
   db = await connect();

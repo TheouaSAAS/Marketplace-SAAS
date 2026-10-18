@@ -19,6 +19,7 @@
     "db:migrate": "node scripts/db.mjs migrate",
     "db:seed": "node scripts/db.mjs seed supabase/seed.sql",
     "db:verify": "node scripts/db.mjs verify",
+    "db:types": "node scripts/db.mjs types",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build && npm run smoke && npm run e2e"
   },
   "dependencies": {

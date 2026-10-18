@@ -133,8 +133,10 @@ do $$
 declare v_views int; v_status text;
 begin
   perform pg_temp.act_as('00000000-0000-4000-8000-000000000001');
-  insert into public.listings (owner_id, slug, title, description, category_id, city_id, neighborhood_id, view_count, price, price_unit)
-  select '00000000-0000-4000-8000-000000000001', 'studio-test', 'Studio de test', repeat('Description de test. ', 3), cat_listing, city_id, neighborhood_id, 999, 100000, 'par_mois' from ctx;
+  insert into public.listings (owner_id, slug, title, description, category_id, city_id, neighborhood_id, view_count, price, price_unit, location, location_precision)
+  select '00000000-0000-4000-8000-000000000001', 'studio-test', 'Studio de test', repeat('Description de test. ', 3), cat_listing, city_id, neighborhood_id, 999, 100000, 'par_mois',
+         extensions.st_setsrid(extensions.st_makepoint(-6.6311, 4.7512), 4326)::extensions.geography, 'exact'
+  from ctx;
   select view_count, status into v_views, v_status from public.listings where slug = 'studio-test';
   perform pg_temp.back();
   perform pg_temp.record('un brouillon est créé par son auteur', v_status = 'draft', v_status);

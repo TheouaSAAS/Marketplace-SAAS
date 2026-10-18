@@ -62,5 +62,17 @@ Le port PostgreSQL direct est devenu inaccessible depuis le poste (bannissement 
 ## D20 — Tests de sécurité sur la base réelle
 La validation syntaxique ne suffit pas : la première exécution réelle a révélé qu'un membre pouvait écrire dans le journal d'administration (fonction `SECURITY DEFINER` où `current_user` vaut le propriétaire). Les règles d'accès sont désormais vérifiées par scénarios SQL (`supabase/tests/*.sql`, `npm run db:verify`) exécutés dans une transaction annulée. Règle ajoutée : dans une fonction `SECURITY DEFINER`, le contexte système se teste avec `is_service_request()` (rôle du jeton), jamais avec `current_user`.
 
+## D21 — Confidentialité garantie par les droits sur les colonnes
+La position précise et les coordonnées de contact ne sont pas filtrées par l'interface mais rendues illisibles pour les rôles de l'API (droits PostgreSQL par colonne). Le public lit une position dérivée (`location_public`). Coût : `select("*")` interdit sur ces tables ; rappeler `grant_public_columns()` après tout ajout de colonne. Alternative écartée : vue publique séparée (double maintenance des règles RLS).
+
+## D22 — Organisations distinctes des vitrines
+`organizations` porte les membres et leurs rôles ; `business_profiles` reste la vitrine publique. Les contenus peuvent être rattachés à une organisation ; les droits passent par `can_manage_content()`, utilisé à la fois par les règles RLS et les déclencheurs.
+
+## D23 — Quatre rôles d'équipe séparés
+Modération (contenus des membres), éditeurs locaux (données de la ville), administrateurs (comptes, référentiel) et superadministrateurs (rôles d'administration). Un modérateur ne vérifie pas les données locales ; un administrateur ne crée pas d'administrateur.
+
+## D24 — Données de démonstration visibles derrière un paramètre
+Le paramètre `demo.public_placeholders` (activé pendant le pilote) contrôle en base la visibilité des exemples. Le désactiver fait disparaître tous les exemples du public sans les supprimer ; `demo_remove.sql` les supprime.
+
 ## Dépendances (justification, §3.1)
-`@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL).
+`@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).
