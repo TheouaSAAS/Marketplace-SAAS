@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Plus } from "lucide-react";
-import { AccountEntry, AccountEntryFallback } from "@/modules/accounts/components/account-entry";
+import { Heart, Plus } from "lucide-react";
 import { SITE } from "@/config/site";
+import { href } from "@/config/routes";
 import { getCityContext } from "@/server/city-context";
+import { AccountEntry, AccountEntryFallback } from "@/modules/accounts/components/account-entry";
+import { buttonClasses } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/brand/logo";
 import { CitySelector, CitySelectorFallback } from "./city-selector";
@@ -19,10 +21,10 @@ async function CurrentCitySelector() {
 }
 
 /**
- * En-tête commun à toutes les pages.
- * Mobile : logo, ville, menu (publication et connexion dans le menu).
- * ≥ 640 px : bouton Publier. ≥ 1024 px : navigation des familles et Connexion.
- * ≥ 1280 px : champ de recherche.
+ * En-tête commun.
+ * Mobile : logo, ville, menu ; les actions principales sont dans la barre basse.
+ * ≥ 640 px : bouton Publier. ≥ 1024 px : recherche, favoris, compte, et barre
+ * des rubriques sur une seconde ligne (navigation structurée sans surcharge).
  */
 export function SiteHeader() {
   return (
@@ -32,13 +34,20 @@ export function SiteHeader() {
           <Logo />
         </Link>
 
-        <MainNav className="ml-2 hidden lg:flex" />
+        <HeaderSearch id="recherche-entete" className="ml-4 hidden max-w-xl flex-1 lg:block" />
 
         <div className="ml-auto flex items-center gap-2">
-          <HeaderSearch id="recherche-entete" className="hidden w-60 xl:block" />
           <Suspense fallback={<CitySelectorFallback />}>
             <CurrentCitySelector />
           </Suspense>
+          <Link
+            href={href("favorites")}
+            aria-label="Mes favoris"
+            title="Mes favoris"
+            className={buttonClasses({ variant: "ghost", size: "icon", className: "hidden lg:inline-flex" })}
+          >
+            <Heart aria-hidden className="h-5 w-5" />
+          </Link>
           <div className="hidden lg:block">
             <Suspense fallback={<AccountEntryFallback variant="desktop" />}>
               <AccountEntry variant="desktop" />
@@ -58,6 +67,11 @@ export function SiteHeader() {
           />
         </div>
       </Container>
+      <div className="hidden border-t border-border lg:block">
+        <Container>
+          <MainNav className="flex h-14" />
+        </Container>
+      </div>
     </header>
   );
 }

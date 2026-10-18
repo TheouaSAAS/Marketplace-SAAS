@@ -1,17 +1,17 @@
-import { Briefcase, Compass, Search } from "lucide-react";
+import { Compass, Search, Wrench } from "lucide-react";
 import type { ReactNode } from "react";
 import { SITE } from "@/config/site";
-import { NAV_FAMILIES, type FamilyKey } from "@/config/navigation";
+import { NAV_SECTIONS, type SectionKey } from "@/config/navigation";
 import { LAUNCH_CITY } from "@/domain/city";
 import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Alert } from "@/components/ui/feedback";
 import { NavItemLink } from "@/components/layout/nav-item-link";
 
-const FAMILY_ICONS: Record<FamilyKey, ReactNode> = {
+const FAMILY_ICONS: Record<SectionKey, ReactNode> = {
+  annonces: <Search aria-hidden className="h-6 w-6" />,
   decouvrir: <Compass aria-hidden className="h-6 w-6" />,
-  trouver: <Search aria-hidden className="h-6 w-6" />,
-  entreprendre: <Briefcase aria-hidden className="h-6 w-6" />,
+  services: <Wrench aria-hidden className="h-6 w-6" />,
 };
 
 /**
@@ -47,7 +47,7 @@ export default function HomePage() {
             Trois portes d’entrée sur votre ville
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
-            {NAV_FAMILIES.map((family) => (
+            {NAV_SECTIONS.map((family) => (
               <Card key={family.key}>
                 <CardBody className="gap-3">
                   <span className="flex h-11 w-11 items-center justify-center rounded-control bg-brand-50 text-brand-700">

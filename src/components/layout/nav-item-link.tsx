@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { href, isLive, type RouteKey } from "@/config/routes";
+import { hasPage, href, type RouteKey } from "@/config/routes";
 import type { NavLink } from "@/config/navigation";
 import { Button, ButtonLink, type ButtonSize, type ButtonVariant } from "@/components/ui/button";
 import { SoonBadge } from "@/components/ui/badge";
@@ -11,8 +11,8 @@ export function navLinkHref(link: NavLink): string {
 }
 
 /**
- * Lien de menu qui respecte le statut de la route : actif si la page est
- * `live`, sinon affiché « Bientôt » et non cliquable (jamais de lien cassé).
+ * Lien de menu qui respecte le statut de la route : actif si une page existe
+ * (`live` ou `preview`), sinon affiché « Bientôt » et non cliquable (jamais de lien cassé).
  */
 export function NavItemLink({
   link,
@@ -23,7 +23,7 @@ export function NavItemLink({
   className?: string;
   onNavigate?: () => void;
 }) {
-  if (!isLive(link.route)) {
+  if (!hasPage(link.route)) {
     return (
       <span aria-disabled="true" className={cn("cursor-default text-ink-subtle", className)}>
         <span>{link.label}</span>
@@ -58,7 +58,7 @@ export function RouteButton({
   onNavigate?: () => void;
   children: ReactNode;
 }) {
-  if (!isLive(route)) {
+  if (!hasPage(route)) {
     return (
       <Button variant={variant} size={size} icon={icon} fullWidth={fullWidth} className={className} disabled title="Bientôt disponible">
         {children}

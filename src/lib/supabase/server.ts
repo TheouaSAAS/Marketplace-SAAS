@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
+import { fetchWithTimeout } from "./fetch";
 
 /**
  * Client lié à la SESSION de l'utilisateur (cookies d'authentification).
@@ -17,6 +18,7 @@ export async function createSessionSupabaseClient() {
   const cookieStore = await cookies();
 
   return createServerClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL!, publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
+    global: { fetch: fetchWithTimeout },
     cookies: {
       getAll() {
         return cookieStore.getAll();

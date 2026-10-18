@@ -61,22 +61,43 @@ test.describe("Fondations — tous écrans", () => {
 test.describe("Navigation mobile", () => {
   test.skip(({ isMobile }) => !isMobile, "spécifique au mobile");
 
-  test("le menu s'ouvre, présente les familles et se ferme", async ({ page }) => {
+  test("le menu s'ouvre, présente les rubriques et l'accès signature, puis se ferme", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Ouvrir le menu" }).click();
     const menu = page.getByRole("dialog", { name: "Menu" });
     await expect(menu).toBeVisible();
-    for (const family of ["Découvrir", "Trouver", "Entreprendre"]) {
-      await expect(menu.getByText(family, { exact: true })).toBeVisible();
+    for (const section of ["Annonces & opportunités", "Découvrir & sortir", "Services & professionnels"]) {
+      await expect(menu.getByText(section, { exact: true })).toBeVisible();
     }
-    await expect(menu.getByText("Nouveau à San Pedro ?")).toBeVisible();
-    await expect(menu.getByRole("button", { name: "Publier" })).toBeDisabled();
+    await expect(menu.getByRole("link", { name: "Nouveau à San Pedro ?" })).toBeVisible();
+    await expect(menu.getByRole("link", { name: "Publier", exact: true })).toBeVisible();
 
-    await menu.getByText("Trouver", { exact: true }).click();
-    await expect(menu.getByText("Immobilier")).toBeVisible();
+    await menu.getByText("Services & professionnels", { exact: true }).click();
+    await expect(menu.getByRole("link", { name: "Artisans et dépannage" })).toBeVisible();
 
     await menu.getByRole("button", { name: "Fermer" }).click();
     await expect(menu).toBeHidden();
+  });
+
+  test("la barre basse mène aux destinations principales sans masquer le contenu", async ({ page }) => {
+    await page.goto("/");
+    const bar = page.getByRole("navigation", { name: "Navigation rapide" });
+    await expect(bar).toBeVisible();
+    await bar.getByRole("link", { name: "Rechercher" }).click();
+    await expect(page).toHaveURL(/\/recherche$/);
+    await expect(bar.getByRole("link", { name: "Rechercher" })).toHaveAttribute("aria-current", "page");
+
+    // Le bas de page reste atteignable au-dessus de la barre fixe.
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    const footerBottom = await page.getByText(/Tous droits réservés/).boundingBox();
+    const barTop = await bar.boundingBox();
+    expect(footerBottom!.y + footerBottom!.height).toBeLessThanOrEqual(barTop!.y + 1);
+  });
+
+  test("l'onglet Compte demande la connexion à un visiteur", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("navigation", { name: "Navigation rapide" }).getByRole("link", { name: "Compte" }).click();
+    await expect(page).toHaveURL(/\/connexion\?suivant=%2Fprofil$/);
   });
 
   test("aucun débordement sur un petit écran de 360 px", async ({ page }) => {
@@ -98,11 +119,11 @@ test.describe("Navigation mobile", () => {
 test.describe("Navigation ordinateur", () => {
   test.skip(({ isMobile }) => isMobile, "spécifique à l'ordinateur");
 
-  test("chaque famille ouvre son menu, qui se ferme avec Échap", async ({ page }) => {
+  test("chaque rubrique ouvre son menu, qui se ferme avec Échap", async ({ page }) => {
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Navigation principale" });
-    for (const family of ["Découvrir", "Trouver", "Entreprendre"]) {
-      const trigger = nav.getByRole("button", { name: family });
+    for (const section of ["Annonces & opportunités", "Découvrir & sortir", "Services & professionnels"]) {
+      const trigger = nav.getByRole("button", { name: section });
       await trigger.click();
       await expect(trigger).toHaveAttribute("aria-expanded", "true");
       await page.keyboard.press("Escape");
@@ -110,10 +131,28 @@ test.describe("Navigation ordinateur", () => {
     }
   });
 
-  test("les pages non livrées ne sont jamais proposées en lien", async ({ page }) => {
+  test("la navigation fonctionne entièrement au clavier", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("navigation", { name: "Navigation principale" }).getByRole("button", { name: "Découvrir" }).click();
-    await expect(page.getByRole("link", { name: "Carte de la ville" })).toHaveCount(0);
-    await expect(page.getByRole("banner").getByRole("button", { name: "Publier" })).toBeDisabled();
+    const nav = page.getByRole("navigation", { name: "Navigation principale" });
+    await nav.getByRole("button", { name: "Découvrir & sortir" }).focus();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    const focused = page.locator(":focus");
+    await expect(focused).toHaveRole("link");
+    await focused.press("Enter");
+    await expect(page).toHaveURL(/\/tourisme$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tourisme");
+  });
+
+  test("l'en-tête donne accès à la recherche, aux favoris et à la publication", async ({ page }) => {
+    await page.goto("/");
+    const banner = page.getByRole("banner");
+    await banner.getByRole("searchbox").fill("studio meublé");
+    await banner.getByRole("searchbox").press("Enter");
+    await expect(page).toHaveURL(/\/recherche\?q=studio\+meubl/);
+    await expect(page.getByText("Votre recherche : « studio meublé »")).toBeVisible();
+    await expect(banner.getByRole("link", { name: "Mes favoris" })).toHaveAttribute("href", "/favoris");
+    await expect(banner.getByRole("link", { name: "Publier" })).toHaveAttribute("href", "/publier");
   });
 });

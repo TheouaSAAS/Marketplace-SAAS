@@ -1,34 +1,65 @@
 // @vitest-environment node
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { FOOTER_SECTIONS, NAV_FAMILIES } from "./navigation";
-import { ROUTES } from "./routes";
+import { FOOTER_SECTIONS, MOBILE_TABS, NAV_SECTIONS, NEWCOMER_LINK } from "./navigation";
+import { hasPage, ROUTES } from "./routes";
+import { SECTION_PREVIEWS } from "./sections";
 
 const seed = readFileSync(new URL("../../supabase/seed.sql", import.meta.url), "utf8");
-const allLinks = [...NAV_FAMILIES.flatMap((family) => family.links), ...FOOTER_SECTIONS.flatMap((section) => section.links)];
+const allLinks = [
+  ...NAV_SECTIONS.flatMap((section) => section.links),
+  ...FOOTER_SECTIONS.flatMap((section) => section.links),
+  NEWCOMER_LINK,
+];
 
 describe("navigation", () => {
-  it("propose exactement les trois familles Découvrir, Trouver, Entreprendre", () => {
-    expect(NAV_FAMILIES.map((family) => family.label)).toEqual(["Découvrir", "Trouver", "Entreprendre"]);
+  it("propose les trois rubriques du cahier des charges", () => {
+    expect(NAV_SECTIONS.map((section) => section.label)).toEqual([
+      "Annonces & opportunités",
+      "Découvrir & sortir",
+      "Services & professionnels",
+    ]);
+  });
+
+  it("met en avant l'accès signature « Nouveau à San Pedro ? »", () => {
+    expect(NEWCOMER_LINK).toEqual({ label: "Nouveau à San Pedro ?", route: "newcomer" });
+    expect(hasPage("newcomer")).toBe(true);
   });
 
   it("ne pointe que vers des routes déclarées", () => {
     for (const link of allLinks) expect(ROUTES).toHaveProperty(link.route);
   });
 
+  it("rend toutes les rubriques majeures accessibles (aucun lien « Bientôt » dans les menus)", () => {
+    for (const link of NAV_SECTIONS.flatMap((section) => section.links)) {
+      expect(hasPage(link.route), link.label).toBe(true);
+    }
+  });
+
   it("n'utilise que des catégories présentes dans les données de référence", () => {
-    const slugs = allLinks.flatMap((link) => (link.category ? [link.category] : []));
-    expect(slugs.length).toBeGreaterThan(0);
-    for (const slug of slugs) expect(seed).toContain(`'${slug}'`);
+    const slugs = [
+      ...allLinks.flatMap((link) => (link.category ? [link.category] : [])),
+      ...Object.values(SECTION_PREVIEWS).flatMap((preview) => ("categories" in preview ? [...preview.categories] : [])),
+    ];
+    expect(slugs.length).toBeGreaterThan(5);
+    for (const slug of slugs) expect(seed, slug).toContain(`'${slug}'`);
   });
 
-  it("met en avant le parcours « Nouveau à San Pedro ? »", () => {
-    const discover = NAV_FAMILIES.find((family) => family.key === "decouvrir");
-    expect(discover?.links.some((link) => link.route === "newcomer" && link.label === "Nouveau à San Pedro ?")).toBe(true);
-  });
-
-  it("donne accès aux trois pages légales depuis le pied de page", () => {
+  it("donne accès aux pages légales, à l'aide, au signalement et à la méthode de vérification depuis le pied de page", () => {
     const footerRoutes = FOOTER_SECTIONS.flatMap((section) => section.links.map((link) => link.route));
-    expect(footerRoutes).toEqual(expect.arrayContaining(["legalNotice", "terms", "privacy"]));
+    expect(footerRoutes).toEqual(expect.arrayContaining(["legalNotice", "terms", "privacy", "help", "report", "verificationPolicy"]));
+  });
+
+  it("propose cinq onglets mobiles menant tous à une page réelle", () => {
+    expect(MOBILE_TABS).toHaveLength(5);
+    for (const tab of MOBILE_TABS) expect(hasPage(tab.route), tab.label).toBe(true);
+  });
+
+  it("chaque rubrique en préparation a son écran d'attente", () => {
+    for (const [key, route] of Object.entries(ROUTES)) {
+      if (route.status === "preview" && !["search", "favorites"].includes(key)) {
+        expect(SECTION_PREVIEWS, key).toHaveProperty(key);
+      }
+    }
   });
 });

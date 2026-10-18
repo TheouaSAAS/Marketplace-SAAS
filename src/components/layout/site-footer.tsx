@@ -1,5 +1,8 @@
+import Link from "next/link";
 import { Mail, MessageCircle } from "lucide-react";
+import { href } from "@/config/routes";
 import { SITE } from "@/config/site";
+import { VerificationBadge } from "@/components/ui/verification";
 import { FOOTER_SECTIONS } from "@/config/navigation";
 import { LAUNCH_CITY } from "@/domain/city";
 import { Container } from "@/components/ui/container";
@@ -20,7 +23,7 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-auto border-t border-border bg-surface">
-      <Container className="grid gap-10 py-12 md:grid-cols-[1.3fr_repeat(3,1fr)]">
+      <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
         <div className="flex flex-col gap-4">
           <Logo />
           <p className="text-base font-semibold text-brand-800">« {SITE.slogan} »</p>
@@ -66,6 +69,18 @@ export function SiteFooter() {
           </nav>
         ))}
       </Container>
+
+      <div className="border-t border-border bg-surface-muted">
+        <Container className="flex flex-wrap items-center gap-x-3 gap-y-2 py-4 text-sm text-ink-muted">
+          <span className="font-semibold text-ink">Fiabilité des informations :</span>
+          <VerificationBadge status="verified" />
+          <VerificationBadge status="pending_validation" />
+          <VerificationBadge status="placeholder" />
+          <Link href={href("verificationPolicy")} className="font-semibold text-brand-700 hover:underline">
+            Comment nous vérifions
+          </Link>
+        </Container>
+      </div>
 
       <div className="border-t border-border">
         <Container className="flex flex-col gap-3 py-5 text-sm text-ink-muted sm:flex-row sm:items-center sm:justify-between">

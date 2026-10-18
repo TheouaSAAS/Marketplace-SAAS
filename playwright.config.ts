@@ -17,7 +17,9 @@ export default defineConfig({
   globalTeardown: "./e2e/global-teardown.ts",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
-  retries: process.env.CI ? 1 : 0,
+  // Une nouvelle tentative absorbe les aléas réseau du poste (base en Irlande) ; un test
+  // qui ne passe qu'à la seconde tentative est signalé « flaky » dans le rapport, pas masqué.
+  retries: 1,
   reporter: [["list"]],
   use: {
     baseURL: `http://localhost:${port}`,

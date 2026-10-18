@@ -1,7 +1,7 @@
 # État de construction — Carrefour des Possibles
 
 > À lire au début de chaque session, puis vérifier l'état réel du code (`git log`, `npm run check`, `npm run db:verify`).
-> Dernière mise à jour : **2026-10-18** — niveau 3 terminé.
+> Dernière mise à jour : **2026-10-18** — niveau 4 terminé.
 
 ## Niveaux
 
@@ -11,8 +11,8 @@
 | 1 | Design system et identité visuelle | ✅ terminé (voir docs/design-system.md) |
 | 2 | Base de données, gouvernance et rôles | ✅ terminé (voir docs/database.md) |
 | 3 | Authentification et comptes | ✅ terminé |
-| 4 | Shell et navigation (4 entrées, barre mobile, assistant, pages d'état) | ⏭️ prochain |
-| 5 | Accueil dynamique | partiel (version fondations) |
+| 4 | Shell et navigation | ✅ terminé — 4 entrées, barre basse mobile, assistant (honnête sans IA), fil d'Ariane, 15 rubriques en préparation, aide, vérification, signalement, contact, maintenance (503), hors ligne (service worker) |
+| 5 | Accueil dynamique | ⏭️ prochain (version fondations en place) |
 | 6–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
 
 ## Pages et routes
@@ -25,6 +25,11 @@
 | `/auth/confirmation` | Aboutissement des liens e-mail (`token_hash` ou `code`) | live |
 | `/profil`, `/profil/export` | Profil, type de compte, sécurité, communications, export JSON, suppression | live (protégé) |
 | `/conditions-utilisation`, `/confidentialite`, `/mentions-legales` | Pages légales **provisoires** (à valider par un juriste ; mentions « à compléter ») | live |
+| `/aide`, `/verification`, `/signaler`, `/contact` | Aide (FAQ), méthode de vérification, signalement, contact | live |
+| 15 rubriques : `/annonces`, `/immobilier`, `/emploi`, `/publier`, `/services`, `/commerces`, `/professionnels`, `/offres`, `/decouvrir`, `/tourisme`, `/guide`, `/quartiers`, `/carte`, `/evenements`, `/nouveau-arrivant` | Écrans d'attente explicites, catégories réelles, `noindex` | preview |
+| `/recherche` | Recherche (moteur au niveau 7) | preview |
+| `/favoris` | Favoris (protégé) | preview |
+| `/maintenance`, `/hors-ligne` | Pages techniques | live (privées) |
 | `/design-system` | Référence des composants (non indexée) | live |
 | `/interne/statut` | Statut interne (jeton ; 404 sinon) | live |
 | `/api/health` | Sonde de disponibilité | live |
@@ -44,10 +49,10 @@
 | --- | --- |
 | `npm run typecheck` (strict + `noUncheckedIndexedAccess`) | ✅ |
 | `npm run lint` | ✅ |
-| `npm test` | ✅ (domaine, configuration, composants, SQL statique, alignement des types) |
+| `npm test` | ✅ 186 tests (domaine, configuration, composants, proxy, délai réseau, SQL statique, alignement des types) |
 | `npm run db:verify` (base réelle, transactions annulées) | ✅ 97/97 |
 | `npm run build` | ✅ |
-| `npm run smoke` | ✅ pages + scan du bundle navigateur |
+| `npm run smoke` | ✅ 26 vérifications + scan du bundle navigateur |
 | `npm run e2e` (Edge, mobile + ordinateur, compte de test créé/supprimé automatiquement) | ✅ 46 réussis, 6 ignorés par conception |
 | CI GitHub Actions | écrite, **jamais exécutée** (dépôt non poussé) |
 
@@ -68,4 +73,4 @@ Voir `docs/data-governance.md` (centre de la ville, quartiers, démonstration).
 
 ## Prochaine étape
 
-Niveau 4 — shell : quatre entrées (Annonces & Opportunités, Découvrir & Sortir, Services & Professionnels, 🧭 Nouveau à San Pedro ?), barre de navigation mobile basse, favoris dans l'en-tête, assistant « Demandez à San Pedro » (désactivé sans IA), pages maintenance et hors ligne, fil d'Ariane, écrans d'attente des rubriques.
+Niveau 5 — accueil dynamique : accroche « Tout San Pedro, au même endroit », recherche « Que recherchez-vous à San Pedro ? », CTA « Nouveau à San Pedro ? », accès rapides, sections alimentées par la base (annonces récentes, professionnels, découvrir, événements à venir) avec badges de vérification et états vides propres.

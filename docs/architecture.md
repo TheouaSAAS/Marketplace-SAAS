@@ -54,6 +54,13 @@ e2e/ scripts/ tests/   Tests navigateur, test de fumée, configuration de test
 
 **Variables d'environnement** : `src/lib/env.ts` (publiques, `NEXT_PUBLIC_*`) et `src/lib/env.server.ts` (secrets, protégé par `server-only`). Le test de fumée vérifie qu'aucun nom de secret n'apparaît dans le code envoyé au navigateur.
 
+## Routes et navigation
+
+- Toutes les routes sont déclarées dans `src/config/routes.ts` avec un statut : `live` (terminée, indexable sauf `private`), `preview` (écran d'attente, liens actifs, `noindex`, hors sitemap), `planned` (pas de page, lien « Bientôt »). `hasPage()` décide des liens, `isLive()` de l'indexation.
+- Menus : `src/config/navigation.ts` (3 rubriques + accès signature, pied de page, 5 onglets mobiles). Écrans d'attente : `src/config/sections.ts` + `SectionPreview`.
+- `proxy.ts` : maintenance (503), pages internes (404 sans jeton), espaces protégés (`/profil`, `/favoris`, `/espace-pro`, `/admin`), rafraîchissement de session.
+- Hors ligne : bandeau (`useOffline`) + service worker minimal (`public/sw.js`) qui ne sert que `/hors-ligne`.
+
 ## Drapeaux de fonctionnalités
 
 `src/config/feature-flags.ts` : 16 fonctionnalités. Active = demandée (`defaultOn` ou `FEATURE_<CLÉ>=on|off`) **et** dépendances configurées. Une fonction IA forcée à `on` sans clé reste inactive. Évaluation : `src/server/features.ts`.

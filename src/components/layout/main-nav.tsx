@@ -2,35 +2,39 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Compass } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { NAV_FAMILIES, type NavFamily } from "@/config/navigation";
-import { href, isLive, ROUTES } from "@/config/routes";
+import { NAV_SECTIONS, NEWCOMER_LINK, type NavSection } from "@/config/navigation";
+import { hasPage, href, ROUTES } from "@/config/routes";
 import { Popover } from "@/components/ui/popover";
 import { NavItemLink } from "./nav-item-link";
 
-function isFamilyActive(family: NavFamily, pathname: string): boolean {
-  return [family.route, ...family.links.map((link) => link.route)].some((route) => {
+function isSectionActive(section: NavSection, pathname: string): boolean {
+  return [section.route, ...section.links.map((link) => link.route)].some((route) => {
     const path = ROUTES[route].path;
-    return path !== "/" && pathname.startsWith(path);
+    return path !== "/" && (pathname === path || pathname.startsWith(`${path}/`));
   });
 }
 
-/** Navigation principale (ordinateur) : un menu déroulant par famille. */
+/**
+ * Navigation principale (ordinateur) : une barre sous l'en-tête, avec un menu
+ * déroulant par rubrique et l'accès signature « Nouveau à San Pedro ? ».
+ */
 export function MainNav({ className }: { className?: string }) {
   const pathname = usePathname();
+  const newcomerActive = pathname.startsWith(ROUTES.newcomer.path);
 
   return (
     <nav aria-label="Navigation principale" className={cn("items-center gap-1", className)}>
-      {NAV_FAMILIES.map((family) => (
-        <Popover key={family.key} label={family.label} active={isFamilyActive(family, pathname)} panelClassName="w-[38rem]">
+      {NAV_SECTIONS.map((section) => (
+        <Popover key={section.key} label={section.label} active={isSectionActive(section, pathname)} panelClassName="w-[36rem]">
           {(close) => (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-4 border-b border-border px-3 pb-2 pt-1">
-                <p className="text-sm text-ink-muted">{family.tagline}</p>
-                {isLive(family.route) && (
+                <p className="text-sm text-ink-muted">{section.tagline}</p>
+                {hasPage(section.route) && (
                   <Link
-                    href={href(family.route)}
+                    href={href(section.route)}
                     onClick={close}
                     className="inline-flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-brand-700 hover:underline"
                   >
@@ -39,7 +43,7 @@ export function MainNav({ className }: { className?: string }) {
                 )}
               </div>
               <ul className="grid grid-cols-2 gap-0.5">
-                {family.links.map((link) => (
+                {section.links.map((link) => (
                   <li key={link.label}>
                     <NavItemLink
                       link={link}
@@ -53,6 +57,17 @@ export function MainNav({ className }: { className?: string }) {
           )}
         </Popover>
       ))}
+      <Link
+        href={href(NEWCOMER_LINK.route)}
+        aria-current={newcomerActive ? "page" : undefined}
+        className={cn(
+          "ml-1 inline-flex h-11 items-center gap-1.5 rounded-pill px-4 text-sm font-bold transition-colors",
+          newcomerActive ? "bg-accent-600 text-white" : "bg-accent-50 text-accent-700 hover:bg-accent-100",
+        )}
+      >
+        <Compass aria-hidden className="h-4 w-4" />
+        {NEWCOMER_LINK.label}
+      </Link>
     </nav>
   );
 }

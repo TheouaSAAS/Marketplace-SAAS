@@ -86,5 +86,23 @@ Inscription et mot de passe oublié répondent toujours la même chose ; la conn
 ## D28 — Suppression de compte avec conservation pseudonymisée
 La suppression efface le compte et ses contenus personnels, mais conserve détachés du compte : fiches de lieux (donnée locale), paiements, abonnements et campagnes (obligations comptables). Défaut trouvé en réel : un utilisateur ayant payé ne pouvait pas supprimer son compte (correctif `…000900`).
 
+## D29 — Troisième statut de route : `preview`
+Le niveau 4 exige que toutes les rubriques majeures soient accessibles avant que leurs contenus existent. Une route `preview` a une vraie page (écran d'attente explicite, catégories réelles lues en base, liens utiles), des liens actifs, mais reste hors sitemap et en `noindex` (contenu mince). `hasPage()` gouverne les liens, `isLive()` l'indexation. Remplace l'ancien principe « Bientôt, non cliquable », conservé seulement pour les routes `planned` (détails, espace pro, administration).
+
+## D30 — Navigation : quatre entrées, deux lignes, barre basse
+Ordinateur : en-tête (recherche, ville, favoris, compte, Publier) + barre des trois rubriques et de l'accès signature « Nouveau à San Pedro ? ». Mobile : en-tête minimal (logo, ville, menu) et barre basse à cinq onglets (Accueil, Rechercher, Publier, Favoris, Compte) dans la zone du pouce, avec marge basse du corps pour ne jamais masquer le contenu (vérifié par test).
+
+## D31 — Service worker limité à la page « Hors ligne »
+Un service worker qui met en cache des pages risquerait d'afficher une annonce retirée ou un prix modifié. Le nôtre ne met en cache que `/hors-ligne`, servie uniquement quand une navigation échoue faute de réseau ; tout le reste passe par le réseau. Enregistré en production seulement.
+
+## D32 — Maintenance par le proxy, en 503
+`FEATURE_MAINTENANCE=on` remplace toutes les pages publiques par `/maintenance` avec le code 503 et `Retry-After` (les moteurs de recherche ne désindexent pas le site), sauf la supervision (`/api/health`, `/interne`).
+
+## D33 — Assistant visible mais honnête
+Le lanceur « Demandez à San Pedro » est présent sur toutes les pages, sans gêner la navigation (au-dessus de la barre basse). Sans IA configurée, il le dit et oriente vers les parcours existants ; il ne simule aucune réponse.
+
+## D34 — Délai maximal et journalisation des appels Supabase
+Les tests ont révélé qu'une perturbation réseau pouvait figer un formulaire indéfiniment, puis, une fois un délai ajouté, afficher « mot de passe incorrect » ou « e-mail envoyé » à tort. Tous les clients Supabase côté serveur utilisent `fetchWithTimeout` (10 s), qui journalise les appels lents (≥ 3 s) et interrompus (chemin, durée, sans données personnelles). Les actions de compte distinguent la panne réseau (`isAuthRetryableFetchError`) d'un refus réel et affichent « momentanément indisponible ». Les tests navigateur autorisent une nouvelle tentative, signalée « flaky » dans le rapport.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

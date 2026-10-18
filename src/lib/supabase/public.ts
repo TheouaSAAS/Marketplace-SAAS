@@ -2,6 +2,7 @@ import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
+import { fetchWithTimeout } from "./fetch";
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -22,5 +23,6 @@ export function createPublicSupabaseClient(): TypedSupabaseClient | null {
   if (!isSupabaseConfigured()) return null;
   return createClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL!, publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: { fetch: fetchWithTimeout },
   });
 }

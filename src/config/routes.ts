@@ -1,68 +1,95 @@
 /**
  * Carte unique des routes de l'application.
  *
- * - `live`    : la page existe et a été validée ; les liens sont actifs.
- * - `planned` : la page est prévue ; les liens sont affichés « Bientôt » et ne
- *               sont pas cliquables, pour ne jamais conduire à une page cassée.
+ * - `live`    : page terminée et validée ; liens actifs, indexable (sauf `private`).
+ * - `preview` : la page existe avec un écran d'attente explicite (« rubrique en
+ *               préparation ») ; liens actifs, jamais indexée ni dans le sitemap.
+ * - `planned` : pas encore de page ; liens affichés « Bientôt », non cliquables.
  *
  * Quand une page est terminée et testée, passer son statut à `live` ici :
  * menus, pied de page et sitemap se mettent à jour automatiquement.
  * Ne jamais écrire un chemin en dur ailleurs : utiliser `href()`.
  */
 
-export type RouteStatus = "live" | "planned";
+export type RouteStatus = "live" | "preview" | "planned";
 
 export interface AppRoute {
   path: string;
   label: string;
-  /** Phase du plan de construction (§3.16) dans laquelle la page est livrée. */
-  phase: 1 | 2 | 3 | 4 | 5 | 6;
+  /** Niveau du plan de construction (docs/build-state.md) qui livre la page complète. */
+  level: number;
   status: RouteStatus;
   /** Page à exclure du sitemap et des moteurs de recherche. */
   private?: boolean;
 }
 
 export const ROUTES = {
-  home: { path: "/", label: "Accueil", phase: 2, status: "live" },
-  discover: { path: "/decouvrir", label: "Découvrir", phase: 2, status: "planned" },
-  tourismGuide: { path: "/decouvrir/guide", label: "Guide touristique", phase: 2, status: "planned" },
-  newcomer: { path: "/nouveau-arrivant", label: "Nouveau en ville ?", phase: 2, status: "planned" },
-  map: { path: "/carte", label: "Carte interactive", phase: 4, status: "planned" },
-  listings: { path: "/annonces", label: "Annonces", phase: 2, status: "planned" },
-  listingDetail: { path: "/annonces/[slug]", label: "Détail d’une annonce", phase: 2, status: "planned" },
-  realEstate: { path: "/immobilier", label: "Immobilier", phase: 2, status: "planned" },
-  services: { path: "/services", label: "Services", phase: 2, status: "planned" },
-  shops: { path: "/commerces", label: "Commerces", phase: 2, status: "planned" },
-  jobs: { path: "/emploi", label: "Emploi et opportunités", phase: 2, status: "planned" },
-  events: { path: "/evenements", label: "Événements", phase: 2, status: "planned" },
-  eventDetail: { path: "/evenements/[slug]", label: "Détail d’un événement", phase: 2, status: "planned" },
-  placeDetail: { path: "/lieux/[slug]", label: "Détail d’un lieu", phase: 2, status: "planned" },
-  directory: { path: "/entreprises", label: "Annuaire des entreprises", phase: 2, status: "planned" },
-  city: { path: "/villes/[slug]", label: "Page de ville", phase: 2, status: "planned" },
-  search: { path: "/recherche", label: "Recherche", phase: 3, status: "planned" },
-  publish: { path: "/publier", label: "Publier une annonce", phase: 3, status: "planned" },
-  login: { path: "/connexion", label: "Connexion", phase: 4, status: "live", private: true },
-  signup: { path: "/inscription", label: "Inscription", phase: 4, status: "live", private: true },
-  forgotPassword: { path: "/mot-de-passe-oublie", label: "Mot de passe oublié", phase: 4, status: "live", private: true },
-  resetPassword: { path: "/mot-de-passe/nouveau", label: "Nouveau mot de passe", phase: 4, status: "live", private: true },
-  authConfirm: { path: "/auth/confirmation", label: "Confirmation", phase: 4, status: "live", private: true },
-  profile: { path: "/profil", label: "Mon profil", phase: 4, status: "live", private: true },
-  profileExport: { path: "/profil/export", label: "Export de mes données", phase: 4, status: "live", private: true },
-  pro: { path: "/espace-pro", label: "Espace professionnel", phase: 4, status: "planned", private: true },
-  admin: { path: "/admin", label: "Administration", phase: 4, status: "planned", private: true },
-  pricing: { path: "/offres", label: "Offres et abonnements", phase: 5, status: "planned" },
-  contact: { path: "/contact", label: "Contact", phase: 2, status: "planned" },
-  legalNotice: { path: "/mentions-legales", label: "Mentions légales", phase: 2, status: "live" },
-  terms: { path: "/conditions-utilisation", label: "Conditions d’utilisation", phase: 2, status: "live" },
-  privacy: { path: "/confidentialite", label: "Politique de confidentialité", phase: 2, status: "live" },
-  designSystem: { path: "/design-system", label: "Système de design", phase: 1, status: "live", private: true },
-  internalStatus: { path: "/interne/statut", label: "Statut interne", phase: 1, status: "live", private: true },
+  home: { path: "/", label: "Accueil", level: 5, status: "live" },
+  newcomer: { path: "/nouveau-arrivant", label: "Nouveau à San Pedro ?", level: 6, status: "preview" },
+  search: { path: "/recherche", label: "Recherche", level: 7, status: "preview" },
+
+  // Annonces & opportunités
+  listings: { path: "/annonces", label: "Annonces", level: 7, status: "preview" },
+  listingDetail: { path: "/annonces/[slug]", label: "Détail d’une annonce", level: 8, status: "planned" },
+  realEstate: { path: "/immobilier", label: "Immobilier", level: 9, status: "preview" },
+  jobs: { path: "/emploi", label: "Emploi et opportunités", level: 17, status: "preview" },
+  publish: { path: "/publier", label: "Publier une annonce", level: 18, status: "preview" },
+
+  // Services & professionnels
+  services: { path: "/services", label: "Services de proximité", level: 10, status: "preview" },
+  shops: { path: "/commerces", label: "Commerces", level: 11, status: "preview" },
+  directory: { path: "/professionnels", label: "Professionnels et entreprises", level: 19, status: "preview" },
+  pricing: { path: "/offres", label: "Offres et visibilité", level: 21, status: "preview" },
+
+  // Découvrir & sortir
+  discover: { path: "/decouvrir", label: "Découvrir et sortir", level: 12, status: "preview" },
+  tourism: { path: "/tourisme", label: "Tourisme", level: 12, status: "preview" },
+  guide: { path: "/guide", label: "Guide pratique", level: 13, status: "preview" },
+  neighborhoods: { path: "/quartiers", label: "Quartiers", level: 14, status: "preview" },
+  map: { path: "/carte", label: "Carte interactive", level: 15, status: "preview" },
+  events: { path: "/evenements", label: "Événements", level: 16, status: "preview" },
+  eventDetail: { path: "/evenements/[slug]", label: "Détail d’un événement", level: 16, status: "planned" },
+  placeDetail: { path: "/lieux/[slug]", label: "Détail d’un lieu", level: 12, status: "planned" },
+  city: { path: "/villes/[slug]", label: "Page de ville", level: 25, status: "planned" },
+
+  // Compte
+  login: { path: "/connexion", label: "Connexion", level: 3, status: "live", private: true },
+  signup: { path: "/inscription", label: "Inscription", level: 3, status: "live", private: true },
+  forgotPassword: { path: "/mot-de-passe-oublie", label: "Mot de passe oublié", level: 3, status: "live", private: true },
+  resetPassword: { path: "/mot-de-passe/nouveau", label: "Nouveau mot de passe", level: 3, status: "live", private: true },
+  authConfirm: { path: "/auth/confirmation", label: "Confirmation", level: 3, status: "live", private: true },
+  profile: { path: "/profil", label: "Mon profil", level: 3, status: "live", private: true },
+  profileExport: { path: "/profil/export", label: "Export de mes données", level: 3, status: "live", private: true },
+  favorites: { path: "/favoris", label: "Mes favoris", level: 8, status: "preview", private: true },
+  pro: { path: "/espace-pro", label: "Espace professionnel", level: 21, status: "planned", private: true },
+  admin: { path: "/admin", label: "Administration", level: 22, status: "planned", private: true },
+
+  // Aide, confiance et informations
+  help: { path: "/aide", label: "Aide", level: 4, status: "live" },
+  verificationPolicy: { path: "/verification", label: "Comment nous vérifions les informations", level: 4, status: "live" },
+  report: { path: "/signaler", label: "Signaler un contenu", level: 4, status: "live" },
+  contact: { path: "/contact", label: "Contact", level: 4, status: "live" },
+  legalNotice: { path: "/mentions-legales", label: "Mentions légales", level: 3, status: "live" },
+  terms: { path: "/conditions-utilisation", label: "Conditions d’utilisation", level: 3, status: "live" },
+  privacy: { path: "/confidentialite", label: "Politique de confidentialité", level: 3, status: "live" },
+
+  // Pages techniques
+  maintenance: { path: "/maintenance", label: "Maintenance", level: 4, status: "live", private: true },
+  offline: { path: "/hors-ligne", label: "Hors ligne", level: 4, status: "live", private: true },
+  designSystem: { path: "/design-system", label: "Système de design", level: 1, status: "live", private: true },
+  internalStatus: { path: "/interne/statut", label: "Statut interne", level: 0, status: "live", private: true },
 } as const satisfies Record<string, AppRoute>;
 
 export type RouteKey = keyof typeof ROUTES;
 
+/** Page terminée et validée (indexable si elle n'est pas privée). */
 export function isLive(key: RouteKey): boolean {
   return ROUTES[key].status === "live";
+}
+
+/** Une page existe à cette adresse (terminée ou en préparation) : le lien peut être actif. */
+export function hasPage(key: RouteKey): boolean {
+  return ROUTES[key].status !== "planned";
 }
 
 type QueryValue = string | number | undefined | null;

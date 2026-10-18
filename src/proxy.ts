@@ -6,6 +6,7 @@ import { hasSupabaseSessionCookie, refreshSupabaseSession } from "@/lib/supabase
 /**
  * Proxy (ex-middleware) : contrôles exécutés AVANT le rendu.
  *
+ * 0. Maintenance : toutes les pages publiques servent /maintenance (503).
  * 1. Pages internes (/interne/*) : sans jeton valide, réécriture vers une
  *    adresse inexistante pour obtenir une vraie 404.
  * 2. Espaces protégés : sans cookie de session, redirection vers la connexion.
@@ -15,10 +16,21 @@ import { hasSupabaseSessionCookie, refreshSupabaseSession } from "@/lib/supabase
  *    (aucun coût pour les visiteurs anonymes).
  */
 
-const PROTECTED_PREFIXES = ["/profil", "/espace-pro", "/admin"];
+const PROTECTED_PREFIXES = ["/profil", "/favoris", "/espace-pro", "/admin"];
+
+/** Chemins toujours servis, même en maintenance (supervision et page elle-même). */
+const MAINTENANCE_EXEMPT = ["/maintenance", "/interne", "/api/health"];
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+
+  // 0. Mode maintenance (FEATURE_MAINTENANCE=on) : 503 pour les moteurs et les sondes.
+  if (process.env.FEATURE_MAINTENANCE === "on" && !MAINTENANCE_EXEMPT.some((prefix) => pathname.startsWith(prefix))) {
+    return NextResponse.rewrite(new URL("/maintenance", request.url), {
+      status: 503,
+      headers: { "Retry-After": "600", "Cache-Control": "no-store" },
+    });
+  }
 
   if (pathname.startsWith("/interne")) {
     const token = request.nextUrl.searchParams.get("token");
@@ -49,5 +61,5 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Toutes les pages, sauf fichiers statiques et métadonnées.
-  matcher: ["/((?!_next/static|_next/image|icon.svg|robots.txt|sitemap.xml|api/health|.*\\.(?:svg|png|jpg|jpeg|webp|ico|txt|xml)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|icon.svg|robots.txt|sitemap.xml|api/health|.*\\.(?:svg|png|jpg|jpeg|webp|ico|txt|xml|js)$).*)"],
 };

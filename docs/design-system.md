@@ -45,6 +45,22 @@ Transitions de couleur et d'ombre de 150 ms, apparitions `animate-fade-in` (150 
 | `OfflineBanner` | offline-banner.tsx | Bandeau hors ligne (Next `useOffline`, relance automatique) |
 | `Container` | container.tsx | Largeur et marges communes |
 
+## Cadre et navigation (`src/components/layout`)
+
+| Composant | Rôle |
+| --- | --- |
+| `SiteHeader` | En-tête : logo, recherche (≥ 1024 px), ville, favoris, compte, Publier ; barre des rubriques sur une seconde ligne (≥ 1024 px) |
+| `MainNav` | Trois menus déroulants (rubriques) + accès signature « Nouveau à San Pedro ? » |
+| `MobileNav` | Panneau latéral : recherche, accès signature, Publier, compte, rubriques dépliables |
+| `BottomNav` | Barre basse mobile, cinq onglets, `aria-current` sur l'onglet actif, zone de sécurité des écrans à encoche |
+| `AssistantLauncher` | Bouton flottant « Demandez à San Pedro », panneau honnête si l'IA est désactivée |
+| `Breadcrumbs` | Fil d'Ariane accessible + données structurées `BreadcrumbList` |
+| `SectionPreview` | Écran d'attente d'une rubrique (`preview`) |
+| `InfoPage`, `Faq` | Pages d'information et questions dépliables |
+| `LegalDocument`, `ToComplete` | Pages légales provisoires |
+| `SiteFooter` | Quatre colonnes, bandeau « Fiabilité des informations », réseaux configurés seulement |
+| `NavItemLink`, `RouteButton` | Liens et boutons qui respectent le statut des routes |
+
 ## États obligatoires
 
 Chaque écran qui charge des données prévoit : **chargement** (`Skeleton` aux dimensions du contenu), **vide** (`EmptyState` avec action pour élargir), **erreur** (`ErrorState` avec « Réessayer »), **hors ligne** (bandeau global + `ErrorState offline`), **désactivé** (bouton désactivé avec `title` explicatif ; un service non configuré n'est jamais simulé).

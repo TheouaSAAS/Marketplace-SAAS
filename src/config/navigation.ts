@@ -2,14 +2,15 @@ import { LAUNCH_CITY } from "@/domain/city";
 import type { RouteKey } from "./routes";
 
 /**
- * Structure produit en trois familles (§2.3). Les familles et leurs entrées de
- * menu sont stables ; les catégories de contenu, elles, sont gérées en base
- * depuis l'administration. Les liens « par catégorie » passent un slug en
- * paramètre `categorie` : ce slug doit exister dans `supabase/seed.sql`
+ * Structure de navigation (cahier des charges, niveau 4) :
+ *   Annonces & opportunités · Découvrir & sortir · Services & professionnels
+ *   + l'accès signature « 🧭 Nouveau à San Pedro ? ».
+ * Les catégories de contenu sont gérées en base ; les liens « par catégorie »
+ * passent un slug en `?categorie=` qui doit exister dans `supabase/seed.sql`
  * (vérifié par `navigation.test.ts`).
  */
 
-export type FamilyKey = "decouvrir" | "trouver" | "entreprendre";
+export type SectionKey = "annonces" | "decouvrir" | "services";
 
 export interface NavLink {
   label: string;
@@ -19,93 +20,114 @@ export interface NavLink {
   hash?: string;
 }
 
-export interface NavFamily {
-  key: FamilyKey;
+export interface NavSection {
+  key: SectionKey;
   label: string;
+  /** Libellé court (barre mobile, petits écrans). */
+  shortLabel: string;
   tagline: string;
   route: RouteKey;
   links: NavLink[];
 }
 
-export const NEWCOMER_LINK: NavLink = {
-  label: `Nouveau à ${LAUNCH_CITY.name} ?`,
-  route: "newcomer",
-};
+export const NEWCOMER_LINK: NavLink = { label: `Nouveau à ${LAUNCH_CITY.name} ?`, route: "newcomer" };
 
-export const NAV_FAMILIES: NavFamily[] = [
+export const NAV_SECTIONS: NavSection[] = [
   {
-    key: "decouvrir",
-    label: "Découvrir",
-    tagline: "Tourisme, sorties et bonnes adresses",
-    route: "discover",
-    links: [
-      { label: "Guide touristique", route: "tourismGuide" },
-      { label: "Lieux à visiter", route: "discover", category: "lieux-a-visiter" },
-      { label: "Plages et sites naturels", route: "discover", category: "plages-sites-naturels" },
-      { label: "Restaurants et gastronomie", route: "discover", category: "restaurants-gastronomie" },
-      { label: "Hôtels et hébergements", route: "discover", category: "hotels-hebergements" },
-      { label: "Loisirs et activités", route: "discover", category: "loisirs-activites" },
-      { label: "Événements", route: "events" },
-      { label: "Carte de la ville", route: "map" },
-      NEWCOMER_LINK,
-    ],
-  },
-  {
-    key: "trouver",
-    label: "Trouver",
-    tagline: "Logement, emploi, annonces et services",
+    key: "annonces",
+    label: "Annonces & opportunités",
+    shortLabel: "Annonces",
+    tagline: "Logement, emploi, biens et opportunités",
     route: "listings",
     links: [
+      { label: "Toutes les annonces", route: "listings" },
       { label: "Immobilier", route: "realEstate" },
       { label: "Emploi et stages", route: "jobs" },
-      { label: "Annonces de biens", route: "listings", category: "annonces-biens" },
       { label: "Véhicules", route: "listings", category: "vehicules" },
-      { label: "Commerces et boutiques", route: "shops" },
-      { label: "Services professionnels", route: "services" },
-      { label: "Transport et livraison", route: "services", category: "transport-livraison" },
-      { label: "Formation", route: "listings", category: "formation" },
+      { label: "Biens et objets", route: "listings", category: "annonces-biens" },
       { label: "Opportunités commerciales", route: "jobs", category: "opportunites-commerciales" },
+      { label: "Publier une annonce", route: "publish" },
     ],
   },
   {
-    key: "entreprendre",
-    label: "Entreprendre",
-    tagline: "Visibilité et outils pour les professionnels",
-    route: "directory",
+    key: "decouvrir",
+    label: "Découvrir & sortir",
+    shortLabel: "Découvrir",
+    tagline: "Tourisme, sorties et guide de la ville",
+    route: "discover",
     links: [
-      { label: "Annuaire des entreprises", route: "directory" },
-      { label: "Publier une annonce", route: "publish" },
-      { label: "Espace professionnel", route: "pro" },
-      { label: "Offres et abonnements", route: "pricing" },
-      { label: "Publicité et visibilité", route: "pricing", hash: "visibilite" },
+      { label: "Tourisme", route: "tourism" },
+      { label: "Restaurants", route: "discover", category: "restaurants-gastronomie" },
+      { label: "Où dormir", route: "tourism", category: "hotels-hebergements" },
+      { label: "Plages et sites naturels", route: "tourism", category: "plages-sites-naturels" },
+      { label: "Événements", route: "events" },
+      { label: "Guide pratique", route: "guide" },
+      { label: "Quartiers", route: "neighborhoods" },
+      { label: "Carte interactive", route: "map" },
     ],
   },
+  {
+    key: "services",
+    label: "Services & professionnels",
+    shortLabel: "Services",
+    tagline: "Artisans, commerces et prestataires locaux",
+    route: "services",
+    links: [
+      { label: "Services de proximité", route: "services" },
+      { label: "Artisans et dépannage", route: "services", category: "artisans-depannage" },
+      { label: "Transport et livraison", route: "services", category: "transport-livraison" },
+      { label: "Commerces de proximité", route: "shops" },
+      { label: "Alimentation", route: "shops", category: "alimentation" },
+      { label: "Professionnels et entreprises", route: "directory" },
+      { label: "Offres pour les professionnels", route: "pricing" },
+    ],
+  },
+];
+
+/** Barre de navigation basse (mobile) : cinq destinations, au pouce. */
+export const MOBILE_TABS: { label: string; route: RouteKey; icon: "home" | "search" | "plus" | "heart" | "user" }[] = [
+  { label: "Accueil", route: "home", icon: "home" },
+  { label: "Rechercher", route: "search", icon: "search" },
+  { label: "Publier", route: "publish", icon: "plus" },
+  { label: "Favoris", route: "favorites", icon: "heart" },
+  { label: "Compte", route: "profile", icon: "user" },
 ];
 
 export const FOOTER_SECTIONS: { title: string; links: NavLink[] }[] = [
   {
     title: "Explorer",
     links: [
-      { label: "Découvrir", route: "discover" },
       { label: "Annonces", route: "listings" },
       { label: "Immobilier", route: "realEstate" },
       { label: "Emploi", route: "jobs" },
+      { label: "Découvrir et sortir", route: "discover" },
       { label: "Événements", route: "events" },
       { label: "Carte", route: "map" },
+      NEWCOMER_LINK,
     ],
   },
   {
     title: "Professionnels",
     links: [
-      { label: "Annuaire des entreprises", route: "directory" },
+      { label: "Professionnels et entreprises", route: "directory" },
+      { label: "Services de proximité", route: "services" },
+      { label: "Commerces", route: "shops" },
       { label: "Publier une annonce", route: "publish" },
-      { label: "Offres et abonnements", route: "pricing" },
+      { label: "Offres et visibilité", route: "pricing" },
     ],
   },
   {
-    title: "Informations",
+    title: "Aide et confiance",
     links: [
+      { label: "Aide", route: "help" },
+      { label: "Comment nous vérifions", route: "verificationPolicy" },
+      { label: "Signaler un contenu", route: "report" },
       { label: "Contact", route: "contact" },
+    ],
+  },
+  {
+    title: "Informations légales",
+    links: [
       { label: "Mentions légales", route: "legalNotice" },
       { label: "Conditions d’utilisation", route: "terms" },
       { label: "Politique de confidentialité", route: "privacy" },

@@ -3,6 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 import { getServerEnv } from "@/lib/env.server";
 import type { Database } from "@/types/database";
+import { fetchWithTimeout } from "./fetch";
 
 /**
  * Client à clé SECRÈTE : contourne les règles RLS.
@@ -16,5 +17,6 @@ export function createAdminSupabaseClient(): SupabaseClient<Database> | null {
   if (!isSupabaseConfigured() || !secret) return null;
   return createClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL!, secret, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: { fetch: fetchWithTimeout },
   });
 }

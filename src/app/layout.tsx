@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { SITE } from "@/config/site";
+import { AssistantLauncher } from "@/components/layout/assistant-launcher";
+import { BottomNav } from "@/components/layout/bottom-nav";
+import { ServiceWorkerRegistration } from "@/components/layout/service-worker-registration";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { OfflineBanner } from "@/components/ui/offline-banner";
 import { ToastProvider } from "@/components/ui/toast";
+import { isFeatureEnabled } from "@/server/features";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -35,12 +39,14 @@ export const viewport: Viewport = {
   themeColor: "#146c86",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${jakarta.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+      {/* Marge basse sur mobile : la barre de navigation fixe ne masque jamais le contenu. */}
+      <body className="flex min-h-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
         <a
           href="#contenu"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-control focus:bg-surface focus:px-4 focus:py-2 focus:shadow-overlay"
@@ -54,7 +60,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </main>
           <SiteFooter />
+          <BottomNav />
+          <AssistantLauncher enabled={isFeatureEnabled("ai_assistant")} />
         </ToastProvider>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

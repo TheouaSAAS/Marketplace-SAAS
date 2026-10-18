@@ -1,5 +1,6 @@
 "use server";
 
+import { isAuthRetryableFetchError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { href } from "@/config/routes";
 import { SITE } from "@/config/site";
@@ -68,6 +69,8 @@ export async function signUpAction(_previous: FormState, formData: FormData): Pr
   });
 
   if (error) {
+    // Panne réseau : ne jamais annoncer un e-mail envoyé alors que rien n'est parti.
+    if (isAuthRetryableFetchError(error)) return { ...UNAVAILABLE, values: formValues(formData) };
     if (error.code === "weak_password") {
       return { status: "error", fieldErrors: { password: "Ce mot de passe est trop faible ou trop courant." }, values: formValues(formData) };
     }
@@ -94,6 +97,8 @@ export async function signInAction(_previous: FormState, formData: FormData): Pr
 
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
+    // Panne réseau : ne pas faire croire à un mot de passe erroné.
+    if (isAuthRetryableFetchError(error)) return { ...UNAVAILABLE, values: formValues(formData) };
     if (error.code === "email_not_confirmed") {
       return {
         status: "error",
@@ -123,6 +128,7 @@ export async function requestPasswordResetAction(_previous: FormState, formData:
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${SITE.url}${href("authConfirm", { query: { suivant: href("resetPassword") } })}`,
   });
+  if (error && isAuthRetryableFetchError(error)) return UNAVAILABLE;
   if (error) log.warn("Réinitialisation refusée", { code: error.code, status: error.status });
   return {
     status: "success",
@@ -143,6 +149,7 @@ export async function updatePasswordAction(_previous: FormState, formData: FormD
 
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) {
+    if (isAuthRetryableFetchError(error)) return UNAVAILABLE;
     if (error.code === "same_password") return { status: "error", fieldErrors: { password: "Choisissez un mot de passe différent de l’actuel." } };
     if (error.code === "weak_password") return { status: "error", fieldErrors: { password: "Ce mot de passe est trop faible ou trop courant." } };
     if (error.code === "reauthentication_needed") {
