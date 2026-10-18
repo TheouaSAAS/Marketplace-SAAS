@@ -16,7 +16,7 @@
  * et tracée dans supabase_migrations.schema_migrations (table de la CLI Supabase).
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -158,7 +158,7 @@ commit;`);
 async function runFiles(db, files, { print = false } = {}) {
   if (files.length === 0) throw new Error("Préciser au moins un fichier SQL.");
   for (const file of files) {
-    const sql = readSql(join(root, file));
+    const sql = readSql(resolve(root, file));
     process.stdout.write(`→ ${file} … `);
     try {
       const rows = await db.query(print ? sql : `begin;\n${sql}\n;\ncommit;`);

@@ -66,8 +66,14 @@ export default function PrivacyPage() {
       <section>
         <h2>Cookies</h2>
         <p>
-          Le site n’utilise que des cookies nécessaires à son fonctionnement : la session de connexion et la ville que vous avez
-          choisie. Aucun cookie publicitaire ni de mesure d’audience tierce n’est déposé.
+          Le site n’utilise que des cookies nécessaires à son fonctionnement : la session de connexion, la ville que vous avez
+          choisie et, seulement si vous l’autorisez, votre position arrondie pour « Autour de moi » (30 minutes). Aucun
+          cookie publicitaire ni de mesure d’audience tierce n’est déposé.
+        </p>
+        <p>
+          Pour améliorer la recherche, nous comptons les recherches effectuées sous forme de totaux quotidiens (texte
+          recherché, type de résultats, nombre de résultats), sans compte, adresse IP, position ni identifiant ; les
+          numéros et adresses e-mail saisis sont masqués. Ces totaux sont supprimés après 180 jours.
         </p>
       </section>
 

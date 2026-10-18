@@ -53,6 +53,10 @@ L'IA ne crée aucune donnée locale. Elle ne répond qu'à partir de contenus `v
 
 Les conseils du plan sont des textes génériques d'orientation (aucune adresse, aucun prix, aucun horaire, aucun numéro). Les seules données locales affichées sont des contenus publiés en base, avec leur badge ; un bloc dont les contenus ne sont pas vérifiés porte un avertissement, et un bloc sans contenu le dit. Les textes des 17 blocs (`src/modules/newcomer/domain/plan.ts`) sont des choix produit, à relire par une personne connaissant San Pedro.
 
+## Recherche (niveau 7)
+
+La recherche n'affiche que des contenus publiés, chacun avec son type, sa fraîcheur (publication, confirmation, mise à jour ou vérification) et son badge. Le filtre « vérifiés uniquement » applique les mêmes durées de validité que l'affichage (365 jours ; 30 jours pour un événement). L'interprétation du langage courant ne crée aucun critère absent de la phrase ni du référentiel (D41). Les distances d'annonces sont calculées sur la position publique, volontairement approximative, et affichées « environ ».
+
 ## Modération (distincte de la vérification)
 
 Les contenus déposés par les utilisateurs (annonces, vitrines, événements) suivent un cycle de **modération** : brouillon → en attente → publié / rejeté → expiré / archivé. Une annonce publiée n'est pas pour autant « vérifiée » : les deux notions sont affichées séparément.

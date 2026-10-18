@@ -12,6 +12,7 @@ const categorySchema = z.object({
   parent_id: z.uuid().nullable(),
   icon: z.string().nullable(),
   sort_order: z.number(),
+  content_types: z.array(z.enum(["listing", "place", "event", "business"])),
 });
 
 export type Category = z.infer<typeof categorySchema>;
@@ -30,7 +31,7 @@ export async function listCategories(): Promise<Category[]> {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("categories")
-    .select("id, slug, name, parent_id, icon, sort_order")
+    .select("id, slug, name, parent_id, icon, sort_order, content_types")
     .eq("is_active", true)
     .order("sort_order");
   if (error) throw new Error(`Lecture des catégories impossible : ${error.message}`);

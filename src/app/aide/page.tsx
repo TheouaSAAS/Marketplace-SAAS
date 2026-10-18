@@ -60,7 +60,9 @@ export default function HelpPage() {
             <Link href={href("privacy")} className={LINK}>politique de confidentialité</Link>.
           </Faq>
           <Faq question="Ma position est-elle enregistrée ?">
-            Non. « Autour de moi » utilise votre position seulement après votre accord, sans l’enregistrer. Sur une annonce,
+            Non. « Autour de moi » utilise votre position seulement après votre accord. Elle est arrondie à environ 100 m,
+            gardée 30 minutes dans votre navigateur, jamais enregistrée par la plateforme ni placée dans l’adresse d’une
+            recherche partagée. Sur une annonce,
             le public ne voit qu’une position approximative, le quartier ou rien du tout, selon le choix de l’annonceur.
           </Faq>
         </div>

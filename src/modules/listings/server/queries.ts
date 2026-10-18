@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
+import { orderByIds } from "@/modules/shared/server/by-ids";
 import { categoryRefSchema, neighborhoodRefSchema, single, verificationStatusSchema } from "@/modules/shared/server/schemas";
 
 export const LISTINGS_CACHE_TAG = "listings";
@@ -16,6 +17,7 @@ const listingCardSchema = z.object({
   verification_status: verificationStatusSchema,
   verified_at: z.string().nullable(),
   published_at: z.string().nullable(),
+  last_confirmed_at: z.string().nullable(),
   category: single(categoryRefSchema),
   neighborhood: single(neighborhoodRefSchema),
 });
@@ -23,7 +25,7 @@ const listingCardSchema = z.object({
 export type ListingCardData = z.infer<typeof listingCardSchema>;
 
 const LISTING_CARD_COLUMNS =
-  "id, slug, title, price, price_unit, availability_status, verification_status, verified_at, published_at, category:categories(name, slug, icon), neighborhood:neighborhoods(name)";
+  "id, slug, title, price, price_unit, availability_status, verification_status, verified_at, published_at, last_confirmed_at, category:categories(name, slug, icon), neighborhood:neighborhoods(name)";
 
 /** Annonces publiées les plus récentes d'une ville, limitées à des catégories (identifiants). */
 export async function listListingsByCategories(cityId: string, categoryIds: readonly string[], limit = 3): Promise<ListingCardData[]> {
@@ -43,6 +45,19 @@ export async function listListingsByCategories(cityId: string, categoryIds: read
     .limit(limit);
   if (error) throw new Error(`Lecture des annonces impossible : ${error.message}`);
   return z.array(listingCardSchema).parse(data);
+}
+
+/** Annonces publiées par identifiants, dans l'ordre donné (résultats de recherche). */
+export async function listListingsByIds(ids: readonly string[]): Promise<ListingCardData[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(LISTINGS_CACHE_TAG);
+
+  const supabase = createPublicSupabaseClient();
+  if (!supabase || ids.length === 0) return [];
+  const { data, error } = await supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "published").in("id", [...ids]);
+  if (error) throw new Error(`Lecture des annonces impossible : ${error.message}`);
+  return orderByIds(z.array(listingCardSchema).parse(data), ids);
 }
 
 /**

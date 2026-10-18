@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Download } from "lucide-react";
 import { href } from "@/config/routes";
@@ -10,6 +11,8 @@ import { formatDate } from "@/lib/format";
 import { DeletePlanForm } from "@/modules/newcomer/components/plan-actions";
 import { answersToSearchParams } from "@/modules/newcomer/domain/answers";
 import { getSavedNewcomerAnswers } from "@/modules/newcomer/server/queries";
+import { DeleteSavedSearchForm } from "@/modules/search/components/saved-search-forms";
+import { listSavedSearches } from "@/modules/search/server/saved";
 import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Alert } from "@/components/ui/feedback";
@@ -54,7 +57,7 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
     .limit(1)
     .maybeSingle()) ?? { data: null };
 
-  const newcomer = await getSavedNewcomerAnswers();
+  const [newcomer, savedSearches] = await Promise.all([getSavedNewcomerAnswers(), listSavedSearches()]);
   const name = account.displayName ?? account.email ?? "Mon compte";
   const isProfessional = account.role === "professional";
 
@@ -141,6 +144,32 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
               Commencer le parcours
             </ButtonLink>
           </div>
+        )}
+      </Section>
+
+      <Section title="Mes recherches enregistrées">
+        {savedSearches.length > 0 ? (
+          <ul className="flex flex-col divide-y divide-border">
+            {savedSearches.map((saved) => (
+              <li key={saved.id} className="flex items-center justify-between gap-3 py-2">
+                <div className="min-w-0">
+                  <Link href={`${href("search")}?${saved.query}`} className="block truncate font-semibold text-brand-700 hover:underline">
+                    {saved.name}
+                  </Link>
+                  <p className="text-xs text-ink-muted">Enregistrée le {formatDate(saved.createdAt)}</p>
+                </div>
+                <DeleteSavedSearchForm id={saved.id} name={saved.name} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-ink-muted">
+            Aucune recherche enregistrée. Depuis la{" "}
+            <Link href={href("search")} className="font-semibold text-brand-700 underline">
+              recherche
+            </Link>
+            , utilisez « Enregistrer cette recherche ».
+          </p>
         )}
       </Section>
 

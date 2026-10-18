@@ -154,7 +154,7 @@ test.describe("Navigation ordinateur", () => {
     await banner.getByRole("searchbox").fill("studio meublé");
     await banner.getByRole("searchbox").press("Enter");
     await expect(page).toHaveURL(/\/recherche\?q=studio\+meubl/);
-    await expect(page.getByText("Votre recherche : « studio meublé »")).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Que recherchez-vous ?" })).toHaveValue("studio meublé");
     await expect(banner.getByRole("link", { name: "Mes favoris" })).toHaveAttribute("href", "/favoris");
     await expect(banner.getByRole("link", { name: "Publier" })).toHaveAttribute("href", "/publier");
   });

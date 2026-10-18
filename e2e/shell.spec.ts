@@ -52,7 +52,7 @@ test.describe("Shell — rubriques", () => {
     }
     await page.goto("/aide");
     await page.getByText("Ma position est-elle enregistrée ?").click();
-    await expect(page.getByText(/sans l’enregistrer/)).toBeVisible();
+    await expect(page.getByText(/jamais enregistrée par la plateforme/)).toBeVisible();
   });
 
   test("les favoris exigent une connexion", async ({ page }) => {

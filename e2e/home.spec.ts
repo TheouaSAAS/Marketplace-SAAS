@@ -7,13 +7,13 @@ test.describe("Accueil dynamique", () => {
     await search.fill("studio meublé à la Cité");
     await search.press("Enter");
     await expect(page).toHaveURL(/\/recherche\?q=studio\+meubl/);
-    await expect(page.getByText("Votre recherche : « studio meublé à la Cité »")).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Que recherchez-vous ?" })).toHaveValue("studio meublé à la Cité");
   });
 
   test("les suggestions de recherche sont des liens fonctionnels", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("list", { name: "Exemples de recherche" }).getByRole("link", { name: "Électricien" }).click();
-    await expect(page.getByText("Votre recherche : « Électricien »")).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Que recherchez-vous ?" })).toHaveValue("Électricien");
   });
 
   test("les huit accès rapides et l'accès signature fonctionnent", async ({ page }) => {

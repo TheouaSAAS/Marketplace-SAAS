@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 import { rankPlaces } from "@/domain/recommendation";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
+import { orderByIds } from "@/modules/shared/server/by-ids";
 import { neighborhoodRefSchema, single, verificationStatusSchema } from "@/modules/shared/server/schemas";
 
 export const PLACES_CACHE_TAG = "places";
@@ -22,6 +23,22 @@ const placeCardSchema = z.object({
 
 export type PlaceCardData = z.infer<typeof placeCardSchema>;
 
+const PLACE_CARD_COLUMNS =
+  "id, slug, name, summary, kind, verification_status, verified_at, updated_at, category:categories(name, slug, icon, family), neighborhood:neighborhoods(name)";
+
+/** Lieux publiés par identifiants, dans l'ordre donné (résultats de recherche). */
+export async function listPlacesByIds(ids: readonly string[]): Promise<PlaceCardData[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(PLACES_CACHE_TAG);
+
+  const supabase = createPublicSupabaseClient();
+  if (!supabase || ids.length === 0) return [];
+  const { data, error } = await supabase.from("places").select(PLACE_CARD_COLUMNS).eq("status", "published").in("id", [...ids]);
+  if (error) throw new Error(`Lecture des lieux impossible : ${error.message}`);
+  return orderByIds(z.array(placeCardSchema).parse(data), ids);
+}
+
 /** Lieux publiés d'une ville limités à des catégories (identifiants), même classement explicable. */
 export async function listPlacesByCategories(cityId: string, categoryIds: readonly string[], limit = 3): Promise<PlaceCardData[]> {
   "use cache";
@@ -32,9 +49,7 @@ export async function listPlacesByCategories(cityId: string, categoryIds: readon
   if (!supabase || categoryIds.length === 0) return [];
   const { data, error } = await supabase
     .from("places")
-    .select(
-      "id, slug, name, summary, kind, verification_status, verified_at, updated_at, category:categories(name, slug, icon, family), neighborhood:neighborhoods(name)",
-    )
+    .select(PLACE_CARD_COLUMNS)
     .eq("city_id", cityId)
     .eq("status", "published")
     .in("category_id", [...categoryIds])

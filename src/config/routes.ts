@@ -28,7 +28,7 @@ export const ROUTES = {
   newcomer: { path: "/nouveau-arrivant", label: "Nouveau à San Pedro ?", level: 6, status: "live" },
   newcomerQuestions: { path: "/nouveau-arrivant/questions", label: "Questionnaire", level: 6, status: "live", private: true },
   newcomerPlan: { path: "/nouveau-arrivant/plan", label: "Mon plan", level: 6, status: "live", private: true },
-  search: { path: "/recherche", label: "Recherche", level: 7, status: "preview" },
+  search: { path: "/recherche", label: "Recherche", level: 7, status: "live", private: true },
 
   // Annonces & opportunités
   listings: { path: "/annonces", label: "Annonces", level: 7, status: "preview" },

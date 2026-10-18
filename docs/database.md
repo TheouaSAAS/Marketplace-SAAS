@@ -34,7 +34,7 @@ Connexion : `DATABASE_URL` (PostgreSQL direct ou pooler) ou `SUPABASE_ACCESS_TOK
 
 Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `can_manage_content(auteur, organisation)` = auteur, ou membre `editor` et plus de l'organisation.
 
-## Tables (40, toutes avec RLS)
+## Tables (41, toutes avec RLS)
 
 | Domaine | Tables |
 | --- | --- |
@@ -47,6 +47,7 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 | Monétisation | `subscriptions`, `payments`, `sponsored_campaigns` |
 | IA | `knowledge_documents`, `knowledge_chunks` (embeddings) |
 | Anti-abus | `rate_limit_buckets` (empreintes HMAC, purgées toutes les heures) |
+| Statistiques | `search_stats` (totaux quotidiens anonymes des recherches, lecture administrateurs, 180 jours) |
 
 ## Deux statuts distincts
 
@@ -61,6 +62,15 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `payments.provider_payload` illisible ; `consents` non modifiables ; candidatures, messages, favoris, recherches, préférences : propriétaire uniquement.
 - Stockage : `media` (public, images ≤ 5 Mo, dossier `<uid>/`) ; `private-media` (privé, PDF et images ≤ 10 Mo, lecture par URL signée).
 - Aucune table ne stocke la position des visiteurs (vérifié par test).
+
+## Recherche (niveau 7, migration `20261019000100_search.sql`)
+
+- `search_matches(type, ville, texte, filtres…)` : une seule logique de correspondance pour `annonces`, `lieux`, `professionnels`, `evenements`, `guide`. **SECURITY INVOKER** : règles d'accès et droits par colonne appliqués ; uniquement les contenus publiés (jamais un brouillon, même pour son auteur), annonces non expirées, événements non terminés.
+- Texte : mots normalisés (sans accents) recherchés comme préfixes, tous requis (`search_tsquery`), ou correspondance approchée du titre (trigrammes, `<%`) pour les fautes de frappe. Index trigrammes ajoutés sur les titres d'annonces, d'événements et d'articles.
+- `search_content(…, tri, limite, décalage)` : page de résultats (identifiants, distance, total) selon des tris publics (pertinence, récent, prix, date, distance) ; `search_counts(…)` : nombre de résultats par type pour les critères communs.
+- Distance calculée sur `location_public` pour les annonces et vitrines (jamais la position exacte) ; sans position, aucun filtre de rayon.
+- `record_search()` (clé secrète du serveur uniquement) alimente `search_stats` ; `search_anonymize()` masque suites de chiffres et e-mails.
+- `saved_searches` : 20 au plus par compte (déclencheur `limit_saved_searches`).
 
 ## Règles en base (déclencheurs)
 
@@ -79,6 +89,7 @@ Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_servi
 | --- | --- | --- |
 | `expirer-annonces` | chaque heure à :15 | passe en `expired` les annonces arrivées à échéance |
 | `purger-anti-abus` | chaque heure à :45 | supprime les empreintes anti-abus de plus de 24 h |
+| `purger-statistiques-recherche` | chaque jour à 3 h 30 | supprime les statistiques de recherche de plus de 180 jours |
 
 ## Sauvegardes
 

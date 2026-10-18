@@ -2423,6 +2423,41 @@ export type Database = {
           },
         ]
       }
+      search_stats: {
+        Row: {
+          city_id: string
+          day: string
+          query_norm: string
+          search_type: string
+          searches: number
+          zero_results: number
+        }
+        Insert: {
+          city_id: string
+          day?: string
+          query_norm: string
+          search_type: string
+          searches?: number
+          zero_results?: number
+        }
+        Update: {
+          city_id?: string
+          day?: string
+          query_norm?: string
+          search_type?: string
+          searches?: number
+          zero_results?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_stats_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sources: {
         Row: {
           collected_at: string
@@ -2821,6 +2856,88 @@ export type Database = {
         Returns: number
       }
       purge_rate_limits: { Args: never; Returns: number }
+      record_search: {
+        Args: {
+          p_city: string
+          p_query: string
+          p_results: number
+          p_type: string
+        }
+        Returns: undefined
+      }
+      search_anonymize: { Args: { p_query: string }; Returns: string }
+      search_content: {
+        Args: {
+          p_available_only?: boolean
+          p_categories?: string[]
+          p_city: string
+          p_lat?: number
+          p_limit?: number
+          p_lng?: number
+          p_neighborhood?: string
+          p_offset?: number
+          p_price_max?: number
+          p_price_min?: number
+          p_query?: string
+          p_radius_m?: number
+          p_seller?: string
+          p_sort?: string
+          p_starts_from?: string
+          p_starts_to?: string
+          p_type: string
+          p_verified_only?: boolean
+        }
+        Returns: {
+          distance_m: number
+          id: string
+          total_count: number
+        }[]
+      }
+      search_counts: {
+        Args: {
+          p_city: string
+          p_lat?: number
+          p_lng?: number
+          p_neighborhood?: string
+          p_query?: string
+          p_radius_m?: number
+          p_verified_only?: boolean
+        }
+        Returns: {
+          total: number
+          type: string
+        }[]
+      }
+      search_matches: {
+        Args: {
+          p_available_only?: boolean
+          p_categories?: string[]
+          p_city: string
+          p_lat?: number
+          p_lng?: number
+          p_neighborhood?: string
+          p_price_max?: number
+          p_price_min?: number
+          p_query?: string
+          p_radius_m?: number
+          p_seller?: string
+          p_starts_from?: string
+          p_starts_to?: string
+          p_type: string
+          p_verified_only?: boolean
+        }
+        Returns: {
+          boost: number
+          distance_m: number
+          id: string
+          price: number
+          rank: number
+          recency: string
+          starts_at: string
+        }[]
+      }
+      search_normalize: { Args: { p_query: string }; Returns: string }
+      search_tsquery: { Args: { p_query: string }; Returns: unknown }
       verification_publicly_visible: {
         Args: { p_status: Database["public"]["Enums"]["verification_status"] }
         Returns: boolean
