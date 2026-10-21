@@ -445,6 +445,45 @@ export type Database = {
           },
         ]
       }
+      contact_reveals: {
+        Row: {
+          channel: string
+          created_at: string
+          id: number
+          listing_id: string
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          id?: never
+          listing_id: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: never
+          listing_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_reveals_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_reveals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_revisions: {
         Row: {
           action: Database["public"]["Enums"]["revision_action"]
@@ -1321,6 +1360,149 @@ export type Database = {
           },
         ]
       }
+      listing_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          hidden_reason: string | null
+          id: string
+          listing_id: string
+          parent_id: string | null
+          status: Database["public"]["Enums"]["comment_status"]
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          hidden_reason?: string | null
+          id?: string
+          listing_id: string
+          parent_id?: string | null
+          status?: Database["public"]["Enums"]["comment_status"]
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          hidden_reason?: string | null
+          id?: string
+          listing_id?: string
+          parent_id?: string | null
+          status?: Database["public"]["Enums"]["comment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_comments_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "listing_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_likes: {
+        Row: {
+          created_at: string
+          listing_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          listing_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          listing_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_likes_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_view_counts: {
+        Row: {
+          listing_id: string
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          listing_id: string
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          listing_id?: string
+          updated_at?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_view_counts_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_view_marks: {
+        Row: {
+          day: string
+          listing_id: string
+          viewer_hash: string
+        }
+        Insert: {
+          day?: string
+          listing_id: string
+          viewer_hash: string
+        }
+        Update: {
+          day?: string
+          listing_id?: string
+          viewer_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_view_marks_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           address_text: string | null
@@ -2188,6 +2370,7 @@ export type Database = {
         Row: {
           article_id: string | null
           business_id: string | null
+          comment_id: string | null
           created_at: string
           details: string | null
           event_id: string | null
@@ -2207,6 +2390,7 @@ export type Database = {
         Insert: {
           article_id?: string | null
           business_id?: string | null
+          comment_id?: string | null
           created_at?: string
           details?: string | null
           event_id?: string | null
@@ -2226,6 +2410,7 @@ export type Database = {
         Update: {
           article_id?: string | null
           business_id?: string | null
+          comment_id?: string | null
           created_at?: string
           details?: string | null
           event_id?: string | null
@@ -2255,6 +2440,13 @@ export type Database = {
             columns: ["business_id"]
             isOneToOne: false
             referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "listing_comments"
             referencedColumns: ["id"]
           },
           {
@@ -2792,6 +2984,7 @@ export type Database = {
         Args: { p_key_hash: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
       }
+      contains_contact_details: { Args: { p_text: string }; Returns: boolean }
       content_transition_allowed: {
         Args: {
           p_from: Database["public"]["Enums"]["content_status"]
@@ -2800,6 +2993,17 @@ export type Database = {
           p_to: Database["public"]["Enums"]["content_status"]
         }
         Returns: boolean
+      }
+      conversation_header: {
+        Args: { p_conversation: string }
+        Returns: {
+          listing_active: boolean
+          listing_id: string
+          listing_slug: string
+          listing_title: string
+          other_id: string
+          other_name: string
+        }[]
       }
       current_user_role: {
         Args: never
@@ -2831,6 +3035,30 @@ export type Database = {
       is_staff: { Args: never; Returns: boolean }
       is_superadmin: { Args: never; Returns: boolean }
       is_suspended: { Args: never; Returns: boolean }
+      listing_comment_thread: {
+        Args: { p_listing: string }
+        Returns: {
+          author_name: string
+          body: string
+          created_at: string
+          id: string
+          is_mine: boolean
+          is_seller: boolean
+          parent_id: string
+        }[]
+      }
+      listing_engagement: {
+        Args: { p_listing: string }
+        Returns: {
+          comments: number
+          liked: boolean
+          likes: number
+          views: number
+        }[]
+      }
+      listing_is_contactable: { Args: { p_listing: string }; Returns: boolean }
+      listing_is_manageable: { Args: { p_listing: string }; Returns: boolean }
+      listing_is_public: { Args: { p_listing: string }; Returns: boolean }
       listing_private_fields: {
         Args: { p_listing: string }
         Returns: {
@@ -2842,6 +3070,35 @@ export type Database = {
           longitude: number
         }[]
       }
+      listing_public_point: {
+        Args: { p_listing: string }
+        Returns: {
+          lat: number
+          lng: number
+          location_precision: Database["public"]["Enums"]["public_location_precision"]
+        }[]
+      }
+      listing_public_state: {
+        Args: { p_slug: string }
+        Returns: {
+          category_id: string
+          city_id: string
+          listing_id: string
+          state: string
+          title: string
+        }[]
+      }
+      listing_seller: {
+        Args: { p_listing: string }
+        Returns: {
+          active_listings: number
+          avatar_url: string
+          display_name: string
+          is_professional: boolean
+          member_since: string
+          organization_name: string
+        }[]
+      }
       log_admin_action: {
         Args: {
           p_action: string
@@ -2851,11 +3108,28 @@ export type Database = {
         }
         Returns: undefined
       }
+      my_conversations: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          last_message: string
+          last_message_at: string
+          last_message_mine: boolean
+          listing_slug: string
+          listing_title: string
+          other_name: string
+          unread: number
+        }[]
+      }
       organization_role_rank: {
         Args: { p_role: Database["public"]["Enums"]["organization_role"] }
         Returns: number
       }
       purge_rate_limits: { Args: never; Returns: number }
+      record_listing_view: {
+        Args: { p_listing: string; p_viewer_hash: string }
+        Returns: boolean
+      }
       record_search: {
         Args: {
           p_city: string
@@ -2864,6 +3138,10 @@ export type Database = {
           p_type: string
         }
         Returns: undefined
+      }
+      reveal_listing_contact: {
+        Args: { p_channel: string; p_listing: string }
+        Returns: string
       }
       search_anonymize: { Args: { p_query: string }; Returns: string }
       search_content: {
@@ -2938,6 +3216,10 @@ export type Database = {
       }
       search_normalize: { Args: { p_query: string }; Returns: string }
       search_tsquery: { Args: { p_query: string }; Returns: unknown }
+      start_listing_conversation: {
+        Args: { p_body: string; p_listing: string }
+        Returns: string
+      }
       verification_publicly_visible: {
         Args: { p_status: Database["public"]["Enums"]["verification_status"] }
         Returns: boolean
@@ -2962,6 +3244,7 @@ export type Database = {
         | "rejected"
       category_family: "decouvrir" | "trouver" | "entreprendre"
       city_launch_status: "planned" | "pilot" | "open"
+      comment_status: "visible" | "hidden" | "deleted"
       consent_kind:
         | "terms"
         | "privacy"
@@ -3194,6 +3477,7 @@ export const Constants = {
       ],
       category_family: ["decouvrir", "trouver", "entreprendre"],
       city_launch_status: ["planned", "pilot", "open"],
+      comment_status: ["visible", "hidden", "deleted"],
       consent_kind: [
         "terms",
         "privacy",
