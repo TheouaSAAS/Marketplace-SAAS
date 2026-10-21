@@ -63,6 +63,8 @@ export const ROUTES = {
   profile: { path: "/profil", label: "Mon profil", level: 3, status: "live", private: true },
   profileExport: { path: "/profil/export", label: "Export de mes données", level: 3, status: "live", private: true },
   favorites: { path: "/favoris", label: "Mes favoris", level: 8, status: "preview", private: true },
+  messages: { path: "/messages", label: "Mes messages", level: 8, status: "planned", private: true },
+  messageThread: { path: "/messages/[id]", label: "Conversation", level: 8, status: "planned", private: true },
   pro: { path: "/espace-pro", label: "Espace professionnel", level: 21, status: "planned", private: true },
   admin: { path: "/admin", label: "Administration", level: 22, status: "planned", private: true },
 
