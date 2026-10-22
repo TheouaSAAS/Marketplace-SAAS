@@ -1068,6 +1068,7 @@ export type Database = {
       }
       guide_sections: {
         Row: {
+          category_slugs: string[]
           created_at: string
           description: string | null
           icon: string | null
@@ -1079,6 +1080,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category_slugs?: string[]
           created_at?: string
           description?: string | null
           icon?: string | null
@@ -1090,6 +1092,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category_slugs?: string[]
           created_at?: string
           description?: string | null
           icon?: string | null
@@ -1109,6 +1112,7 @@ export type Database = {
           handled_by: string | null
           id: string
           message: string
+          resolution_note: string | null
           status: Database["public"]["Enums"]["report_status"]
           updated_at: string
           user_id: string
@@ -1119,6 +1123,7 @@ export type Database = {
           handled_by?: string | null
           id?: string
           message: string
+          resolution_note?: string | null
           status?: Database["public"]["Enums"]["report_status"]
           updated_at?: string
           user_id: string
@@ -1129,6 +1134,7 @@ export type Database = {
           handled_by?: string | null
           id?: string
           message?: string
+          resolution_note?: string | null
           status?: Database["public"]["Enums"]["report_status"]
           updated_at?: string
           user_id?: string
@@ -3167,6 +3173,10 @@ export type Database = {
         Args: { p_organization: string; p_owner: string }
         Returns: boolean
       }
+      chunk_text: {
+        Args: { p_max?: number; p_text: string }
+        Returns: string[]
+      }
       consume_rate_limit: {
         Args: { p_key_hash: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
@@ -3204,6 +3214,25 @@ export type Database = {
       grant_public_columns: {
         Args: { p_hidden: string[]; p_table: string }
         Returns: undefined
+      }
+      guide_article_credits: {
+        Args: { p_article: string }
+        Returns: {
+          author_name: string
+          source_collected_at: string
+          source_publisher: string
+          source_title: string
+          source_url: string
+          verifier_name: string
+        }[]
+      }
+      guide_article_history: {
+        Args: { p_article: string }
+        Returns: {
+          change_note: string
+          created_at: string
+          version: number
+        }[]
       }
       immutable_unaccent: { Args: { input: string }; Returns: string }
       is_admin: { Args: never; Returns: boolean }
@@ -3373,6 +3402,21 @@ export type Database = {
       review_place_claim: {
         Args: { p_approve: boolean; p_claim: string; p_note?: string }
         Returns: undefined
+      }
+      save_guide_article: {
+        Args: {
+          p_body: string
+          p_change_note: string
+          p_id: string
+          p_section: string
+          p_slug: string
+          p_source: string
+          p_status: Database["public"]["Enums"]["content_status"]
+          p_summary: string
+          p_title: string
+          p_verification: Database["public"]["Enums"]["verification_status"]
+        }
+        Returns: string
       }
       search_anonymize: { Args: { p_query: string }; Returns: string }
       search_content: {
