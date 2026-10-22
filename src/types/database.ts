@@ -2191,8 +2191,11 @@ export type Database = {
       }
       places: {
         Row: {
+          access_conditions: string | null
+          accessibility: string[]
           address_text: string | null
           ambiance: string[]
+          audiences: string[]
           business_id: string | null
           category_id: string
           city_id: string
@@ -2222,17 +2225,23 @@ export type Database = {
           source_id: string | null
           status: Database["public"]["Enums"]["content_status"]
           summary: string | null
+          themes: string[]
           updated_at: string
           verification_note: string | null
           verification_status: Database["public"]["Enums"]["verification_status"]
           verified_at: string | null
           verified_by: string | null
+          visit_duration: string | null
+          warnings: string | null
           website: string | null
           whatsapp: string | null
         }
         Insert: {
+          access_conditions?: string | null
+          accessibility?: string[]
           address_text?: string | null
           ambiance?: string[]
+          audiences?: string[]
           business_id?: string | null
           category_id: string
           city_id: string
@@ -2262,17 +2271,23 @@ export type Database = {
           source_id?: string | null
           status?: Database["public"]["Enums"]["content_status"]
           summary?: string | null
+          themes?: string[]
           updated_at?: string
           verification_note?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
           verified_at?: string | null
           verified_by?: string | null
+          visit_duration?: string | null
+          warnings?: string | null
           website?: string | null
           whatsapp?: string | null
         }
         Update: {
+          access_conditions?: string | null
+          accessibility?: string[]
           address_text?: string | null
           ambiance?: string[]
+          audiences?: string[]
           business_id?: string | null
           category_id?: string
           city_id?: string
@@ -2302,11 +2317,14 @@ export type Database = {
           source_id?: string | null
           status?: Database["public"]["Enums"]["content_status"]
           summary?: string | null
+          themes?: string[]
           updated_at?: string
           verification_note?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
           verified_at?: string | null
           verified_by?: string | null
+          visit_duration?: string | null
+          warnings?: string | null
           website?: string | null
           whatsapp?: string | null
         }
@@ -3206,6 +3224,25 @@ export type Database = {
       is_staff: { Args: never; Returns: boolean }
       is_superadmin: { Args: never; Returns: boolean }
       is_suspended: { Args: never; Returns: boolean }
+      itinerary_candidates: {
+        Args: { p_categories: string[]; p_city: string }
+        Returns: {
+          accessibility: string[]
+          audiences: string[]
+          category_slug: string
+          id: string
+          lat: number
+          lng: number
+          name: string
+          price_level: number
+          slug: string
+          themes: string[]
+          verification_status: Database["public"]["Enums"]["verification_status"]
+          verified_at: string
+          visit_duration: string
+          warnings: string
+        }[]
+      }
       listing_comment_thread: {
         Args: { p_listing: string }
         Returns: {
@@ -3480,6 +3517,30 @@ export type Database = {
           total_count: number
         }[]
       }
+      search_tourism: {
+        Args: {
+          p_accessibility?: string[]
+          p_audiences?: string[]
+          p_budget_max?: number
+          p_categories: string[]
+          p_city: string
+          p_lat?: number
+          p_limit?: number
+          p_lng?: number
+          p_max_duration?: string
+          p_offset?: number
+          p_query?: string
+          p_radius_m?: number
+          p_sort?: string
+          p_themes?: string[]
+          p_verified_only?: boolean
+        }
+        Returns: {
+          distance_m: number
+          id: string
+          total_count: number
+        }[]
+      }
       search_tsquery: { Args: { p_query: string }; Returns: unknown }
       sponsored_shops: {
         Args: { p_categories?: string[]; p_city: string; p_limit?: number }
@@ -3501,6 +3562,7 @@ export type Database = {
         Args: { p_status: Database["public"]["Enums"]["verification_status"] }
         Returns: boolean
       }
+      visit_duration_rank: { Args: { p_duration: string }; Returns: number }
     }
     Enums: {
       application_status:

@@ -138,3 +138,35 @@ from (values
   ('exemple-quincaillerie', '{livraison}', '{}', '{"Exemple d’outillage","Exemple de matériau"}')
 ) as v (slug, features, ambiance, products)
 where p.slug = v.slug and p.verification_status = 'placeholder';
+
+-- -----------------------------------------------------------------------------
+-- Tourisme (niveau 12) : une plage, une activité et un opérateur d'exemple ;
+-- attributs touristiques d'exemple, conditions et avertissements explicitement
+-- « à confirmer localement ». Aucun horaire, prix, transport ni adresse.
+-- -----------------------------------------------------------------------------
+insert into public.places (kind, created_by, slug, name, summary, description, category_id, city_id, neighborhood_id,
+                           location, location_precision, status, verification_status)
+select v.kind::public.place_kind, c.owner_id, v.slug, v.name, v.summary,
+       'Fiche de démonstration fictive, destinée à tester la plateforme. Elle ne décrit aucun lieu réel.',
+       (select id from public.categories where slug = v.category), c.city_id, v.neighborhood,
+       pg_temp.demo_point(v.dlng, v.dlat), 'approximate', 'published', 'placeholder'
+from demo_ctx c
+cross join lateral (values
+  ('lieu_touristique', 'exemple-site-naturel', 'Exemple — Site naturel (à valider localement)', 'Exemple de plage ou de site naturel.', 'plages-sites-naturels', null::uuid, 0.020, -0.006),
+  ('etablissement', 'exemple-activite', 'Exemple — Activité de loisirs (à valider localement)', 'Exemple de sortie.', 'loisirs-activites', c.n_cite, 0.003, 0.006),
+  ('etablissement', 'exemple-excursion', 'Exemple — Excursion guidée (à valider localement)', 'Exemple d’opérateur touristique.', 'excursions-guides', c.n_lac, -0.008, 0.007)
+) as v (kind, slug, name, summary, category, neighborhood, dlng, dlat)
+on conflict (slug) do nothing;
+
+update public.places p
+set themes = v.themes::text[], audiences = v.audiences::text[], visit_duration = v.duration, accessibility = v.access::text[],
+    access_conditions = v.conditions, warnings = v.warnings
+from (values
+  ('exemple-lieu-a-visiter', '{culture,histoire}', '{familles,groupes}', 'une_2h', '{stationnement_proche}', 'Exemple : conditions d’accès à confirmer localement.', null),
+  ('exemple-site-naturel', '{plage,nature,detente}', '{familles,couples}', 'demi_journee', '{acces_voiture}', 'Exemple : conditions d’accès à confirmer localement.', 'Exemple d’avertissement : renseignez-vous sur la baignade auprès des personnes du lieu.'),
+  ('exemple-activite', '{sport,detente}', '{groupes,couples}', 'une_2h', '{}', null, null),
+  ('exemple-excursion', '{nature,culture}', '{familles,groupes}', 'journee', '{}', 'Exemple : réservation auprès de l’opérateur, à confirmer.', null),
+  ('exemple-restaurant', '{gastronomie}', '{familles,couples,groupes}', 'une_2h', '{fauteuil_roulant}', null, null),
+  ('exemple-hebergement', '{detente}', '{familles,couples}', null, '{stationnement_proche}', null, null)
+) as v (slug, themes, audiences, duration, access, conditions, warnings)
+where p.slug = v.slug and p.verification_status = 'placeholder';
