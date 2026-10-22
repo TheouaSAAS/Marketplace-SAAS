@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { href } from "@/config/routes";
 import { formValues, type FormState } from "@/lib/form-state";
@@ -41,18 +42,6 @@ export async function sendMessageAction(_previous: FormState, formData: FormData
     .update({ last_read_at: new Date().toISOString() })
     .eq("conversation_id", parsed.data.conversation)
     .eq("user_id", user.id);
+  revalidatePath(href("messageThread", { params: { id: parsed.data.conversation } }));
   return { status: "success" };
-}
-
-/** Marque la conversation comme lue par la personne connectée. */
-export async function markConversationReadAction(conversationId: string): Promise<void> {
-  if (!z.uuid().safeParse(conversationId).success) return;
-  const user = await getSessionUser();
-  const supabase = await createSessionSupabaseClient();
-  if (!user || !supabase) return;
-  await supabase
-    .from("conversation_participants")
-    .update({ last_read_at: new Date().toISOString() })
-    .eq("conversation_id", conversationId)
-    .eq("user_id", user.id);
 }

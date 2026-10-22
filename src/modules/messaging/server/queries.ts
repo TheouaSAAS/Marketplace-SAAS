@@ -66,3 +66,14 @@ export async function getConversation(conversationId: string): Promise<{ header:
   if (error) throw new Error(`Lecture des messages impossible : ${error.message}`);
   return { header: parsedHeader, messages: z.array(messageSchema).parse(data).reverse() };
 }
+
+/** Marque la conversation comme lue (idempotent, appelé à l'ouverture du fil). */
+export async function markConversationRead(conversationId: string, userId: string): Promise<void> {
+  const supabase = await createSessionSupabaseClient();
+  if (!supabase) return;
+  await supabase
+    .from("conversation_participants")
+    .update({ last_read_at: new Date().toISOString() })
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId);
+}
