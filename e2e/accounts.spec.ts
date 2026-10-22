@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { HAS_DATABASE, NO_DATABASE } from "./env";
 
 const email = process.env.E2E_USER_EMAIL;
 const password = process.env.E2E_USER_PASSWORD;
@@ -74,6 +75,7 @@ test.describe("Comptes", () => {
 
 test.describe("Formulaires de compte (sans envoi d'e-mail)", () => {
   test("l'inscription explique chaque erreur", async ({ page }) => {
+    test.skip(!HAS_DATABASE, NO_DATABASE);
     await page.goto("/inscription");
     await page.getByRole("button", { name: "Créer mon compte" }).click();
     await expect(page.getByText("Votre nom doit contenir au moins 2 caractères.")).toBeVisible();
@@ -83,6 +85,7 @@ test.describe("Formulaires de compte (sans envoi d'e-mail)", () => {
   });
 
   test("les règles du mot de passe se cochent en direct", async ({ page }) => {
+    test.skip(!HAS_DATABASE, NO_DATABASE);
     await page.goto("/inscription");
     const rules = page.getByRole("list", { name: "Règles du mot de passe" });
     await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill("abc");
@@ -95,12 +98,14 @@ test.describe("Formulaires de compte (sans envoi d'e-mail)", () => {
   });
 
   test("un nouveau mot de passe sans lien valide est refusé proprement", async ({ page }) => {
+    test.skip(!HAS_DATABASE, NO_DATABASE);
     await page.goto("/mot-de-passe/nouveau");
     await expect(page.getByText("Lien expiré")).toBeVisible();
     await expect(page.getByRole("link", { name: "Demander un nouveau lien" })).toBeVisible();
   });
 
   test("un lien de confirmation invalide renvoie vers la connexion avec une explication", async ({ page }) => {
+    test.skip(!HAS_DATABASE, NO_DATABASE);
     await page.goto("/auth/confirmation?token_hash=faux&type=email");
     await expect(page).toHaveURL(/\/connexion\?erreur=lien/);
     await expect(page.getByText("Lien invalide ou expiré")).toBeVisible();

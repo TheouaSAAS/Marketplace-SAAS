@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { HAS_DATABASE, NO_DATABASE } from "./env";
 
 const email = process.env.E2E_USER_EMAIL;
 const password = process.env.E2E_USER_PASSWORD;
@@ -31,7 +32,9 @@ test.describe("Parcours « Nouveau à San Pedro ? »", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nouveau à San Pedro ?");
     await expect(page.getByText(/ne remplace pas un conseil juridique, financier/)).toBeVisible();
     await page.getByRole("link", { name: "Commencer" }).click();
-    await expect(page.getByRole("heading", { name: "Qu’est-ce qui vous amène à San Pedro ?" })).toBeVisible();
+    // Navigation côté client : peut dépasser 5 s quand les tests tournent en parallèle.
+    await expect(page).toHaveURL(/\/nouveau-arrivant\/questions$/, { timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: "Qu’est-ce qui vous amène à San Pedro ?" })).toBeVisible({ timeout: 15_000 });
   });
 
   test("une étape incomplète est expliquée et le focus suit les étapes", async ({ page }) => {
@@ -70,6 +73,7 @@ test.describe("Parcours « Nouveau à San Pedro ? »", () => {
   });
 
   test("le plan place les priorités en tête et explique chaque conseil", async ({ page }) => {
+    test.skip(!HAS_DATABASE, NO_DATABASE);
     await answerUntilPlan(page);
     const blocks = page.getByRole("main").getByRole("listitem").filter({ has: page.getByRole("heading", { level: 2 }) });
     await expect(blocks.first().getByRole("heading", { level: 2 })).toHaveText("Santé");

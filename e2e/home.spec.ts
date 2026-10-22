@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { HAS_DATABASE, NO_DATABASE } from "./env";
 
 test.describe("Accueil dynamique", () => {
   test("la recherche en langage courant mène aux résultats", async ({ page }) => {
@@ -28,6 +29,7 @@ test.describe("Accueil dynamique", () => {
   });
 
   test("les sections affichent des contenus réels ou un état vide explicite", async ({ page }) => {
+    test.skip(!HAS_DATABASE, NO_DATABASE);
     await page.goto("/");
     for (const title of ["Annonces récentes", "Découvrir San Pedro", "Commerces et professionnels", "Événements à venir"]) {
       const section = page.getByRole("region", { name: title });
@@ -51,6 +53,7 @@ test.describe("Accueil dynamique", () => {
   });
 
   test("chaque section explique sa règle de sélection", async ({ page }) => {
+    test.skip(!HAS_DATABASE, NO_DATABASE);
     await page.goto("/");
     const section = page.getByRole("region", { name: "Annonces récentes" });
     await section.getByText("Pourquoi ces contenus ?").click();

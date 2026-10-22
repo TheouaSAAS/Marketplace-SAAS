@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { HAS_DATABASE, NO_DATABASE } from "./env";
 
 const email = process.env.E2E_USER_EMAIL;
 const password = process.env.E2E_USER_PASSWORD;
@@ -12,6 +13,8 @@ async function openFilters(page: Page, isMobile: boolean) {
 const results = (page: Page) => page.getByRole("region", { name: /résultat/ });
 
 test.describe("Recherche", () => {
+  // Résultats lus en base : sans Supabase, voir « Recherche sans base de données » plus bas.
+  test.skip(!HAS_DATABASE, NO_DATABASE);
   test("l'aperçu sépare les types et indique type et fraîcheur de chaque résultat", async ({ page }) => {
     await page.goto("/recherche");
     const tabs = page.getByRole("navigation", { name: "Types de résultats" });
@@ -141,5 +144,16 @@ test.describe("Recherche", () => {
     await expect(page.getByText("Recherche supprimée.")).toBeVisible({ timeout: LOGIN_TIMEOUT });
     await page.reload();
     await expect(saved).toHaveCount(0);
+  });
+});
+
+test.describe("Recherche sans base de données", () => {
+  test.skip(HAS_DATABASE, "Base configurée : état dégradé non testable");
+
+  test("l'indisponibilité est annoncée clairement, sans erreur", async ({ page }) => {
+    const response = await page.goto("/recherche?q=studio");
+    expect(response?.status()).toBe(200);
+    await expect(page.getByText("Recherche indisponible")).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Que recherchez-vous ?" })).toHaveValue("studio");
   });
 });

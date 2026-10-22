@@ -9,7 +9,7 @@
  */
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -20,6 +20,14 @@ const BASE = external ?? `http://localhost:${PORT}`;
 const STATUS_TOKEN = external ? process.env.SMOKE_STATUS_TOKEN : randomBytes(24).toString("hex");
 
 const SLOGAN = "Votre ville, mille opportunités";
+
+// Mêmes variables que le serveur (.env.local), sans écraser celles déjà définies (CI).
+const envFile = fileURLToPath(new URL("../.env.local", import.meta.url));
+if (existsSync(envFile)) process.loadEnvFile(envFile);
+/** Base configurée ? Sans elle (CI), les pages affichent un état « indisponible » explicite. */
+const DB = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+const SEARCH_DOWN = ["Recherche indisponible"];
+const ACCOUNTS_DOWN = ["Comptes momentanément indisponibles"];
 
 /** Pages validées : chemin, statut HTTP attendu, textes qui doivent apparaître. */
 const PAGES = [
@@ -44,14 +52,14 @@ const PAGES = [
     excludes: ["Ce plan est incomplet"],
   },
   { path: "/nouveau-arrivant/plan?motif=visiter", status: 200, includes: ["Ce plan est incomplet"] },
-  { path: "/recherche", status: 200, includes: ["Aperçu", "Guide pratique", "noindex"], excludes: ["En préparation"] },
-  { path: "/recherche?q=studio", status: 200, includes: ["Recherche", "Types de résultats"] },
+  { path: "/recherche", status: 200, includes: DB ? ["Aperçu", "Guide pratique", "noindex"] : [...SEARCH_DOWN, "noindex"], excludes: ["En préparation"] },
+  { path: "/recherche?q=studio", status: 200, includes: DB ? ["Recherche", "Types de résultats"] : SEARCH_DOWN },
   {
     path: "/recherche?q=logement%20%C3%A0%20louer%20pr%C3%A8s%20de%20moi",
     status: 200,
-    includes: ["Nous avons interprété votre recherche", "Annonces immobilières à louer", "Près de vous"],
+    includes: DB ? ["Nous avons interprété votre recherche", "Annonces immobilières à louer", "Près de vous"] : SEARCH_DOWN,
   },
-  { path: "/recherche?q=zzqqxx&type=lieux", status: 200, includes: ["Élargir la recherche"] },
+  { path: "/recherche?q=zzqqxx&type=lieux", status: 200, includes: DB ? ["Élargir la recherche"] : SEARCH_DOWN },
   { path: "/aide", status: 200, includes: ["Ma position est-elle enregistrée"] },
   { path: "/verification", status: 200, includes: ["Comment nous vérifions"] },
   { path: "/signaler", status: 200, includes: ["Signaler un contenu"] },
@@ -60,8 +68,8 @@ const PAGES = [
   { path: "/favoris", status: 307, includes: [] },
   { path: "/sw.js", status: 200, includes: ["hors-ligne"] },
   { path: "/api/health", status: 200, includes: ['"status":"ok"'], excludes: ["SUPABASE", "KEY"] },
-  { path: "/connexion", status: 200, includes: ["Connexion", "Mot de passe oublié"] },
-  { path: "/inscription", status: 200, includes: ["Créer un compte", "conditions d’utilisation"] },
+  { path: "/connexion", status: 200, includes: DB ? ["Connexion", "Mot de passe oublié"] : ["Connexion", ...ACCOUNTS_DOWN] },
+  { path: "/inscription", status: 200, includes: DB ? ["Créer un compte", "conditions d’utilisation"] : ACCOUNTS_DOWN },
   { path: "/mot-de-passe-oublie", status: 200, includes: ["Mot de passe oublié"] },
   { path: "/profil", status: 307, includes: [] },
   { path: "/profil/export", status: 307, includes: [] },
