@@ -70,6 +70,7 @@ Les contenus déposés par les utilisateurs (annonces, vitrines, événements) s
 | Taxonomie des catégories | `supabase/seed.sql` | choix produit, modifiable |
 | Textes des conseils du parcours nouvel arrivant (17 blocs) | `src/modules/newcomer/domain/plan.ts` | à relire localement |
 | Rubriques du guide (11) | migration `…000500_domains.sql` | choix produit, modifiable |
+| Articles du guide et liens rubrique ↔ catégories du site | rédaction `/admin/guide`, migration `20261026000100_guide.sql` | aucun article réel à ce jour (1 gabarit « Exemple ») : à rédiger et vérifier avec source par l’équipe locale ; correspondances rubriques ↔ catégories modifiables |
 | Mots-clés des 5 types de commerces et de la vue « Auto, moto et pièces » (« maquis », « garba », « pagne »…) | migration `20261024000100_shops.sql` | choix produit, à compléter localement |
 | Mots-clés des catégories touristiques et catégorie « Excursions, guides et opérateurs » | migration `20261025000100_tourism.sql` | choix produit, à compléter localement |
 | Conditions d’accès, avertissements, durée de visite, accessibilité des lieux | saisis par l’équipe locale, avec source et date | « à confirmer localement » tant qu’ils manquent ; démonstration : textes marqués « Exemple » |

@@ -197,5 +197,14 @@ Le créateur d'itinéraire (`/tourisme/itineraire`) compose une demi-journée, u
 ## D65 — « Information à confirmer localement »
 Chaque donnée touristique manquante (thèmes, public, durée, accessibilité, conditions d'accès, source, date de vérification) est affichée « Information à confirmer localement ». Les pages restent utiles sans données vérifiées : entrées, filtres, itinéraire honnête, conseils de prudence généraux (aucune donnée locale), liens vers le guide et les quartiers. Le centre-ville, approximatif, ne sert à aucun calcul de distance.
 
+## D66 — Guide : Markdown restreint rendu sans HTML
+Les articles sont écrits dans un Markdown restreint (titres, listes, encadrés, gras, italique, liens) lu en arbre puis rendu en éléments React : aucun HTML brut, seuls les liens internes et https sont actifs. Les titres alimentent le sommaire (ancres stables). Pas de bibliothèque ajoutée.
+
+## D67 — Guide : versions, modération et statut annoncé
+Chaque modification du texte crée une version avec sa note, consultable par l'équipe (texte complet) et par le public (date et note). Un article publié non vérifié porte « Contenu à confirmer localement » ; une vérification de plus d'un an, « vérification ancienne » ; chaque article rappelle qu'il s'agit d'une orientation générale, pas d'un conseil juridique, médical, administratif ou financier personnalisé. Les lecteurs suggèrent des corrections, traitées par l'équipe (`/admin/guide`), jamais publiées telles quelles.
+
+## D68 — Guide relié au site et préparé pour l'assistant
+Chaque rubrique liste ses ressources réelles (services, commerces, tourisme, immobilier, recherche) avec le nombre de contenus publiés ; une catégorie vide est annoncée sans lien, la carte n'est proposée qu'une fois sa page ouverte. La recherche du guide utilise le moteur du site (type « guide ») et renvoie vers la recherche générale. Les articles publiés alimentent automatiquement les documents de l'assistant, découpés en passages, avec leur statut et leur source.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

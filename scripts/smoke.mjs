@@ -38,7 +38,7 @@ const PAGES = [
   {
     path: "/sitemap.xml",
     status: 200,
-    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces"],
+    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces", "/guide"],
     // Ni pages privées, ni rubriques en préparation (contenu encore mince).
     excludes: ["/design-system", "/admin", "/interne", "/evenements", "/annonces", "/profil", "/hors-ligne", "/tourisme/itineraire?"],
   },

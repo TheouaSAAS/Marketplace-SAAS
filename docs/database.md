@@ -116,6 +116,14 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `search_tourism` (SECURITY INVOKER) : catégories, texte, thèmes (au moins un), public (au moins un), durée maximale, budget maximal, accessibilité (toutes), vérifiés, position et rayon (200 km au plus : environs) ; ordre public : vérification de moins d’un an, thèmes couverts, mise à jour récente (ou distance).
 - `itinerary_candidates` : lieux publiés et visibles des catégories touristiques, avec attributs et position (300 au plus) — seule matière du créateur d’itinéraire.
 
+## Guide pratique (niveau 13, migrations `20261026000100_guide.sql` et `…000200_category_counts.sql`)
+
+- Rubriques (`guide_sections`, 11, administrables) reliées aux catégories du site par `category_slugs` ; `category_content_counts` compte les contenus publiés et lisibles (sous-catégories comprises) pour ne proposer un lien que si des données existent.
+- `save_guide_article` (SECURITY INVOKER, équipe locale) : création ou modification avec note obligatoire, enregistrée avec la version (`guide_article_versions`, via `app.change_reason`). Le texte modifié incrémente la version ; « vérifié » exige une source et la base date et attribue la vérification.
+- `guide_article_history` (dates et notes, sans contenu) et `guide_article_credits` (auteur, source, vérificateur) : publics pour un article publié, sinon équipe locale.
+- `guide_suggestions` : ouvertes à la création, 5 par jour et par personne, seulement sur un article publié ; l’équipe change le statut et la réponse (`resolution_note`), jamais le message (`protect_guide_suggestion`, `handled_by` posé par la base). Signalement possible (`reports.article_id`).
+- Assistant (RAG) : `sync_guide_knowledge` tient `knowledge_documents` à jour pour chaque article publié (lien `/guide/<rubrique>/<article>`, statut de vérification, source) et le découpe en passages de 1 200 caractères au plus (`chunk_text`) ; un article retiré quitte les documents. Les vecteurs seront calculés au niveau 23 ; l’assistant ne lira que les documents vérifiés (règle existante).
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre d'emploi publiée et ouverte), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.

@@ -24,7 +24,7 @@ Le socle partagé reste hors des modules : `src/components/ui` (design system), 
 | `shops` | 11 | vitrines de commerces, horaires sourcés, revendications, sponsorisés |
 | `admin` | 10, 22 | référentiel des catégories (puis administration complète) |
 | `tourism` | 12 | entrées « Découvrir », exploration filtrable, itinéraires déterministes, infos pratiques |
-| `guide` | 13 | articles du guide pratique |
+| `guide` | 13 | rubriques, articles (Markdown restreint, sommaire, statut, versions), suggestions, rédaction, ressources liées, préparation de l’assistant |
 | `neighborhoods` | 14 | quartiers |
 | `map` | 15 | carte, couches, géolocalisation |
 | `events` | 16 | événements |
