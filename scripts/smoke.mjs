@@ -38,9 +38,9 @@ const PAGES = [
   {
     path: "/sitemap.xml",
     status: 200,
-    includes: ["<loc>", "/aide", "/verification"],
+    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces"],
     // Ni pages privées, ni rubriques en préparation (contenu encore mince).
-    excludes: ["/design-system", "/admin", "/interne", "/tourisme", "/annonces", "/profil", "/hors-ligne"],
+    excludes: ["/design-system", "/admin", "/interne", "/evenements", "/annonces", "/profil", "/hors-ligne", "/tourisme/itineraire?"],
   },
   { path: "/annonces", status: 200, includes: ["En préparation", "noindex"] },
   { path: "/immobilier", status: 200, includes: ["Immobilier à San Pedro", "Logements à louer", "Locations de courte durée"], excludes: ["En préparation"] },
@@ -53,8 +53,9 @@ const PAGES = [
   { path: "/immobilier/professionnel", status: 200, includes: ["Bureaux et locaux commerciaux"], excludes: ["Pièces (min.)"] },
   { path: "/immobilier/conseils", status: 200, includes: ["Avant une visite ou un paiement", "Guide pratique : se loger"] },
   { path: "/immobilier/comparer?annonces=a", status: 200, includes: ["Choisissez au moins deux biens", "noindex"] },
-  // Paramètre dynamique inconnu : rendu « introuvable » non indexé (statut 200 en streaming, comme une annonce inconnue).
-  { path: "/immobilier/inconnu", status: 200, includes: ["introuvable", "noindex"] },
+  // Paramètre dynamique inconnu : rendu « introuvable » non indexé. Statut 404, ou 200 si la réponse a déjà commencé en streaming
+  // (selon le moment où la page décide) : le contenu et noindex sont exigés dans les deux cas.
+  { path: "/immobilier/inconnu", status: [200, 404], includes: ["introuvable", "noindex"] },
   { path: "/nouveau-arrivant", status: 200, includes: ["Nouveau à San Pedro ?", "Commencer"] },
   { path: "/nouveau-arrivant/questions", status: 200, includes: ["Questionnaire", "noindex"] },
   {
@@ -156,7 +157,8 @@ async function main() {
     const response = await fetch(BASE + page.path, { redirect: "manual" });
     const body = await response.text();
     const problems = [];
-    if (response.status !== page.status) problems.push(`statut ${response.status} au lieu de ${page.status}`);
+    const expected = [page.status].flat();
+    if (!expected.includes(response.status)) problems.push(`statut ${response.status} au lieu de ${expected.join(" ou ")}`);
     for (const text of page.includes ?? []) if (!body.includes(text)) problems.push(`texte absent : « ${text} »`);
     for (const text of page.excludes ?? []) if (body.includes(text)) problems.push(`texte interdit présent : « ${text} »`);
     if (page.path === "/") {

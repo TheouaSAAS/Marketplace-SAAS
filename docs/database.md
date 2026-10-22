@@ -108,6 +108,14 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `search_shops` (SECURITY INVOKER) : type, texte (nom, description, produits), quartier, budget maximal, ambiance (au moins une), services (tous), vérifiés, position et rayon ; ordre public : vérification de moins d’un an, horaires vérifiés depuis moins de 180 jours, mise à jour récente (ou distance).
 - `sponsored_shops` : 2 vitrines au plus dont la campagne `category` est `active` et en cours ; affichées à part avec l’étiquette « Sponsorisé ». `place_point` : position en coordonnées (carte, itinéraire).
 
+## Tourisme (niveau 12, migration `20261025000100_tourism.sql`)
+
+- Lieux touristiques, activités, hébergements, restaurants et opérateurs = `places` des catégories « Découvrir » ; nouvelle catégorie `excursions-guides` (opérateurs), mots-clés des catégories touristiques.
+- Attributs déclarés, listes fermées vérifiées par contrainte : `themes` (9), `audiences` (5), `visit_duration` (4, rang par `visit_duration_rank`), `accessibility` (4) ; textes `access_conditions` et `warnings` (1 000 caractères). Absents → « information à confirmer localement » à l’affichage.
+- Source, statut et date de vérification : colonnes de gouvernance du niveau 2 (`source_id`, `verification_status`, `verified_at`, `verified_by`).
+- `search_tourism` (SECURITY INVOKER) : catégories, texte, thèmes (au moins un), public (au moins un), durée maximale, budget maximal, accessibilité (toutes), vérifiés, position et rayon (200 km au plus : environs) ; ordre public : vérification de moins d’un an, thèmes couverts, mise à jour récente (ou distance).
+- `itinerary_candidates` : lieux publiés et visibles des catégories touristiques, avec attributs et position (300 au plus) — seule matière du créateur d’itinéraire.
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre d'emploi publiée et ouverte), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.

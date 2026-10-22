@@ -60,7 +60,7 @@ describe("MainNav", () => {
     await userEvent.click(triggers[1]!);
     expect(screen.getByRole("link", { name: "Plages et sites naturels" })).toHaveAttribute(
       "href",
-      "/tourisme?categorie=plages-sites-naturels",
+      "/tourisme?type=plages-sites-naturels",
     );
   });
 

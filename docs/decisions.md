@@ -188,5 +188,14 @@ Le budget est un ordre de grandeur (petit budget → haut de gamme), jamais un p
 ## D62 — Liens de menu vers une page filtrée
 Chaque page a sa forme canonique d'adresse (`/services?metier=…`, `/commerces?type=…`) : les menus et le plan nouvel arrivant passent par `categoryHref`, qui emploie le bon critère. Auparavant, `?categorie=` était retiré par la redirection canonique de `/services` (filtre perdu).
 
+## D63 — Tourisme : un seul modèle de lieu, quatre entrées
+Hébergements, restaurants, sites, activités et opérateurs sont des lieux du référentiel ; « Où dormir ? », « Où manger ? », « Que découvrir ? » et « Sortir » (`/decouvrir/[entree]`) regroupent des catégories administrables, `/tourisme` les explore toutes avec les mêmes filtres. « Sortir » ajoute les événements à venir. Les opérateurs (`excursions-guides`) sont des établissements revendicables : on les contacte par la messagerie une fois revendiqués.
+
+## D64 — Itinéraire : règles fixes, rien d'inventé
+Le créateur d'itinéraire (`/tourisme/itineraire`) compose une demi-journée, une journée ou deux jours avec les seuls lieux publiés : vérifiés d'abord, puis thèmes choisis, puis le plus proche de l'étape précédente. Public, budget et accessibilité sont impératifs, et une information absente ne les satisfait pas. Un moment sans lieu adapté est signalé « à compléter localement », jamais comblé. Matin, midi, soir sont des repères, pas des horaires ; seule la distance à vol d'oiseau entre deux lieux connus est donnée, sans durée de trajet ni moyen de transport. La demande est dans l'adresse (partageable) ; même demande et mêmes lieux donnent le même itinéraire.
+
+## D65 — « Information à confirmer localement »
+Chaque donnée touristique manquante (thèmes, public, durée, accessibilité, conditions d'accès, source, date de vérification) est affichée « Information à confirmer localement ». Les pages restent utiles sans données vérifiées : entrées, filtres, itinéraire honnête, conseils de prudence généraux (aucune donnée locale), liens vers le guide et les quartiers. Le centre-ville, approximatif, ne sert à aucun calcul de distance.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

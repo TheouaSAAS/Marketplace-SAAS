@@ -22,7 +22,7 @@ test.describe("Accueil dynamique", () => {
     const quick = page.getByRole("navigation", { name: "Accès rapides" });
     await expect(quick.getByRole("link")).toHaveCount(8);
     await quick.getByRole("link", { name: "Restaurants" }).click();
-    await expect(page).toHaveURL(/\/decouvrir\?categorie=restaurants-gastronomie$/);
+    await expect(page).toHaveURL(/\/tourisme\?type=restaurants-gastronomie$/);
     await page.goto("/");
     await page.getByRole("main").getByRole("link", { name: "Nouveau à San Pedro ?" }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nouveau à San Pedro ?");
