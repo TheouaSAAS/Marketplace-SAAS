@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BookOpen, BriefcaseBusiness, CalendarDays, MapPin, Package, Store } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import { eventBadge } from "@/domain/event-timing";
@@ -31,7 +32,7 @@ interface CardProps {
 function CardShell({ index = 0, visual, context, children }: { index?: number; visual: ReactNode; context?: ReactNode; children: ReactNode }) {
   return (
     <article
-      className="flex flex-col overflow-hidden rounded-card border border-border bg-surface shadow-card animate-slide-up [animation-fill-mode:both]"
+      className="relative flex flex-col overflow-hidden rounded-card border border-border bg-surface shadow-card animate-slide-up [animation-fill-mode:both] has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-focus"
       style={{ animationDelay: `${Math.min(index, 8) * 60}ms` } as CSSProperties}
     >
       {visual}
@@ -75,7 +76,22 @@ const AVAILABILITY: Record<ListingCardData["availability_status"], { label: stri
   unknown: null,
 };
 
-export function ListingCard({ listing, now, index, context }: CardProps & { listing: ListingCardData }) {
+/** Titre de carte ; avec `href`, le lien couvre toute la carte (un seul arrêt au clavier). */
+function CardTitle({ title, href }: { title: string; href?: string }) {
+  return (
+    <h3 className="line-clamp-2 font-bold leading-snug">
+      {href ? (
+        <Link href={href} className="after:absolute after:inset-0 hover:text-brand-700 focus-visible:outline-none">
+          {title}
+        </Link>
+      ) : (
+        title
+      )}
+    </h3>
+  );
+}
+
+export function ListingCard({ listing, now, index, context, href }: CardProps & { listing: ListingCardData; href?: string }) {
   const availability = AVAILABILITY[listing.availability_status];
   return (
     <CardShell index={index} context={context} visual={<CategoryVisual icon={listing.category?.icon} fallback={Package} tone="brand" />}>
@@ -83,7 +99,7 @@ export function ListingCard({ listing, now, index, context }: CardProps & { list
         <PublicVerification status={listing.verification_status} verifiedAt={listing.verified_at} now={now} />
         {availability && <Badge tone={availability.tone}>{availability.label}</Badge>}
       </div>
-      <h3 className="line-clamp-2 font-bold leading-snug">{listing.title}</h3>
+      <CardTitle title={listing.title} href={href} />
       <Meta items={[listing.category?.name, listing.neighborhood?.name]} />
       <div className="mt-auto flex items-end justify-between gap-2 pt-2">
         <p className="font-bold text-brand-800">{formatPrice(listing.price, listing.price_unit ?? "total")}</p>
