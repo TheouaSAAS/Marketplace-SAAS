@@ -47,7 +47,15 @@ function ResultCard({ item, now, index }: { item: SearchItem; now: Date; index: 
     case "evenements":
       return <EventCard event={item.data} now={now} index={index} context={context} />;
     case "guide":
-      return <GuideCard article={item.data} now={now} index={index} context={context} />;
+      return (
+        <GuideCard
+          article={item.data}
+          now={now}
+          index={index}
+          context={context}
+          href={item.data.section ? href("guideArticle", { params: { rubrique: item.data.section.slug, article: item.data.slug } }) : undefined}
+        />
+      );
   }
 }
 

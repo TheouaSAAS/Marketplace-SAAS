@@ -147,7 +147,7 @@ describe("BusinessCard et GuideCard", () => {
       verified_at: null,
       published_at: "2026-10-01T00:00:00Z",
       updated_at: "2026-10-01T00:00:00Z",
-      section: { name: "Démarches", icon: null },
+      section: { name: "Démarches", icon: null, slug: "demarches" },
     };
     render(<GuideCard article={article} now={now} />);
     expect(screen.getByText("Démarches")).toBeInTheDocument();

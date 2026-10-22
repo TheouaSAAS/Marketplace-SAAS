@@ -3173,6 +3173,13 @@ export type Database = {
         Args: { p_organization: string; p_owner: string }
         Returns: boolean
       }
+      category_content_counts: {
+        Args: { p_city: string; p_slugs: string[] }
+        Returns: {
+          slug: string
+          total: number
+        }[]
+      }
       chunk_text: {
         Args: { p_max?: number; p_text: string }
         Returns: string[]

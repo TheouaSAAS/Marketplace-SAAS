@@ -175,14 +175,14 @@ export function BusinessCard({ business, now, index, context, href }: CardProps 
   );
 }
 
-export function GuideCard({ article, now, index, context }: CardProps & { article: GuideCardData }) {
+export function GuideCard({ article, now, index, context, href }: CardProps & { article: GuideCardData; href?: string }) {
   return (
     <CardShell index={index} context={context} visual={<CategoryVisual icon={article.section?.icon} fallback={BookOpen} tone="sand" />}>
       <div className="flex flex-wrap gap-1.5">
         <PublicVerification status={article.verification_status} verifiedAt={article.verified_at} now={now} />
         {article.section && <Badge tone="neutral">{article.section.name}</Badge>}
       </div>
-      <h3 className="line-clamp-2 font-bold leading-snug">{article.title}</h3>
+      <CardTitle title={article.title} href={href} />
       {article.summary && <p className="line-clamp-3 text-sm text-ink-muted">{article.summary}</p>}
     </CardShell>
   );

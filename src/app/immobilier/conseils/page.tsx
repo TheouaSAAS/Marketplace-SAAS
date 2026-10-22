@@ -43,7 +43,7 @@ async function GuideArticles() {
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {articles.map((article, index) => (
         <li key={article.id} className="flex [&>article]:flex-1">
-          <GuideCard article={article} now={now} index={index} />
+          <GuideCard article={article} now={now} index={index} href={href("guideArticle", { params: { rubrique: "se-loger", article: article.slug } })} />
         </li>
       ))}
     </ul>

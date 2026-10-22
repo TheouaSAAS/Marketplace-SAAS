@@ -127,6 +127,11 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
             Examiner les revendications de vitrines
           </ButtonLink>
         )}
+        {isCurator(account.role) && (
+          <ButtonLink href={href("adminGuide")} variant="secondary">
+            Rédiger le guide pratique
+          </ButtonLink>
+        )}
       </Section>
 
       <Section title="Sécurité">

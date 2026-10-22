@@ -76,17 +76,6 @@ export const SECTION_PREVIEWS = {
     parent: "directory",
     related: ["directory", "publish", "contact"],
   },
-  guide: {
-    title: "Guide pratique",
-    intro: "Vivre et s’orienter à San Pedro : s’installer, se loger, se déplacer, services essentiels.",
-    upcoming: [
-      "Articles rédigés par l’équipe locale, avec auteur, source et date de vérification",
-      "Sommaire et lecture confortable sur mobile",
-      "Suggestion de correction par les lecteurs",
-    ],
-    parent: "discover",
-    related: ["newcomer", "neighborhoods", "help"],
-  },
   neighborhoods: {
     title: "Quartiers",
     intro: "Les quartiers de San Pedro et ce que la plateforme y recense réellement : logements, commerces, services, lieux.",
