@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Download } from "lucide-react";
 import { href } from "@/config/routes";
-import { ROLE_LABELS } from "@/domain/roles";
+import { isAdmin, ROLE_LABELS } from "@/domain/roles";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink, buttonClasses } from "@/components/ui/button";
@@ -114,6 +114,11 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
         )}
         {!["user", "professional"].includes(account.role) && (
           <p className="text-sm text-ink-muted">Compte d’équipe : le type est géré par l’administration.</p>
+        )}
+        {isAdmin(account.role) && (
+          <ButtonLink href={href("adminCategories")} variant="secondary">
+            Gérer les catégories et métiers
+          </ButtonLink>
         )}
       </Section>
 

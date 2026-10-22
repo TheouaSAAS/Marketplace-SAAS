@@ -113,6 +113,25 @@ begin
   get diagnostics n = row_count;
   perform pg_temp.back();
   perform pg_temp.record('l''expéditeur ne change pas le statut d''une demande envoyée', n = 0, n::text);
+
+  -- Référentiel des métiers : géré par l'administration (règle categories_admin_write), historisé.
+  update public.profiles set role = 'admin' where id = '00000000-0000-4000-8000-000000000101';
+  perform pg_temp.act_as('00000000-0000-4000-8000-000000000101');
+  update public.categories set keywords = keywords || '{zqxclim}'::text[] where slug = 'climatisation';
+  get diagnostics n = row_count;
+  insert into public.categories (parent_id, family, slug, name, content_types)
+  select id, family, 'zqx-froid-industriel', 'Froid industriel', content_types from public.categories where slug = 'climatisation';
+  perform pg_temp.back();
+  perform pg_temp.record('un administrateur modifie les mots-clés d''un métier', n = 1, n::text);
+  perform pg_temp.record('un administrateur ajoute une spécialité', exists (select 1 from public.categories where slug = 'zqx-froid-industriel'));
+  perform pg_temp.record('la modification du référentiel est historisée',
+    exists (select 1 from public.content_revisions r join public.categories c on c.id = r.entity_id where c.slug = 'climatisation' and r.after::text like '%zqxclim%'));
+
+  perform pg_temp.act_as('00000000-0000-4000-8000-000000000102');
+  update public.categories set name = 'Piratée' where slug = 'climatisation';
+  get diagnostics n = row_count;
+  perform pg_temp.back();
+  perform pg_temp.record('un membre ne modifie pas le référentiel', n = 0, n::text);
 end $$;
 
 select test, ok, detail from results order by n;

@@ -4,12 +4,13 @@ import { existsSync } from "node:fs";
 /**
  * Crée des comptes de test CONFIRMÉS par l'API d'administration (aucun e-mail
  * envoyé), exposés aux tests par variables d'environnement, supprimés dans
- * global-teardown. Deux comptes indépendants : les tests qui tournent en
+ * global-teardown. Trois comptes indépendants : les tests qui tournent en
  * parallèle ne se perturbent pas (E2E_USER_* pour les comptes et parcours,
- * E2E_USER2_* pour la fiche annonce et la messagerie). Sans Supabase
- * configuré, les tests de compte sont ignorés.
+ * E2E_USER2_* pour la fiche annonce et la messagerie, E2E_ADMIN_* pour
+ * l'administration du référentiel). Sans Supabase configuré, les tests de
+ * compte sont ignorés.
  */
-async function createUser(url: string, secret: string, prefix: "E2E_USER" | "E2E_USER2", displayName: string) {
+async function createUser(url: string, secret: string, prefix: "E2E_USER" | "E2E_USER2" | "E2E_ADMIN", displayName: string) {
   const email = `e2e-${randomBytes(6).toString("hex")}@test.invalid`;
   const password = `E2e${randomBytes(9).toString("hex")}`;
   const response = await fetch(`${url}/auth/v1/admin/users`, {
@@ -36,4 +37,12 @@ export default async function globalSetup() {
   if (!url || !secret) return;
   await createUser(url, secret, "E2E_USER", "Testeur E2E");
   await createUser(url, secret, "E2E_USER2", "Testeur E2E bis");
+  await createUser(url, secret, "E2E_ADMIN", "Administrateur E2E");
+  // Rôle attribué par la clé secrète (contexte système), seul moyen hors superadministrateur.
+  const promoted = await fetch(`${url}/rest/v1/profiles?id=eq.${process.env.E2E_ADMIN_ID}`, {
+    method: "PATCH",
+    headers: { apikey: secret, Authorization: `Bearer ${secret}`, "Content-Type": "application/json", "User-Agent": "e2e-setup" },
+    body: JSON.stringify({ role: "admin" }),
+  });
+  if (!promoted.ok) throw new Error(`Attribution du rôle administrateur impossible : HTTP ${promoted.status} ${await promoted.text()}`);
 }

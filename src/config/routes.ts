@@ -72,6 +72,7 @@ export const ROUTES = {
   messageThread: { path: "/messages/[id]", label: "Conversation", level: 8, status: "live", private: true },
   pro: { path: "/espace-pro", label: "Espace professionnel", level: 21, status: "planned", private: true },
   admin: { path: "/admin", label: "Administration", level: 22, status: "planned", private: true },
+  adminCategories: { path: "/admin/categories", label: "Catégories", level: 10, status: "live", private: true },
 
   // Aide, confiance et informations
   help: { path: "/aide", label: "Aide", level: 4, status: "live" },

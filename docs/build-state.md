@@ -17,7 +17,7 @@
 | 7 | Moteur de recherche | ✅ terminé — recherche transversale (annonces, lieux, professionnels, événements, guide), aperçu par type puis onglets paginés, filtres facettés et tri expliqué dans l'adresse, fautes de frappe tolérées, langage courant par règles fixes, « autour de moi » sur autorisation, recherches enregistrées, statistiques anonymes |
 | 8 | Détail d'annonce, favoris et contact | ✅ terminé — fiche (vérification, prix, caractéristiques, localisation selon le choix de l'annonceur avec carte, annonceur), favoris, « j'aime », partage, commentaires sans coordonnées, signalement, contact par messagerie, coordonnées seulement si partagées, annonces similaires expliquées, états expirée / en attente, données structurées ; messagerie /messages. Non livrés : galerie photo (avec la publication), compteur de vues, temps réel instantané (rafraîchissement toutes les 20 s) |
 | 9 | Immobilier | ✅ terminé — accueil et quatre entrées (location, vente, séjour temporaire, locaux professionnels), phrase en langage courant traduite en filtres, filtres adaptés à l’entrée (type, pièces, chambres, surface, meublé, budget sans conseil financier, équipements, quartier, disponibles, confirmées), cartes avec fraîcheur et « à reconfirmer », comparaison de 3 biens, conseils (règles de prudence + articles « Se loger » du guide), fiche immobilière avec alerte de fraîcheur |
-| 10 | Services de proximité | ✅ terminé — métiers et mots-clés administrables, besoin en langage courant rapproché d’un métier (« ma climatisation ne fonctionne plus »), recherche de professionnels (métier, quartier, distance, disponibilité déclarée et datée, vérification, mode de contact) avec ordre expliqué, annonces de service du métier, fiche professionnelle (prestations, zone, horaires seulement si vérifiés), demande de devis avec accord explicite, suivi des demandes envoyées et reçues (/devis). Reportés : édition de la fiche (espace pro), édition des métiers dans l’interface (admin), photos, avis |
+| 10 | Services de proximité | ✅ terminé — métiers et mots-clés administrables, besoin en langage courant rapproché d’un métier (« ma climatisation ne fonctionne plus »), recherche de professionnels (métier, quartier, distance, disponibilité déclarée et datée, vérification, mode de contact) avec ordre expliqué, annonces de service du métier, fiche professionnelle (prestations, zone, horaires seulement si vérifiés), demande de devis avec accord explicite, suivi des demandes envoyées et reçues (/devis), gestion des catégories et métiers par les administrateurs (/admin/categories : nom, mots-clés, ordre, activation, sous-catégories ; historisée). Reportés : édition de la fiche (espace pro), photos (portfolio), avis |
 | 11 | Commerces | ⏭️ prochain |
 | 12–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
 
@@ -42,6 +42,7 @@
 | `/services` | Services de proximité : besoin en langage courant, métiers, filtres dans l’adresse, ordre expliqué, annonces de service | live |
 | `/professionnels/[slug]` | Fiche d’un professionnel, demande de devis avec accord, signalement | live |
 | `/devis` | Demandes de devis envoyées (statut) et reçues (coordonnées transmises avec accord, statut modifiable) | live (privée) |
+| `/admin/categories` | Référentiel des catégories et métiers (administrateurs seulement ; membres : « accès réservé ») | live (privée) |
 | `/favoris` | Annonces mises en favori (protégé) | live (privée) |
 | `/messages`, `/messages/[id]` | Messagerie : conversations et fil (protégé, participants uniquement) | live (privées) |
 | `/maintenance`, `/hors-ligne` | Pages techniques | live (privées) |
@@ -67,11 +68,11 @@
 | --- | --- |
 | `npm run typecheck` (strict + `noUncheckedIndexedAccess`) | ✅ |
 | `npm run lint` | ✅ |
-| `npm test` | ✅ 291 tests (domaine, services : besoin → métier, filtres, détails et statuts des devis, immobilier : filtres, langage courant, fraîcheur, règles du plan nouvel arrivant, recherche : adresse, langage courant, périodes, fiche annonce : attributs, similaires, données structurées, catégories, configuration, composants, proxy, délai réseau, SQL statique, alignement des types) |
-| `npm run db:verify` (base réelle, transactions annulées) | ✅ 166/166 |
+| `npm test` | ✅ 294 tests (domaine, référentiel : mots-clés, adresses, arbre, services : besoin → métier, filtres, détails et statuts des devis, immobilier : filtres, langage courant, fraîcheur, règles du plan nouvel arrivant, recherche : adresse, langage courant, périodes, fiche annonce : attributs, similaires, données structurées, catégories, configuration, composants, proxy, délai réseau, SQL statique, alignement des types) |
+| `npm run db:verify` (base réelle, transactions annulées) | ✅ 170/170 |
 | `npm run build` | ✅ |
 | `npm run smoke` | ✅ 43 pages + scan du bundle navigateur ; adapté à l’absence de base (CI) |
-| `npm run e2e` (Edge, mobile + ordinateur, 2 navigateurs à la fois, 2 comptes de test créés/supprimés automatiquement) | ✅ 138 réussis, 18 ignorés par conception ; sans base (CI) : non remesuré depuis le niveau 8 |
+| `npm run e2e` (Edge, mobile + ordinateur, 2 navigateurs à la fois, 3 comptes de test — dont un administrateur — créés/supprimés automatiquement) | ✅ 141 réussis, 20 ignorés par conception (1 instable : page hors ligne, réussie au 2ᵉ essai) ; sans base (CI simulée en local, 2026-10-22) : 78 réussis, 78 ignorés |
 | CI GitHub Actions | écrite, **jamais exécutée** (dépôt non poussé) |
 
 ## Problèmes connus et blocages
