@@ -3440,6 +3440,33 @@ export type Database = {
         }
         Returns: undefined
       }
+      map_features: {
+        Args: {
+          p_city: string
+          p_east?: number
+          p_layers: string[]
+          p_limit?: number
+          p_neighborhood?: string
+          p_north?: number
+          p_south?: number
+          p_west?: number
+        }
+        Returns: {
+          category: string
+          id: string
+          lat: number
+          layer: string
+          lng: number
+          location_precision: string
+          neighborhood: string
+          slug: string
+          starts_at: string
+          title: string
+          total_count: number
+          verification_status: Database["public"]["Enums"]["verification_status"]
+          verified_at: string
+        }[]
+      }
       my_conversations: {
         Args: never
         Returns: {
