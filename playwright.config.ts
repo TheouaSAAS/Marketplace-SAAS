@@ -16,10 +16,16 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   globalTeardown: "./e2e/global-teardown.ts",
   fullyParallel: true,
+  // Deux navigateurs à la fois : au-delà, le poste (navigateurs + serveur) sature et
+  // les actions dépassent les délais sans être en défaut.
+  workers: 2,
   forbidOnly: Boolean(process.env.CI),
   // Une nouvelle tentative absorbe les aléas réseau du poste (base en Irlande) ; un test
   // qui ne passe qu'à la seconde tentative est signalé « flaky » dans le rapport, pas masqué.
   retries: 1,
+  // Base distante (Supabase, ~0,7 s par appel depuis San Pedro) et projets en parallèle :
+  // une navigation peut dépasser les 5 s par défaut sans être en défaut.
+  expect: { timeout: 10_000 },
   reporter: [["list"]],
   use: {
     baseURL: `http://localhost:${port}`,

@@ -131,5 +131,17 @@ La position n'est demandée qu'au clic sur « Utiliser ma position », arrondie 
 ## D43 — Statistiques de recherche agrégées et anonymes
 Chaque recherche avec texte incrémente un total quotidien (ville, type, texte normalisé, nombre sans résultat) après la réponse (`after`), via une fonction réservée à la clé secrète du serveur. Ni compte, ni IP, ni position, ni identifiant ; chiffres et e-mails masqués en base ; conservation 180 jours ; lecture réservée aux administrateurs. Objectif : repérer les recherches sans résultat pour orienter la collecte de contenus.
 
+## D44 — Contact : la messagerie par défaut, les coordonnées sur accord
+Le canal de contact d'une annonce est la messagerie interne : aucune coordonnée n'est échangée par défaut. Un téléphone, un WhatsApp ou un e-mail ne sont proposés que si l'annonceur a coché leur partage ; ils ne s'affichent qu'à un membre connecté, 20 par heure au plus, et chaque affichage est tracé 90 jours (lutte contre la collecte en masse). Toutes ces règles sont en base (fonctions SECURITY DEFINER), donc valables aussi pour un appel direct à l'API. Une annonce expirée, archivée, indisponible ou d'un annonceur suspendu ne peut plus être sollicitée.
+
+## D45 — Commentaires publics sans coordonnées, réponse réservée à l'annonceur
+Les questions publiques refusent tout numéro (8 chiffres ou plus) et toute adresse e-mail : l'échange privé passe par la messagerie. Seul l'annonceur répond (un niveau), il peut masquer un commentaire ; l'auteur supprime le sien ; un texte publié ne se réécrit pas ; l'équipe modère. Tout commentaire est signalable.
+
+## D46 — Pages dynamiques et menus sous Suspense
+Avec Cache Components, une adresse dynamique (`/annonces/[slug]`, `/messages/[id]`) n'est pas connue au prérendu : les menus qui lisent l'adresse (barre basse, navigation principale) sont placés sous `<Suspense>`, avec en repli le même menu sans élément actif (aucun saut de mise en page).
+
+## D47 — Niveau 8 : périmètre livré et reporté
+Livré : fiche complète, favoris, « j'aime », partage, commentaires, signalement, contact, messagerie, similaires, états, données structurées. Reporté : galerie photo (avec l'ajout de photos, niveau 18 — un visuel neutre l'indique, aucune image inventée) ; compteur de vues (tables et fonction en base, non alimentées) ; temps réel instantané de la messagerie (la base diffuse les messages, l'interface rafraîchit le fil toutes les 20 s quand l'onglet est visible).
+
 ## Dépendances (justification, §3.1)
-`@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets). Dév. : `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).
+`@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

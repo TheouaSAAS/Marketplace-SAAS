@@ -34,7 +34,7 @@ Connexion : `DATABASE_URL` (PostgreSQL direct ou pooler) ou `SUPABASE_ACCESS_TOK
 
 Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `can_manage_content(auteur, organisation)` = auteur, ou membre `editor` et plus de l'organisation.
 
-## Tables (41, toutes avec RLS)
+## Tables (46, toutes avec RLS)
 
 | Domaine | Tables |
 | --- | --- |
@@ -43,7 +43,8 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 | Organisations | `organizations`, `organization_members`, `business_profiles` (vitrines) |
 | Contenus | `listings`, `places` (établissements et lieux touristiques), `events` (report, annulation), `guide_articles` + `guide_article_versions`, `images` |
 | Gouvernance | `sources`, `content_revisions` (avant/après, auteur, raison), `admin_audit_log` |
-| Interactions | `favorites`, `contact_requests`, `conversations`, `conversation_participants`, `messages`, `reviews`, `job_applications`, `reports`, `guide_suggestions`, `notifications` |
+| Interactions | `favorites`, `listing_likes`, `listing_comments`, `contact_requests`, `contact_reveals` (interne), `conversations`, `conversation_participants`, `messages`, `reviews`, `job_applications`, `reports` (annonce, lieu, événement, vitrine ou commentaire), `guide_suggestions`, `notifications` |
+| Compteurs internes | `listing_view_counts`, `listing_view_marks` (prévues pour un compteur de vues, non alimentées à ce jour) |
 | Monétisation | `subscriptions`, `payments`, `sponsored_campaigns` |
 | IA | `knowledge_documents`, `knowledge_chunks` (embeddings) |
 | Anti-abus | `rate_limit_buckets` (empreintes HMAC, purgées toutes les heures) |
@@ -72,6 +73,16 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `record_search()` (clé secrète du serveur uniquement) alimente `search_stats` ; `search_anonymize()` masque suites de chiffres et e-mails.
 - `saved_searches` : 20 au plus par compte (déclencheur `limit_saved_searches`).
 
+## Fiche d’annonce et messagerie (niveau 8, migrations `20261020000100` et `…000200`)
+
+- États : `listing_is_public` (publiée, active, statut montrable), `listing_is_contactable` (en plus : non indisponible, annonceur non suspendu), `listing_public_state` (expirée ou archivée, sans révéler brouillons ni refus), `listing_public_point` (coordonnées de la position publique).
+- `listing_seller` : profil public minimal de l’annonceur (nom affiché, ancienneté, statut professionnel, organisation, nombre d’annonces en ligne).
+- `reveal_listing_contact` : renvoie une coordonnée seulement si l’annonceur l’a partagée (`show_phone`, `show_whatsapp`, `show_email`), à un membre connecté non suspendu, 20 par heure au plus ; chaque affichage est tracé dans `contact_reveals` (90 jours).
+- Commentaires (`listing_comments`) : sans téléphone ni e-mail (`contains_contact_details`), 10 par heure, réponse réservée à l’annonceur, texte non modifiable après publication, masquage par l’annonceur, modération par l’équipe ; fil public par `listing_comment_thread`.
+- Messagerie : `start_listing_conversation` (ouvre ou reprend la conversation, 10 nouvelles par heure), messages limités à 15 par minute et 200 par heure, `my_conversations` et `conversation_header` réservés aux participants ; table `messages` publiée pour le temps réel de Supabase (règles d’accès appliquées).
+- Signalements : un seul ouvert par personne et par contenu, 10 par heure.
+- Code d’erreur `CP429` : limite atteinte (le message de la base est affiché tel quel).
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre d'emploi publiée et ouverte), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
@@ -90,6 +101,8 @@ Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_servi
 | `expirer-annonces` | chaque heure à :15 | passe en `expired` les annonces arrivées à échéance |
 | `purger-anti-abus` | chaque heure à :45 | supprime les empreintes anti-abus de plus de 24 h |
 | `purger-statistiques-recherche` | chaque jour à 3 h 30 | supprime les statistiques de recherche de plus de 180 jours |
+| `purger-vues-annonces` | chaque jour à 3 h 20 | supprime les marques de vues de plus de 2 jours |
+| `purger-coordonnees-consultees` | chaque jour à 3 h 25 | supprime les traces de coordonnées consultées de plus de 90 jours |
 
 ## Sauvegardes
 

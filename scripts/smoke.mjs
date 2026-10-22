@@ -66,6 +66,16 @@ const PAGES = [
   { path: "/contact", status: 200, includes: ["Contact"] },
   { path: "/hors-ligne", status: 200, includes: ["Vous êtes hors ligne"] },
   { path: "/favoris", status: 307, includes: [] },
+  { path: "/messages", status: 307, includes: [] },
+  { path: "/messages/00000000-0000-4000-8000-000000000000", status: 307, includes: [] },
+  {
+    path: "/annonces/exemple-logement-location",
+    status: 200,
+    // Sans base, l'annonce de démonstration est introuvable (aucune donnée).
+    includes: DB ? ["Contacter l’annonceur", "Description", "noindex"] : ["introuvable"],
+    excludes: ["07 07", "contact_phone"],
+  },
+  { path: "/annonces/annonce-qui-n-existe-pas", status: 200, includes: ["introuvable", "noindex"] },
   { path: "/sw.js", status: 200, includes: ["hors-ligne"] },
   { path: "/api/health", status: 200, includes: ['"status":"ok"'], excludes: ["SUPABASE", "KEY"] },
   { path: "/connexion", status: 200, includes: DB ? ["Connexion", "Mot de passe oublié"] : ["Connexion", ...ACCOUNTS_DOWN] },

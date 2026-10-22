@@ -15,8 +15,9 @@
 | 5 | Accueil dynamique | ✅ terminé — accroche, recherche, 8 accès rapides, 4 sections lues en base avec règles affichées, badges de vérification, avertissement de démonstration, états vides et d'erreur |
 | 6 | Parcours « Nouveau à San Pedro ? » | ✅ terminé — introduction, questionnaire en 5 étapes (brouillon repris), plan déterministe expliqué bloc par bloc avec contenus réels, enregistrement facultatif dans le compte, suppression depuis le plan ou le profil |
 | 7 | Moteur de recherche | ✅ terminé — recherche transversale (annonces, lieux, professionnels, événements, guide), aperçu par type puis onglets paginés, filtres facettés et tri expliqué dans l'adresse, fautes de frappe tolérées, langage courant par règles fixes, « autour de moi » sur autorisation, recherches enregistrées, statistiques anonymes |
-| 8 | Détail d'annonce, favoris et contact | ⏭️ prochain |
-| 9–28 | Recherche, domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
+| 8 | Détail d'annonce, favoris et contact | ✅ terminé — fiche (vérification, prix, caractéristiques, localisation selon le choix de l'annonceur avec carte, annonceur), favoris, « j'aime », partage, commentaires sans coordonnées, signalement, contact par messagerie, coordonnées seulement si partagées, annonces similaires expliquées, états expirée / en attente, données structurées ; messagerie /messages. Non livrés : galerie photo (avec la publication), compteur de vues, temps réel instantané (rafraîchissement toutes les 20 s) |
+| 9 | Immobilier | ⏭️ prochain |
+| 10–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
 
 ## Pages et routes
 
@@ -33,7 +34,9 @@
 | `/nouveau-arrivant` | Introduction du parcours, rappel du plan enregistré | live |
 | `/nouveau-arrivant/questions`, `/nouveau-arrivant/plan` | Questionnaire et plan personnalisé (réponses dans l'adresse, `noindex`) | live (privées) |
 | `/recherche` | Recherche transversale (filtres dans l'adresse, `noindex`) | live (privée) |
-| `/favoris` | Favoris (protégé) | preview |
+| `/annonces/[slug]` | Fiche d’une annonce (publique, auteur, expirée) | live |
+| `/favoris` | Annonces mises en favori (protégé) | live (privée) |
+| `/messages`, `/messages/[id]` | Messagerie : conversations et fil (protégé, participants uniquement) | live (privées) |
 | `/maintenance`, `/hors-ligne` | Pages techniques | live (privées) |
 | `/design-system` | Référence des composants (non indexée) | live |
 | `/interne/statut` | Statut interne (jeton ; 404 sinon) | live |
@@ -48,7 +51,7 @@
 - **Comptes** (`src/modules/accounts`) : schémas Zod, actions serveur, formulaires ; `src/server/auth.ts` (identité vérifiée), `src/server/rate-limit.ts` (anti-abus en base).
 - **Recherche** (`src/modules/search`) : paramètres et adresse canonique, interprétation du langage courant, périodes, position, fonctions SQL `search_*`, chargeurs de cartes par identifiants, recherches enregistrées, statistiques anonymes.
 - **Parcours nouvel arrivant** (`src/modules/newcomer`) : modèle de réponses et passage par l'adresse, règles du plan (17 blocs, 8 au plus), questionnaire client, actions d'enregistrement et de suppression.
-- **Données** : Supabase `towkxqwdvjdajlohevxt` (PostgreSQL 17, eu-west-1), 13 migrations, 41 tables avec RLS, tâches `pg_cron` (expiration des annonces, purge anti-abus), types générés, démonstration étiquetée (11 éléments).
+- **Données** : Supabase `towkxqwdvjdajlohevxt` (PostgreSQL 17, eu-west-1), 15 migrations, 46 tables avec RLS, tâches `pg_cron` (expiration des annonces, purges anti-abus, statistiques, vues, coordonnées consultées), types générés, démonstration étiquetée (11 éléments).
 
 ## Tests (dernière exécution : 2026-10-18)
 
@@ -56,11 +59,11 @@
 | --- | --- |
 | `npm run typecheck` (strict + `noUncheckedIndexedAccess`) | ✅ |
 | `npm run lint` | ✅ |
-| `npm test` | ✅ 255 tests (domaine, règles du plan nouvel arrivant, recherche : adresse, langage courant, périodes, catégories, configuration, composants, proxy, délai réseau, SQL statique, alignement des types) |
-| `npm run db:verify` (base réelle, transactions annulées) | ✅ 119/119 |
+| `npm test` | ✅ 267 tests (domaine, règles du plan nouvel arrivant, recherche : adresse, langage courant, périodes, fiche annonce : attributs, similaires, données structurées, catégories, configuration, composants, proxy, délai réseau, SQL statique, alignement des types) |
+| `npm run db:verify` (base réelle, transactions annulées) | ✅ 144/144 |
 | `npm run build` | ✅ |
-| `npm run smoke` | ✅ 36 vérifications + scan du bundle navigateur |
-| `npm run e2e` (Edge, mobile + ordinateur, compte de test créé/supprimé automatiquement) | ✅ 110 réussis, 14 ignorés par conception (tests propres à un seul format ou au compte partagé) |
+| `npm run smoke` | ✅ 40 vérifications + scan du bundle navigateur ; adapté à l’absence de base (CI) |
+| `npm run e2e` (Edge, mobile + ordinateur, 2 navigateurs à la fois, 2 comptes de test créés/supprimés automatiquement) | ✅ 119 réussis, 17 ignorés par conception ; sans base (CI) : 72 réussis, 64 ignorés |
 | CI GitHub Actions | écrite, **jamais exécutée** (dépôt non poussé) |
 
 ## Problèmes connus et blocages
@@ -80,4 +83,4 @@ Voir `docs/data-governance.md` (centre de la ville, quartiers, démonstration).
 
 ## Prochaine étape
 
-Niveau 8 — détail d'annonce : galerie, prix, attributs, localisation à précision contrôlée, vérification, profil de l'annonceur, favoris, partage, contact sécurisé et messagerie, signalement, annonces similaires explicables, compteur de vues respectueux, annonces expirées ou en attente, données structurées.
+Niveau 9 — immobilier : recherche spécialisée (location, vente, terrains, locaux), filtres précis (pièces, surface, meublé, budget), fiches adaptées, conseils de visite, sans donnée inventée.
