@@ -87,6 +87,12 @@ const placeDetailSchema = z.object({
   features: z.array(z.string()),
   ambiance: z.array(z.string()),
   products: z.array(z.string()),
+  themes: z.array(z.string()),
+  audiences: z.array(z.string()),
+  visit_duration: z.string().nullable(),
+  accessibility: z.array(z.string()),
+  access_conditions: z.string().nullable(),
+  warnings: z.string().nullable(),
   opening_hours: z.unknown().nullable(),
   opening_hours_verified_at: z.string().nullable(),
   phone: z.string().nullable(),
@@ -98,7 +104,7 @@ const placeDetailSchema = z.object({
   location_precision: z.enum(["exact", "approximate", "unknown"]),
   hours_source: single(z.object({ title: z.string() }).nullable()),
   source: single(z.object({ title: z.string() }).nullable()),
-  category: single(z.object({ name: z.string(), slug: z.string(), parent_id: z.uuid().nullable() })),
+  category: single(z.object({ name: z.string(), slug: z.string(), parent_id: z.uuid().nullable(), family: z.string() })),
   neighborhood: single(z.object({ name: z.string(), slug: z.string() }).nullable()),
   city: single(z.object({ name: z.string() })),
 });
@@ -106,7 +112,7 @@ const placeDetailSchema = z.object({
 export type PlaceDetail = z.infer<typeof placeDetailSchema>;
 
 const PLACE_DETAIL_COLUMNS =
-  "id, slug, name, kind, summary, description, verification_status, verified_at, updated_at, price_level, features, ambiance, products, opening_hours, opening_hours_verified_at, phone, whatsapp, email, website, address_text, manager_id, location_precision, hours_source:sources!places_opening_hours_source_id_fkey(title), source:sources!places_source_id_fkey(title), category:categories(name, slug, parent_id), neighborhood:neighborhoods(name, slug), city:cities(name)";
+  "id, slug, name, kind, summary, description, verification_status, verified_at, updated_at, price_level, features, ambiance, products, themes, audiences, visit_duration, accessibility, access_conditions, warnings, opening_hours, opening_hours_verified_at, phone, whatsapp, email, website, address_text, manager_id, location_precision, hours_source:sources!places_opening_hours_source_id_fkey(title), source:sources!places_source_id_fkey(title), category:categories(name, slug, parent_id, family), neighborhood:neighborhoods(name, slug), city:cities(name)";
 
 /** Vitrine publique (lieu publié et visible) ; null sinon. */
 export async function getPublicPlace(slug: string): Promise<PlaceDetail | null> {

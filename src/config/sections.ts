@@ -76,29 +76,6 @@ export const SECTION_PREVIEWS = {
     parent: "directory",
     related: ["directory", "publish", "contact"],
   },
-  discover: {
-    title: "Découvrir et sortir",
-    intro: "Que faire à San Pedro ? Lieux à visiter, plages, restaurants, sorties et événements.",
-    upcoming: [
-      "Où dormir, où manger, que découvrir, où sortir",
-      "Fiches avec source, date de vérification et conditions d’accès",
-      "Itinéraires construits uniquement avec des lieux réellement enregistrés",
-    ],
-    categories: ["lieux-a-visiter", "plages-sites-naturels", "restaurants-gastronomie", "hotels-hebergements", "loisirs-activites", "evenements"],
-    related: ["tourism", "events", "guide", "map"],
-  },
-  tourism: {
-    title: "Tourisme",
-    intro: "Destinations, plages, activités, hébergements et opérateurs touristiques de San Pedro et de ses environs.",
-    upcoming: [
-      "Fiches touristiques datées, avec sources et avertissements",
-      "Filtres : thème, public, durée, budget indicatif, accessibilité",
-      "Mention « information à confirmer localement » quand une donnée manque",
-    ],
-    parent: "discover",
-    categories: ["lieux-a-visiter", "plages-sites-naturels", "hotels-hebergements", "loisirs-activites"],
-    related: ["discover", "events", "map"],
-  },
   guide: {
     title: "Guide pratique",
     intro: "Vivre et s’orienter à San Pedro : s’installer, se loger, se déplacer, services essentiels.",

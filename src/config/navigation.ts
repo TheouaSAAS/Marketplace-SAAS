@@ -57,7 +57,7 @@ export const NAV_SECTIONS: NavSection[] = [
     route: "discover",
     links: [
       { label: "Tourisme", route: "tourism" },
-      { label: "Restaurants", route: "discover", category: "restaurants-gastronomie" },
+      { label: "Restaurants", route: "tourism", category: "restaurants-gastronomie" },
       { label: "Où dormir", route: "tourism", category: "hotels-hebergements" },
       { label: "Plages et sites naturels", route: "tourism", category: "plages-sites-naturels" },
       { label: "Événements", route: "events" },

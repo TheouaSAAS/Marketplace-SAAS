@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { BriefcaseBusiness, CalendarDays, House, Map, Store, TreePalm, Utensils, Wrench, type LucideIcon } from "lucide-react";
-import { href, type RouteKey } from "@/config/routes";
+import { categoryHref, type RouteKey } from "@/config/routes";
 
 const ITEMS: { label: string; route: RouteKey; category?: string; icon: LucideIcon }[] = [
   { label: "Logement", route: "realEstate", icon: House },
   { label: "Services", route: "services", icon: Wrench },
   { label: "Commerces", route: "shops", icon: Store },
-  { label: "Restaurants", route: "discover", category: "restaurants-gastronomie", icon: Utensils },
+  { label: "Restaurants", route: "tourism", category: "restaurants-gastronomie", icon: Utensils },
   { label: "Tourisme", route: "tourism", icon: TreePalm },
   { label: "Carte", route: "map", icon: Map },
   { label: "Emploi", route: "jobs", icon: BriefcaseBusiness },
@@ -22,7 +22,7 @@ export function QuickAccess() {
         {ITEMS.map(({ label, route, category, icon: Icon }) => (
           <li key={label}>
             <Link
-              href={href(route, { query: { categorie: category } })}
+              href={categoryHref(route, category)}
               className="flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-control px-1 text-center text-xs font-semibold text-ink transition-colors hover:bg-brand-50 hover:text-brand-700 sm:text-sm"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-pill bg-brand-50 text-brand-700">

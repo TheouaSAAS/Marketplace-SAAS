@@ -49,8 +49,10 @@ export const ROUTES = {
   pricing: { path: "/offres", label: "Offres et visibilité", level: 21, status: "preview" },
 
   // Découvrir & sortir
-  discover: { path: "/decouvrir", label: "Découvrir et sortir", level: 12, status: "preview" },
-  tourism: { path: "/tourisme", label: "Tourisme", level: 12, status: "preview" },
+  discover: { path: "/decouvrir", label: "Découvrir et sortir", level: 12, status: "live" },
+  discoverEntry: { path: "/decouvrir/[entree]", label: "Découvrir", level: 12, status: "live" },
+  tourism: { path: "/tourisme", label: "Tourisme", level: 12, status: "live" },
+  itinerary: { path: "/tourisme/itineraire", label: "Créer un itinéraire", level: 12, status: "live" },
   guide: { path: "/guide", label: "Guide pratique", level: 13, status: "preview" },
   neighborhoods: { path: "/quartiers", label: "Quartiers", level: 14, status: "preview" },
   map: { path: "/carte", label: "Carte interactive", level: 15, status: "preview" },
@@ -132,7 +134,7 @@ export function href(
  * Nom du critère de catégorie propre à certaines pages (forme canonique de
  * leur adresse) ; « categorie » partout ailleurs.
  */
-const CATEGORY_PARAMS: Partial<Record<RouteKey, string>> = { services: "metier", shops: "type" };
+const CATEGORY_PARAMS: Partial<Record<RouteKey, string>> = { services: "metier", shops: "type", tourism: "type" };
 
 /** Lien vers une page filtrée sur une catégorie (menus, plan nouvel arrivant). */
 export function categoryHref(key: RouteKey, category: string | undefined, hash?: string): string {

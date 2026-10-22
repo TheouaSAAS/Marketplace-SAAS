@@ -20,6 +20,7 @@ import { ReportForm } from "@/modules/listings/components/report-form";
 import { contactLink } from "@/modules/listings/domain/presentation";
 import { ambianceLabels, budgetLabel, featureLabels } from "@/modules/shops/domain/attributes";
 import { hoursStatus, isOpenAt, parseOpeningHours, weekLines } from "@/modules/shops/domain/hours";
+import { PracticalInfo, SourceAndVerification } from "@/modules/tourism/components/practical-info";
 import { ClaimForm, PlaceFavoriteButton, PlaceLikeButton, PlaceMessageForm } from "@/modules/shops/components/place-actions";
 import { getMyPendingClaim, getPlaceEngagement, getPlaceImages, getPlacePoint, getPublicPlace, type PlaceDetail } from "@/modules/shops/server/queries";
 import { getSessionUser } from "@/server/auth";
@@ -180,7 +181,9 @@ async function Contact({ place, back, now }: { place: PlaceDetail; back: string;
       ) : (
         <p className="text-sm text-ink-muted">
           {channels.length === 0 ? "Aucune coordonnée renseignée pour l’instant. " : ""}
-          La messagerie sera disponible quand l’exploitant aura revendiqué cette vitrine.
+          {place.kind === "etablissement"
+            ? "La messagerie sera disponible quand l’exploitant aura revendiqué cette vitrine."
+            : "Site sans exploitant : renseignez-vous sur place ou auprès d’un opérateur (« Que découvrir ? »)."}
         </p>
       )}
     </section>
@@ -293,14 +296,13 @@ async function Place({ params }: Pick<Props, "params">) {
             </section>
           )}
 
+          {place.category?.family === "decouvrir" && <PracticalInfo place={place} />}
           <Hours place={place} now={now} />
           <Suspense fallback={<Skeleton className="h-64 w-full" />}>
             <Location place={place} />
           </Suspense>
-          <p className="text-xs text-ink-subtle">
-            Fiche mise à jour le {formatDate(place.updated_at)}
-            {place.source ? ` · source : ${place.source.title}` : ""}.
-          </p>
+          <SourceAndVerification status={place.verification_status} verifiedAt={place.verified_at} source={place.source?.title ?? null} now={now} />
+          <p className="text-xs text-ink-subtle">Fiche mise à jour le {formatDate(place.updated_at)}.</p>
         </div>
         <aside className="flex flex-col gap-4 rounded-card border border-border bg-surface p-4" aria-label="Contacter">
           <Suspense fallback={<Skeleton className="h-40 w-full" />}>
