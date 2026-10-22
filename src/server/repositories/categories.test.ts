@@ -10,6 +10,8 @@ const category = (id: string, slug: string, parent: string | null = null): Categ
   icon: null,
   sort_order: 0,
   content_types: [],
+  attribute_schema: null,
+  keywords: [],
 });
 
 const all = [

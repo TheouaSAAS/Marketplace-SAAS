@@ -15,6 +15,11 @@ const businessCardSchema = z.object({
   verification_status: verificationStatusSchema,
   verified_at: z.string().nullable(),
   updated_at: z.string(),
+  services: z.array(z.string()),
+  service_area: z.string().nullable(),
+  accepts_quotes: z.boolean(),
+  availability_note: z.string().nullable(),
+  availability_declared_at: z.string().nullable(),
   category: single(categoryRefSchema.nullable()),
   neighborhood: single(neighborhoodRefSchema),
 });
@@ -36,7 +41,7 @@ export async function listBusinessesByIds(ids: readonly string[]): Promise<Busin
   const { data, error } = await supabase
     .from("business_profiles")
     .select(
-      "id, slug, name, description, verification_status, verified_at, updated_at, category:categories(name, slug, icon), neighborhood:neighborhoods(name)",
+      "id, slug, name, description, verification_status, verified_at, updated_at, services, service_area, accepts_quotes, availability_note, availability_declared_at, category:categories(name, slug, icon), neighborhood:neighborhoods(name)",
     )
     .eq("status", "published")
     .in("id", [...ids]);

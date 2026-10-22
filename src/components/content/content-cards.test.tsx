@@ -123,6 +123,11 @@ describe("BusinessCard et GuideCard", () => {
       verification_status: "pending_validation",
       verified_at: null,
       updated_at: "2026-10-01T00:00:00Z",
+      services: ["Dépannage"],
+      service_area: null,
+      accepts_quotes: true,
+      availability_note: null,
+      availability_declared_at: null,
       category: { name: "Artisans et dépannage", slug: "artisans-depannage", icon: "wrench" },
       neighborhood: { name: "Bardot" },
     };

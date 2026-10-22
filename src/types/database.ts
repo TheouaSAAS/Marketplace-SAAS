@@ -3005,6 +3005,14 @@ export type Database = {
           longitude: number
         }[]
       }
+      business_public_point: {
+        Args: { p_business: string }
+        Returns: {
+          lat: number
+          lng: number
+          location_precision: Database["public"]["Enums"]["public_location_precision"]
+        }[]
+      }
       can_manage_content: {
         Args: { p_organization: string; p_owner: string }
         Returns: boolean
