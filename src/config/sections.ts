@@ -31,18 +31,6 @@ export const SECTION_PREVIEWS = {
     categories: ["immobilier", "emploi-stages", "annonces-biens", "vehicules", "opportunites-commerciales", "formation"],
     related: ["realEstate", "jobs", "publish", "newcomer"],
   },
-  realEstate: {
-    title: "Immobilier",
-    intro: "Louer, acheter ou trouver un local à San Pedro : annonces de particuliers et de professionnels, avec leur date de dernière confirmation.",
-    upcoming: [
-      "Filtres précis : type de bien, pièces, surface, meublé, budget, quartier",
-      "Location, vente, location temporaire et locaux professionnels",
-      "Conseils de sécurité avant toute visite ou versement",
-    ],
-    parent: "listings",
-    categories: ["immobilier"],
-    related: ["neighborhoods", "listings", "newcomer"],
-  },
   jobs: {
     title: "Emploi et opportunités",
     intro: "Offres d’emploi, stages, missions, formations et appels à prestataires à San Pedro.",

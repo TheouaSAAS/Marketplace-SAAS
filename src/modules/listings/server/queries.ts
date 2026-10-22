@@ -7,7 +7,7 @@ import { categoryRefSchema, neighborhoodRefSchema, single, verificationStatusSch
 
 export const LISTINGS_CACHE_TAG = "listings";
 
-const listingCardSchema = z.object({
+export const listingCardSchema = z.object({
   id: z.uuid(),
   slug: z.string(),
   title: z.string(),
@@ -24,7 +24,7 @@ const listingCardSchema = z.object({
 
 export type ListingCardData = z.infer<typeof listingCardSchema>;
 
-const LISTING_CARD_COLUMNS =
+export const LISTING_CARD_COLUMNS =
   "id, slug, title, price, price_unit, availability_status, verification_status, verified_at, published_at, last_confirmed_at, category:categories(name, slug, icon), neighborhood:neighborhoods(name)";
 
 /** Annonces publiées les plus récentes d'une ville, limitées à des catégories (identifiants). */

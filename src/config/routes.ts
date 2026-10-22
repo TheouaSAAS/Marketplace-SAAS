@@ -33,7 +33,10 @@ export const ROUTES = {
   // Annonces & opportunités
   listings: { path: "/annonces", label: "Annonces", level: 7, status: "preview" },
   listingDetail: { path: "/annonces/[slug]", label: "Détail d’une annonce", level: 8, status: "live" },
-  realEstate: { path: "/immobilier", label: "Immobilier", level: 9, status: "preview" },
+  realEstate: { path: "/immobilier", label: "Immobilier", level: 9, status: "live" },
+  realEstateMode: { path: "/immobilier/[mode]", label: "Recherche immobilière", level: 9, status: "live" },
+  realEstateCompare: { path: "/immobilier/comparer", label: "Comparer des biens", level: 9, status: "live", private: true },
+  realEstateAdvice: { path: "/immobilier/conseils", label: "Conseils pour se loger", level: 9, status: "live" },
   jobs: { path: "/emploi", label: "Emploi et opportunités", level: 17, status: "preview" },
   publish: { path: "/publier", label: "Publier une annonce", level: 18, status: "preview" },
 
