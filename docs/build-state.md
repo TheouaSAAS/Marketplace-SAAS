@@ -1,5 +1,6 @@
 # État de construction — Carrefour des Possibles
 
+> Cahier détaillé de chaque niveau : `docs/plan-28-niveaux.md`.
 > À lire au début de chaque session, puis vérifier l'état réel du code (`git log`, `npm run check`, `npm run db:verify`).
 > Dernière mise à jour : **2026-10-22** — niveau 11 terminé.
 
