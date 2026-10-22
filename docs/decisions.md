@@ -206,5 +206,14 @@ Chaque modification du texte crée une version avec sa note, consultable par l'�
 ## D68 — Guide relié au site et préparé pour l'assistant
 Chaque rubrique liste ses ressources réelles (services, commerces, tourisme, immobilier, recherche) avec le nombre de contenus publiés ; une catégorie vide est annoncée sans lien, la carte n'est proposée qu'une fois sa page ouverte. La recherche du guide utilise le moteur du site (type « guide ») et renvoie vers la recherche générale. Les articles publiés alimentent automatiquement les documents de l'assistant, découpés en passages, avec leur statut et leur source.
 
+## D69 — Quartiers : sans frontière figée, sans qualificatif
+Un quartier existe sans périmètre ; les contenus lui sont rattachés par la relation déclarée (`neighborhood_id`), jamais par un calcul de proximité qui figerait une frontière. Une fiche sans périmètre validé le dit, une fiche non vérifiée aussi. Aucun quartier n'est classé ni qualifié (sûr, calme, riche, pratique, dangereux…) : la liste est alphabétique et chaque fiche le rappelle ; la description, rédigée par l'équipe, reste factuelle.
+
+## D70 — Périmètres : brouillon, validation, historique
+Un périmètre se propose en GeoJSON (contrôlé en base), se prévisualise, puis se valide ou se refuse avec motif ; seul un brouillon validé est publié, l'ancien est conservé comme « remplacé », un retrait exige un motif. Toute modification passe par ces fonctions : elle est au journal d'administration et dans l'historique des révisions. La saisie à main levée sur carte viendra avec la carte interactive (niveau 15).
+
+## D71 — Liste des quartiers en un appel
+La liste des quartiers et le nombre de contenus rattachés viennent d'une seule fonction (`neighborhood_overview`) : vingt appels parallèles depuis San Pedro dépassaient parfois le délai réseau et faisaient échouer toute la page.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

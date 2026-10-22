@@ -25,7 +25,7 @@ Le socle partagé reste hors des modules : `src/components/ui` (design system), 
 | `admin` | 10, 22 | référentiel des catégories (puis administration complète) |
 | `tourism` | 12 | entrées « Découvrir », exploration filtrable, itinéraires déterministes, infos pratiques |
 | `guide` | 13 | rubriques, articles (Markdown restreint, sommaire, statut, versions), suggestions, rédaction, ressources liées, préparation de l’assistant |
-| `neighborhoods` | 14 | quartiers |
+| `neighborhoods` | 14 | fiches neutres, onglets de ressources rattachées, périmètres (brouillon, validation, historique), administration |
 | `map` | 15 | carte, couches, géolocalisation |
 | `events` | 16 | événements |
 | `jobs` | 17 | emploi et opportunités |

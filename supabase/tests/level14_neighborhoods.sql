@@ -141,6 +141,11 @@ begin
     exists (select 1 from public.neighborhoods where id = v_hood and alt_names = '{Zqn ancien nom}' and steward_id = '00000000-0000-4000-8000-000000000501'));
   perform pg_temp.record('la modification est historisée avec sa note',
     exists (select 1 from public.content_revisions where entity_id = v_hood and reason = 'Ajout d''un nom alternatif'));
+
+  perform pg_temp.act_as(null);
+  perform pg_temp.record('vue d''ensemble : contenus rattachés comptés en un appel',
+    exists (select 1 from public.neighborhood_overview((select id from public.cities where is_default)) o where o.id = v_hood and o.total = 3 and not o.bounded));
+  perform pg_temp.back();
 end $$;
 
 select test, ok, detail from results order by n;

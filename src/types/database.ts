@@ -3473,6 +3473,19 @@ export type Database = {
           status: string
         }[]
       }
+      neighborhood_overview: {
+        Args: { p_city: string }
+        Returns: {
+          alt_names: string[]
+          bounded: boolean
+          id: string
+          name: string
+          slug: string
+          total: number
+          verification_status: Database["public"]["Enums"]["verification_status"]
+          verified_at: string
+        }[]
+      }
       neighborhood_resource_counts: {
         Args: { p_neighborhood: string }
         Returns: {

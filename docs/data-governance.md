@@ -66,7 +66,8 @@ Les contenus déposés par les utilisateurs (annonces, vitrines, événements) s
 | Donnée | Fichier | Statut |
 | --- | --- | --- |
 | Centre approximatif de San Pedro (position par défaut de la carte) | `src/domain/city.ts`, `supabase/seed.sql` | à confirmer |
-| 10 noms de quartiers | `supabase/seeds/quartiers_san_pedro.sql` | à valider (orthographe, découpage, manquants) |
+| 10 noms de quartiers | `supabase/seeds/quartiers_san_pedro.sql`, puis `/admin/quartiers` | à valider (orthographe, découpage, manquants) ; aucune description ni aucun périmètre saisi à ce jour |
+| Périmètres des quartiers | `/admin/quartiers/[quartier]` (brouillon GeoJSON, validation) | facultatifs ; à tracer avec une source (relevé terrain, document officiel), jamais approximés |
 | Taxonomie des catégories | `supabase/seed.sql` | choix produit, modifiable |
 | Textes des conseils du parcours nouvel arrivant (17 blocs) | `src/modules/newcomer/domain/plan.ts` | à relire localement |
 | Rubriques du guide (11) | migration `…000500_domains.sql` | choix produit, modifiable |

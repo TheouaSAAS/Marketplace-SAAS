@@ -134,3 +134,29 @@ export async function listNeighborhoodEventIds(neighborhoodId: string, limit = 6
   if (error) throw new Error(`Lecture des événements du quartier impossible : ${error.message}`);
   return idsSchema.parse(data).map((row) => row.id);
 }
+
+const overviewSchema = z.object({
+  id: z.uuid(),
+  slug: z.string(),
+  name: z.string(),
+  alt_names: z.array(z.string()),
+  verification_status: verificationStatusSchema,
+  verified_at: z.string().nullable(),
+  bounded: z.boolean(),
+  total: z.number(),
+});
+
+export type NeighborhoodOverview = z.infer<typeof overviewSchema>;
+
+/** Quartiers d'une ville avec leur nombre de contenus rattachés, par ordre alphabétique français (un seul appel). */
+export async function getNeighborhoodOverview(cityId: string): Promise<NeighborhoodOverview[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(NEIGHBORHOODS_CACHE_TAG, `${NEIGHBORHOODS_CACHE_TAG}:${cityId}`);
+
+  const supabase = createPublicSupabaseClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase.rpc("neighborhood_overview", { p_city: cityId });
+  if (error) throw new Error(`Lecture des quartiers impossible : ${error.message}`);
+  return z.array(overviewSchema).parse(data).sort((a, b) => a.name.localeCompare(b.name, "fr"));
+}

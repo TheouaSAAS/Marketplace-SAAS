@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/spinner";
 import { VerificationBadge } from "@/components/ui/verification";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { NEIGHBORHOOD_NEUTRALITY } from "@/modules/neighborhoods/domain/tabs";
-import { getNeighborhood, getNeighborhoodCounts, listNeighborhoods } from "@/modules/neighborhoods/server/queries";
+import { getNeighborhoodOverview, type NeighborhoodOverview } from "@/modules/neighborhoods/server/queries";
 import { getCityContext } from "@/server/city-context";
 
 export const metadata: Metadata = {
@@ -26,23 +26,9 @@ async function NeighborhoodList() {
   const { current } = await getCityContext();
   if (!current.id) return <Alert tone="warning" title="Quartiers indisponibles">La base de contenus n’est pas encore configurée.</Alert>;
   const now = new Date();
-  let rows: { slug: string; name: string; alt: string[]; status: Parameters<typeof displayedVerification>[0]; verifiedAt: string | null; bounded: boolean; total: number }[];
+  let rows: NeighborhoodOverview[];
   try {
-    const hoods = await listNeighborhoods(current.id);
-    rows = await Promise.all(
-      hoods.map(async (hood) => {
-        const [detail, counts] = await Promise.all([getNeighborhood(current.id!, hood.slug), getNeighborhoodCounts(hood.id)]);
-        return {
-          slug: hood.slug,
-          name: hood.name,
-          alt: detail?.alt_names ?? [],
-          status: hood.verification_status,
-          verifiedAt: hood.verified_at,
-          bounded: Boolean(detail?.boundary_validated_at),
-          total: Object.values(counts).reduce((sum, value) => sum + value, 0),
-        };
-      }),
-    );
+    rows = await getNeighborhoodOverview(current.id);
   } catch (error) {
     logger.error("Quartiers indisponibles", { module: "quartiers", error });
     return <ErrorState title="Les quartiers sont momentanément indisponibles" description="Réessayez dans quelques instants." />;
@@ -60,9 +46,9 @@ async function NeighborhoodList() {
               <MapPin aria-hidden className="h-4 w-4 text-brand-700" />
               {row.name}
             </span>
-            {row.alt.length > 0 && <span className="text-xs text-ink-muted">Aussi appelé : {row.alt.join(", ")}</span>}
+            {row.alt_names.length > 0 && <span className="text-xs text-ink-muted">Aussi appelé : {row.alt_names.join(", ")}</span>}
             <span className="flex flex-wrap gap-1.5">
-              <VerificationBadge status={displayedVerification(row.status, row.verifiedAt, now)} />
+              <VerificationBadge status={displayedVerification(row.verification_status, row.verified_at, now)} />
               <Badge tone="neutral">{row.bounded ? "Périmètre validé" : "Sans périmètre validé"}</Badge>
             </span>
             <span className="text-sm text-ink-muted">
