@@ -1773,10 +1773,82 @@ export type Database = {
           },
         ]
       }
+      neighborhood_boundaries: {
+        Row: {
+          geometry: unknown
+          id: string
+          neighborhood_id: string
+          note: string | null
+          proposed_at: string
+          proposed_by: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_id: string | null
+          status: string
+        }
+        Insert: {
+          geometry: unknown
+          id?: string
+          neighborhood_id: string
+          note?: string | null
+          proposed_at?: string
+          proposed_by?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_id?: string | null
+          status?: string
+        }
+        Update: {
+          geometry?: unknown
+          id?: string
+          neighborhood_id?: string
+          note?: string | null
+          proposed_at?: string
+          proposed_by?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "neighborhood_boundaries_neighborhood_id_fkey"
+            columns: ["neighborhood_id"]
+            isOneToOne: false
+            referencedRelation: "neighborhoods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "neighborhood_boundaries_proposed_by_fkey"
+            columns: ["proposed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "neighborhood_boundaries_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "neighborhood_boundaries_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       neighborhoods: {
         Row: {
           alt_names: string[]
           boundary: unknown
+          boundary_validated_at: string | null
           center: unknown
           city_id: string
           created_at: string
@@ -1786,6 +1858,7 @@ export type Database = {
           name: string
           slug: string
           source_id: string | null
+          steward_id: string | null
           updated_at: string
           verification_note: string | null
           verification_status: Database["public"]["Enums"]["verification_status"]
@@ -1795,6 +1868,7 @@ export type Database = {
         Insert: {
           alt_names?: string[]
           boundary?: unknown
+          boundary_validated_at?: string | null
           center?: unknown
           city_id: string
           created_at?: string
@@ -1804,6 +1878,7 @@ export type Database = {
           name: string
           slug: string
           source_id?: string | null
+          steward_id?: string | null
           updated_at?: string
           verification_note?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
@@ -1813,6 +1888,7 @@ export type Database = {
         Update: {
           alt_names?: string[]
           boundary?: unknown
+          boundary_validated_at?: string | null
           center?: unknown
           city_id?: string
           created_at?: string
@@ -1822,6 +1898,7 @@ export type Database = {
           name?: string
           slug?: string
           source_id?: string | null
+          steward_id?: string | null
           updated_at?: string
           verification_note?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
@@ -1841,6 +1918,13 @@ export type Database = {
             columns: ["source_id"]
             isOneToOne: false
             referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "neighborhoods_steward_id_fkey"
+            columns: ["steward_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -3184,6 +3268,10 @@ export type Database = {
         Args: { p_max?: number; p_text: string }
         Returns: string[]
       }
+      clear_neighborhood_boundary: {
+        Args: { p_neighborhood: string; p_note: string }
+        Returns: undefined
+      }
       consume_rate_limit: {
         Args: { p_key_hash: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
@@ -3367,6 +3455,17 @@ export type Database = {
           unread: number
         }[]
       }
+      neighborhood_boundary_geojson: {
+        Args: { p_neighborhood: string }
+        Returns: string
+      }
+      neighborhood_resource_counts: {
+        Args: { p_neighborhood: string }
+        Returns: {
+          kind: string
+          total: number
+        }[]
+      }
       organization_role_rank: {
         Args: { p_role: Database["public"]["Enums"]["organization_role"] }
         Returns: number
@@ -3388,6 +3487,15 @@ export type Database = {
           location_precision: Database["public"]["Enums"]["location_precision"]
         }[]
       }
+      propose_neighborhood_boundary: {
+        Args: {
+          p_geojson: string
+          p_neighborhood: string
+          p_note?: string
+          p_source?: string
+        }
+        Returns: string
+      }
       purge_rate_limits: { Args: never; Returns: number }
       record_listing_view: {
         Args: { p_listing: string; p_viewer_hash: string }
@@ -3405,6 +3513,10 @@ export type Database = {
       reveal_listing_contact: {
         Args: { p_channel: string; p_listing: string }
         Returns: string
+      }
+      review_neighborhood_boundary: {
+        Args: { p_approve: boolean; p_boundary: string; p_note?: string }
+        Returns: undefined
       }
       review_place_claim: {
         Args: { p_approve: boolean; p_claim: string; p_note?: string }
@@ -3579,6 +3691,7 @@ export type Database = {
           p_limit?: number
           p_lng?: number
           p_max_duration?: string
+          p_neighborhood?: string
           p_offset?: number
           p_query?: string
           p_radius_m?: number
