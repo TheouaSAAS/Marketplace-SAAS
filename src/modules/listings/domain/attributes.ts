@@ -1,3 +1,5 @@
+import { EQUIPMENTS } from "@/modules/real-estate/domain/modes";
+
 /**
  * Attributs propres à une catégorie d'annonce (`categories.attribute_schema`),
  * stockés dans `listings.attributes`. Ce registre sert à l'AFFICHAGE : seuls
@@ -10,7 +12,8 @@ type AttributeKind =
   | { kind: "integer"; unit?: string }
   | { kind: "boolean" }
   | { kind: "date" }
-  | { kind: "choice"; options: Record<string, string> };
+  | { kind: "choice"; options: Record<string, string> }
+  | { kind: "list"; options: Record<string, string> };
 
 interface AttributeDefinition {
   label: string;
@@ -39,7 +42,10 @@ export const ATTRIBUTE_SCHEMAS: Record<string, Record<string, AttributeDefinitio
     pieces: { label: "Pièces", type: { kind: "integer" } },
     chambres: { label: "Chambres", type: { kind: "integer" } },
     surface_m2: { label: "Surface", type: { kind: "integer", unit: "m²" } },
+    salles_de_bain: { label: "Salles de bain", type: { kind: "integer" } },
+    etage: { label: "Étage", type: { kind: "integer" } },
     meuble: { label: "Meublé", type: { kind: "boolean" } },
+    equipements: { label: "Équipements déclarés", type: { kind: "list", options: EQUIPMENTS } },
   },
   emploi: {
     contrat: {
@@ -113,6 +119,11 @@ function formatValue(definition: AttributeDefinition, value: unknown): string | 
     }
     case "choice":
       return typeof value === "string" && Object.hasOwn(type.options, value) ? type.options[value]! : null;
+    case "list": {
+      if (!Array.isArray(value)) return null;
+      const labels = value.filter((item): item is string => typeof item === "string" && Object.hasOwn(type.options, item)).map((item) => type.options[item]!);
+      return labels.length ? labels.join(", ") : null;
+    }
   }
 }
 
