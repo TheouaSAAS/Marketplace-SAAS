@@ -2966,6 +2966,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      attr_bool: {
+        Args: { p_attributes: Json; p_key: string }
+        Returns: boolean
+      }
+      attr_int: { Args: { p_attributes: Json; p_key: string }; Returns: number }
       become_individual: { Args: never; Returns: undefined }
       become_professional: { Args: never; Returns: undefined }
       business_private_location: {
@@ -3215,6 +3220,32 @@ export type Database = {
         }[]
       }
       search_normalize: { Args: { p_query: string }; Returns: string }
+      search_real_estate: {
+        Args: {
+          p_categories: string[]
+          p_chambres_min?: number
+          p_city: string
+          p_confirmed_days?: number
+          p_dispo?: boolean
+          p_equipements?: string[]
+          p_limit?: number
+          p_meuble?: boolean
+          p_neighborhood?: string
+          p_offset?: number
+          p_pieces_min?: number
+          p_prix_max?: number
+          p_prix_min?: number
+          p_query?: string
+          p_sort?: string
+          p_stay?: string
+          p_surface_min?: number
+          p_type_bien?: string
+        }
+        Returns: {
+          id: string
+          total_count: number
+        }[]
+      }
       search_tsquery: { Args: { p_query: string }; Returns: unknown }
       start_listing_conversation: {
         Args: { p_body: string; p_listing: string }
