@@ -15,13 +15,14 @@ const reportSchema = z
     annonce: z.uuid().optional(),
     commentaire: z.uuid().optional(),
     professionnel: z.uuid().optional(),
+    lieu: z.uuid().optional(),
     motif: z.enum(REPORT_REASON_KEYS, { error: "Choisissez un motif." }),
     details: z.string().trim().max(2000, "2 000 caractères au maximum.").optional(),
   })
-  .refine((value) => [value.annonce, value.commentaire, value.professionnel].filter(Boolean).length === 1, { message: "Contenu signalé introuvable." });
+  .refine((value) => [value.annonce, value.commentaire, value.professionnel, value.lieu].filter(Boolean).length === 1, { message: "Contenu signalé introuvable." });
 
 /**
- * Signale une annonce ou un commentaire à l'équipe de modération. Un seul
+ * Signale une annonce, un commentaire, une fiche professionnelle ou une vitrine à l'équipe de modération. Un seul
  * signalement ouvert par personne et par contenu ; nombre limité par heure
  * (règles en base).
  */
@@ -31,6 +32,7 @@ export async function reportContentAction(_previous: FormState, formData: FormDa
     annonce: formData.get("annonce") || undefined,
     commentaire: formData.get("commentaire") || undefined,
     professionnel: formData.get("professionnel") || undefined,
+    lieu: formData.get("lieu") || undefined,
     motif: formData.get("motif"),
     details: formData.get("details") || undefined,
   });
@@ -54,6 +56,7 @@ export async function reportContentAction(_previous: FormState, formData: FormDa
     listing_id: parsed.data.annonce ?? null,
     comment_id: parsed.data.commentaire ?? null,
     business_id: parsed.data.professionnel ?? null,
+    place_id: parsed.data.lieu ?? null,
     reason: parsed.data.motif,
     details: parsed.data.details ?? null,
   });

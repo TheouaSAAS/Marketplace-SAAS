@@ -10,7 +10,8 @@ import { Alert, EmptyState, ErrorState } from "@/components/ui/feedback";
 import { Skeleton } from "@/components/ui/spinner";
 import { BusinessCard, ListingCard } from "@/components/content/content-cards";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { SERVICES_RANKING_RULE } from "@/modules/services/domain/params";
+import { PageNav } from "@/components/ui/page-nav";
+import { SERVICES_RANKING_RULE, serviceQuery } from "@/modules/services/domain/params";
 import { availabilityText, proContext } from "@/modules/services/domain/present";
 import { ServiceFiltersForm } from "@/modules/services/components/service-filters";
 import { TradeList } from "@/modules/services/components/trade-list";
@@ -92,6 +93,12 @@ async function Results({ searchParams }: Pick<PageProps<"/services">, "searchPar
               ))}
             </ul>
           )}
+          <PageNav
+            page={data.filters.page}
+            total={data.total}
+            pageSize={data.pageSize}
+            hrefFor={(page) => `${href("services")}?${serviceQuery({ ...data.filters, page })}`}
+          />
         </section>
       </div>
       {data.listings.length > 0 && (

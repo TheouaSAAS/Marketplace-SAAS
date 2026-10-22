@@ -12,6 +12,8 @@ const conversationSchema = z.object({
   other_name: z.string(),
   listing_title: z.string().nullable(),
   listing_slug: z.string().nullable(),
+  place_name: z.string().nullable(),
+  place_slug: z.string().nullable(),
   last_message: z.string().nullable(),
   last_message_mine: z.boolean().nullable(),
   last_message_at: z.string(),
@@ -35,6 +37,8 @@ const headerSchema = z.object({
   listing_title: z.string().nullable(),
   listing_slug: z.string().nullable(),
   listing_active: z.boolean(),
+  place_name: z.string().nullable(),
+  place_slug: z.string().nullable(),
 });
 
 const messageSchema = z.object({

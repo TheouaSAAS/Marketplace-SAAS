@@ -9,7 +9,7 @@ import { REPORT_REASONS } from "../domain/report-reasons";
 import { reportContentAction } from "../server/report-action";
 
 /** Signaler une annonce ou un commentaire à l'équipe de modération (repliable). */
-export function ReportForm({ target, back, label = "Signaler cette annonce" }: { target: { annonce: string } | { commentaire: string } | { professionnel: string }; back: string; label?: string }) {
+export function ReportForm({ target, back, label = "Signaler cette annonce" }: { target: { annonce: string } | { commentaire: string } | { professionnel: string } | { lieu: string }; back: string; label?: string }) {
   const [state, action] = useActionState(reportContentAction, INITIAL_FORM_STATE);
   const [name, value] = Object.entries(target)[0] as [string, string];
 

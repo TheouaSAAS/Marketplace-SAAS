@@ -44,6 +44,14 @@ async function Conversation({ params }: Pick<Props, "params">) {
             </Link>
           </p>
         )}
+        {header.place_name && header.place_slug && (
+          <p className="text-sm">
+            À propos de la vitrine{" "}
+            <Link href={href("placeDetail", { params: { slug: header.place_slug } })} className="font-semibold text-brand-700 hover:underline">
+              {header.place_name}
+            </Link>
+          </p>
+        )}
       </div>
       {header.listing_id && !header.listing_active && (
         <Alert tone="warning">Cette annonce n’est plus disponible. Vous pouvez encore échanger avec l’annonceur.</Alert>

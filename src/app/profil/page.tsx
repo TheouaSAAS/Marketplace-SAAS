@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Download } from "lucide-react";
 import { href } from "@/config/routes";
-import { isAdmin, ROLE_LABELS } from "@/domain/roles";
+import { isAdmin, isCurator, ROLE_LABELS } from "@/domain/roles";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink, buttonClasses } from "@/components/ui/button";
@@ -13,6 +13,8 @@ import { answersToSearchParams } from "@/modules/newcomer/domain/answers";
 import { getSavedNewcomerAnswers } from "@/modules/newcomer/server/queries";
 import { DeleteSavedSearchForm } from "@/modules/search/components/saved-search-forms";
 import { listSavedSearches } from "@/modules/search/server/saved";
+import { CLAIM_STATUSES } from "@/modules/shops/domain/claims";
+import { listMyClaims } from "@/modules/shops/server/claims";
 import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Alert } from "@/components/ui/feedback";
@@ -57,7 +59,7 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
     .limit(1)
     .maybeSingle()) ?? { data: null };
 
-  const [newcomer, savedSearches] = await Promise.all([getSavedNewcomerAnswers(), listSavedSearches()]);
+  const [newcomer, savedSearches, claims] = await Promise.all([getSavedNewcomerAnswers(), listSavedSearches(), listMyClaims(account.id).catch(() => [])]);
   const name = account.displayName ?? account.email ?? "Mon compte";
   const isProfessional = account.role === "professional";
 
@@ -120,6 +122,11 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
             Gérer les catégories et métiers
           </ButtonLink>
         )}
+        {isCurator(account.role) && (
+          <ButtonLink href={href("placeClaims")} variant="secondary">
+            Examiner les revendications de vitrines
+          </ButtonLink>
+        )}
       </Section>
 
       <Section title="Sécurité">
@@ -130,6 +137,22 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
       <Section title="Communications">
         <MarketingConsentForm granted={Boolean(marketing?.granted)} />
       </Section>
+
+      {claims.length > 0 && (
+        <Section title="Mes revendications de vitrines">
+          <ul className="flex flex-col gap-2 text-sm">
+            {claims.map((claim) => (
+              <li key={claim.id}>
+                <Link className="font-semibold underline" href={href("placeDetail", { params: { slug: claim.place.slug } })}>
+                  {claim.place.name}
+                </Link>{" "}
+                · {CLAIM_STATUSES[claim.status]}
+                {claim.decision_note && <span className="text-ink-muted"> · « {claim.decision_note} »</span>}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       <Section title="Mon parcours « Nouveau à San Pedro ? »">
         {newcomer ? (

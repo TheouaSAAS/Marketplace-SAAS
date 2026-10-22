@@ -1,13 +1,13 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { hasPage, href, type RouteKey } from "@/config/routes";
+import { categoryHref, hasPage, href, type RouteKey } from "@/config/routes";
 import type { NavLink } from "@/config/navigation";
 import { Button, ButtonLink, type ButtonSize, type ButtonVariant } from "@/components/ui/button";
 import { SoonBadge } from "@/components/ui/badge";
 
 export function navLinkHref(link: NavLink): string {
-  return href(link.route, { query: { categorie: link.category }, hash: link.hash });
+  return categoryHref(link.route, link.category, link.hash);
 }
 
 /**

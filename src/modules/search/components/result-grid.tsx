@@ -41,9 +41,9 @@ function ResultCard({ item, now, index }: { item: SearchItem; now: Date; index: 
     case "annonces":
       return <ListingCard listing={item.data} now={now} index={index} context={context} href={href("listingDetail", { params: { slug: item.data.slug } })} />;
     case "lieux":
-      return <PlaceCard place={item.data} now={now} index={index} context={context} />;
+      return <PlaceCard place={item.data} now={now} index={index} context={context} href={href("placeDetail", { params: { slug: item.data.slug } })} />;
     case "professionnels":
-      return <BusinessCard business={item.data} now={now} index={index} context={context} />;
+      return <BusinessCard business={item.data} now={now} index={index} context={context} href={href("professionalDetail", { params: { slug: item.data.slug } })} />;
     case "evenements":
       return <EventCard event={item.data} now={now} index={index} context={context} />;
     case "guide":

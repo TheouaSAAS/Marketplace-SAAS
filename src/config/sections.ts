@@ -54,18 +54,6 @@ export const SECTION_PREVIEWS = {
     parent: "listings",
     related: ["signup", "listings", "help"],
   },
-  shops: {
-    title: "Commerces de proximité",
-    intro: "Les commerces et boutiques de San Pedro, avec leurs horaires sourcés ou signalés « à confirmer ».",
-    upcoming: [
-      "Vitrines : description, galerie, produits, horaires, itinéraire",
-      "Filtres : type, quartier, proximité, statut vérifié",
-      "Revendication d’une vitrine par son exploitant, après validation",
-    ],
-    parent: "services",
-    categories: ["commerces-boutiques"],
-    related: ["services", "directory", "map"],
-  },
   directory: {
     title: "Professionnels et entreprises",
     intro: "L’annuaire des professionnels de San Pedro : commerces, artisans, agences, opérateurs.",

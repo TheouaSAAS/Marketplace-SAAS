@@ -109,7 +109,7 @@ export function ListingCard({ listing, now, index, context, href }: CardProps & 
   );
 }
 
-export function PlaceCard({ place, now, index, context }: CardProps & { place: PlaceCardData }) {
+export function PlaceCard({ place, now, index, context, href, badge }: CardProps & { place: PlaceCardData; href?: string; badge?: ReactNode }) {
   return (
     <CardShell
       index={index}
@@ -117,9 +117,10 @@ export function PlaceCard({ place, now, index, context }: CardProps & { place: P
       visual={<CategoryVisual icon={place.category?.icon} fallback={Store} tone={place.kind === "lieu_touristique" ? "lagoon" : "sand"} />}
     >
       <div className="flex flex-wrap gap-1.5">
+        {badge}
         <PublicVerification status={place.verification_status} verifiedAt={place.verified_at} now={now} />
       </div>
-      <h3 className="line-clamp-2 font-bold leading-snug">{place.name}</h3>
+      <CardTitle title={place.name} href={href} />
       {place.summary && <p className="line-clamp-2 text-sm text-ink-muted">{place.summary}</p>}
       <Meta items={[place.category?.name, place.neighborhood?.name]} />
     </CardShell>

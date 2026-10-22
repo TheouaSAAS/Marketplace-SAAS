@@ -98,7 +98,7 @@ export async function HomeSections() {
         ) : (
           <SectionGrid>
             {discover.value.map((place, index) => (
-              <PlaceCard key={place.id} place={place} now={now} index={index} />
+              <PlaceCard key={place.id} place={place} now={now} index={index} href={href("placeDetail", { params: { slug: place.slug } })} />
             ))}
           </SectionGrid>
         )}
@@ -117,7 +117,7 @@ export async function HomeSections() {
         ) : (
           <SectionGrid>
             {professionals.value.map((place, index) => (
-              <PlaceCard key={place.id} place={place} now={now} index={index} />
+              <PlaceCard key={place.id} place={place} now={now} index={index} href={href("placeDetail", { params: { slug: place.slug } })} />
             ))}
           </SectionGrid>
         )}

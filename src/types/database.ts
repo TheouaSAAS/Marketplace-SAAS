@@ -3307,6 +3307,14 @@ export type Database = {
         }[]
       }
       place_is_public: { Args: { p_place: string }; Returns: boolean }
+      place_point: {
+        Args: { p_place: string }
+        Returns: {
+          lat: number
+          lng: number
+          location_precision: Database["public"]["Enums"]["location_precision"]
+        }[]
+      }
       purge_rate_limits: { Args: never; Returns: number }
       record_listing_view: {
         Args: { p_listing: string; p_viewer_hash: string }

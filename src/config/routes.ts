@@ -42,7 +42,7 @@ export const ROUTES = {
 
   // Services & professionnels
   services: { path: "/services", label: "Services de proximité", level: 10, status: "live" },
-  shops: { path: "/commerces", label: "Commerces", level: 11, status: "preview" },
+  shops: { path: "/commerces", label: "Commerces", level: 11, status: "live" },
   directory: { path: "/professionnels", label: "Professionnels et entreprises", level: 19, status: "preview" },
   professionalDetail: { path: "/professionnels/[slug]", label: "Fiche d’un professionnel", level: 10, status: "live" },
   quoteRequests: { path: "/devis", label: "Mes demandes de devis", level: 10, status: "live", private: true },
@@ -56,7 +56,8 @@ export const ROUTES = {
   map: { path: "/carte", label: "Carte interactive", level: 15, status: "preview" },
   events: { path: "/evenements", label: "Événements", level: 16, status: "preview" },
   eventDetail: { path: "/evenements/[slug]", label: "Détail d’un événement", level: 16, status: "planned" },
-  placeDetail: { path: "/lieux/[slug]", label: "Détail d’un lieu", level: 12, status: "planned" },
+  placeDetail: { path: "/lieux/[slug]", label: "Vitrine d’un lieu", level: 11, status: "live" },
+  placeClaims: { path: "/admin/revendications", label: "Revendications de vitrines", level: 11, status: "live", private: true },
   city: { path: "/villes/[slug]", label: "Page de ville", level: 25, status: "planned" },
 
   // Compte
@@ -125,4 +126,15 @@ export function href(
   }
   const query = search.toString();
   return `${path}${query ? `?${query}` : ""}${options.hash ? `#${options.hash}` : ""}`;
+}
+
+/**
+ * Nom du critère de catégorie propre à certaines pages (forme canonique de
+ * leur adresse) ; « categorie » partout ailleurs.
+ */
+const CATEGORY_PARAMS: Partial<Record<RouteKey, string>> = { services: "metier", shops: "type" };
+
+/** Lien vers une page filtrée sur une catégorie (menus, plan nouvel arrivant). */
+export function categoryHref(key: RouteKey, category: string | undefined, hash?: string): string {
+  return href(key, { query: category ? { [CATEGORY_PARAMS[key] ?? "categorie"]: category } : {}, hash });
 }

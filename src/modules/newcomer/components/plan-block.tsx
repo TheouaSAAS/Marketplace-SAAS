@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Info, MapPin } from "lucide-react";
-import { href } from "@/config/routes";
+import { categoryHref } from "@/config/routes";
 import { displayedVerification, type VerificationStatus } from "@/domain/verification";
 import { formatDateTime, formatPrice } from "@/lib/format";
 import { logger } from "@/lib/logger";
@@ -145,7 +145,7 @@ export function PlanBlockCard({ block, index, children }: { block: PlanBlock; in
         {definition.actions.map((action) => (
           <Link
             key={action.label}
-            href={href(action.route, { query: { categorie: action.category } })}
+            href={categoryHref(action.route, action.category)}
             className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand-700 hover:underline"
           >
             {action.label} <ArrowRight aria-hidden className="h-4 w-4" />
