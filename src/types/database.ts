@@ -660,6 +660,39 @@ export type Database = {
           },
         ]
       }
+      event_reminders: {
+        Row: {
+          event_id: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_reminders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_reminders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           address_text: string | null
@@ -3230,6 +3263,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      archive_past_events: { Args: never; Returns: number }
       attr_bool: {
         Args: { p_attributes: Json; p_key: string }
         Returns: boolean
@@ -3264,6 +3298,16 @@ export type Database = {
           total: number
         }[]
       }
+      change_event_schedule: {
+        Args: {
+          p_action: string
+          p_ends_at?: string
+          p_event: string
+          p_note: string
+          p_starts_at?: string
+        }
+        Returns: undefined
+      }
       chunk_text: {
         Args: { p_max?: number; p_text: string }
         Returns: string[]
@@ -3289,6 +3333,8 @@ export type Database = {
       conversation_header: {
         Args: { p_conversation: string }
         Returns: {
+          event_slug: string
+          event_title: string
           listing_active: boolean
           listing_id: string
           listing_slug: string
@@ -3471,6 +3517,8 @@ export type Database = {
         Args: never
         Returns: {
           conversation_id: string
+          event_slug: string
+          event_title: string
           last_message: string
           last_message_at: string
           last_message_mine: boolean
@@ -3648,6 +3696,23 @@ export type Database = {
           type: string
         }[]
       }
+      search_events: {
+        Args: {
+          p_categories?: string[]
+          p_city: string
+          p_free?: boolean
+          p_from?: string
+          p_limit?: number
+          p_neighborhood?: string
+          p_offset?: number
+          p_query?: string
+          p_to?: string
+        }
+        Returns: {
+          id: string
+          total_count: number
+        }[]
+      }
       search_matches: {
         Args: {
           p_available_only?: boolean
@@ -3774,12 +3839,17 @@ export type Database = {
         }[]
       }
       search_tsquery: { Args: { p_query: string }; Returns: unknown }
+      send_event_reminders: { Args: never; Returns: number }
       sponsored_shops: {
         Args: { p_categories?: string[]; p_city: string; p_limit?: number }
         Returns: {
           ends_at: string
           id: string
         }[]
+      }
+      start_event_conversation: {
+        Args: { p_body: string; p_event: string }
+        Returns: string
       }
       start_listing_conversation: {
         Args: { p_body: string; p_listing: string }
