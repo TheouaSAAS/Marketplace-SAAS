@@ -70,5 +70,7 @@ Les contenus déposés par les utilisateurs (annonces, vitrines, événements) s
 | Taxonomie des catégories | `supabase/seed.sql` | choix produit, modifiable |
 | Textes des conseils du parcours nouvel arrivant (17 blocs) | `src/modules/newcomer/domain/plan.ts` | à relire localement |
 | Rubriques du guide (11) | migration `…000500_domains.sql` | choix produit, modifiable |
+| Mots-clés des 5 types de commerces et de la vue « Auto, moto et pièces » (« maquis », « garba », « pagne »…) | migration `20261024000100_shops.sql` | choix produit, à compléter localement |
+| Horaires des commerces | saisis et vérifiés par l’équipe locale, avec une source (`sources`) | aucun horaire en démonstration ; « à confirmer » tant qu’ils ne sont pas vérifiés |
 | 12 métiers de services et leurs mots-clés (vocabulaire local : « clim », « tresses »…) | migration `20261023000100_services.sql` (`categories.keywords`) | choix produit, à compléter avec les termes utilisés à San Pedro |
-| Données de démonstration (5 lieux, 4 annonces, 1 événement, 1 article, 3 fiches professionnelles « Exemple — … ») | `supabase/seeds/demo.sql` | `placeholder`, à supprimer avant le lancement (`demo_remove.sql`) ou masquer (`demo.public_placeholders`) |
+| Données de démonstration (5 lieux, 4 annonces, 1 événement, 1 article, 3 fiches professionnelles, 2 vitrines de commerce supplémentaires « Exemple — … », sans horaire) | `supabase/seeds/demo.sql` | `placeholder`, à supprimer avant le lancement (`demo_remove.sql`) ou masquer (`demo.public_placeholders`) |

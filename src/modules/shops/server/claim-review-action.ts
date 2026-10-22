@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath, updateTag } from "next/cache";
+import { updateTag } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { href } from "@/config/routes";
 import type { FormState } from "@/lib/form-state";
@@ -33,6 +34,6 @@ export async function reviewClaimAction(_previous: FormState, formData: FormData
     return { status: "error", message: "La décision n’a pas pu être enregistrée. Réessayez." };
   }
   updateTag(PLACES_CACHE_TAG);
-  revalidatePath(href("placeClaims"));
-  return { status: "success", message: approve ? "Revendication validée : l’exploitant gère désormais la vitrine." : "Revendication refusée ; le demandeur est notifié." };
+  // La liste se met à jour (demande traitée retirée) ; la décision est confirmée par l'adresse.
+  redirect(href("placeClaims", { query: { decision: approve ? "validee" : "refusee" } }));
 }

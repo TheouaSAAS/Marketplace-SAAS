@@ -170,5 +170,23 @@ Livré : métiers administrables, recherche de professionnels (métier, quartier
 ## D56 — Référentiel : administré, historisé, jamais supprimé
 Les catégories (métiers, rubriques, types de commerces) se modifient depuis `/admin/categories` : nom, mots-clés, ordre, activation, ajout de sous-catégories qui héritent de la famille, des types de contenus et des attributs du parent. L'adresse (slug) d'une catégorie existante ne change pas, car elle peut être partagée ; une catégorie se désactive plutôt que d'être supprimée. Les droits sont en base (`categories_admin_write`), chaque modification est historisée (`content_revisions`) et le cache public est invalidé immédiatement (`updateTag`).
 
+## D57 — Commerces : la vitrine est un lieu tenu par l'équipe locale
+Un commerce n'est pas une annonce : sa vitrine est un lieu (`places`, type « établissement »), créé et vérifié par l'équipe locale, que l'exploitant peut revendiquer. Les vues spécialisées (restaurants, alimentation, boutiques, quincaillerie, téléphonie, auto…) sont des catégories du référentiel : en ajouter une se fait depuis `/admin/categories`, sans déploiement. La vitrine (`/lieux/[slug]`) sert aussi aux lieux touristiques, que le niveau 12 enrichira.
+
+## D58 — Horaires : vérifiés et sourcés, ou « à confirmer »
+Des horaires ne sont présentés comme vérifiés qu'avec une date de vérification de moins de 6 mois et une source (relevé terrain, déclaration de l'exploitant contrôlée…). Sinon la vitrine affiche « Horaires à confirmer » ; sans horaires, « non renseignés ». « Ouvert / fermé maintenant » précise toujours s'il repose sur des horaires vérifiés ou à confirmer. Seule l'équipe locale peut marquer des horaires comme vérifiés (règle en base).
+
+## D59 — Revendication : vérifiée par une personne, jamais automatique
+L'exploitant fournit un élément vérifiable (registre du commerce, facture, carte professionnelle) et un téléphone vus par l'équipe seulement. Un éditeur local ou un administrateur valide ou refuse (motif obligatoire, transmis au demandeur, qui suit sa demande dans son profil). Validée, la revendication fait de l'exploitant le destinataire des messages ; elle ne change ni la vérification ni l'ordre. La modification de la vitrine par l'exploitant viendra avec l'espace pro (niveau 21).
+
+## D60 — Mise en avant sponsorisée : à part et étiquetée
+Les vitrines sponsorisées (campagne active et en cours, 2 au plus) apparaissent dans un bloc séparé « Mis en avant », chacune avec l'étiquette « Sponsorisé » et l'explication qu'elles ne modifient ni l'ordre ni la vérification. Aucun paiement n'est encore possible (niveau 21) : aucune campagne ne peut devenir active sans l'équipe.
+
+## D61 — Budget, ambiance, services : indicatifs et déclarés
+Le budget est un ordre de grandeur (petit budget → haut de gamme), jamais un prix ; services et ambiance sont des listes fermées, contrôlées en base ; les produits sont des libellés libres, « sans garantie de stock ni de prix ». Aucune photo d'illustration : la galerie n'affiche que des photos réellement déposées.
+
+## D62 — Liens de menu vers une page filtrée
+Chaque page a sa forme canonique d'adresse (`/services?metier=…`, `/commerces?type=…`) : les menus et le plan nouvel arrivant passent par `categoryHref`, qui emploie le bon critère. Auparavant, `?categorie=` était retiré par la redirection canonique de `/services` (filtre perdu).
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

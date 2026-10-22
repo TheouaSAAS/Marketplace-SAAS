@@ -98,6 +98,16 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - Demande de devis (`contact_requests.kind = 'devis'`) : `details` (prestation, délai, quartier), `consented_at` obligatoire (contrainte `contact_requests_quote_consent`) ; `enforce_quote_rules` refuse un professionnel qui n’accepte pas les devis et limite à 5 demandes par heure (`CP429`).
 - `protect_contact_request_content` : le destinataire ne change que le statut (nouvelle, lue, répondue, archivée) ; message, coordonnées et accord restent tels qu’envoyés (`42501`).
 
+## Commerces (niveau 11, migrations `20261024000100_shops.sql` et `…000200_place_point.sql`)
+
+- Vitrine = `places` de type `etablissement` dans une catégorie de commerce. Vues : « Restaurants et gastronomie » et chaque sous-catégorie de « Commerces et boutiques » (dont la nouvelle `auto-moto`) ; une sous-catégorie ajoutée depuis l’administration devient une vue.
+- Attributs déclarés : `features` (11 services) et `ambiance` (6 clés), listes fermées vérifiées par contrainte ; `products` (40 au plus) ; `price_level` (budget indicatif 1 à 4).
+- Horaires : `opening_hours` au format `{"lun": [["08:00","12:30"]], …}` (`valid_opening_hours`), `opening_hours_verified_at` + `opening_hours_source_id` (source obligatoire). `protect_place_curation` : seule l’équipe locale vérifie des horaires ; toute autre modification les repasse « à confirmer ». Elle seule désigne le gérant (`manager_id`).
+- `place_claims` : revendication (lien, présentation, élément vérifiable, téléphone), une en attente par vitrine et par personne, 3 par jour, impossible si la vitrine a déjà un gérant ; décision par `review_place_claim` (éditeurs locaux et administrateurs ; refus motivé ; notification au demandeur ; journal d’administration ; autres demandes closes).
+- `place_likes`, `place_engagement` (total public, état personnel), `start_place_conversation` (messagerie vers le gérant seulement) ; `my_conversations` et `conversation_header` renvoient aussi `place_name`, `place_slug`.
+- `search_shops` (SECURITY INVOKER) : type, texte (nom, description, produits), quartier, budget maximal, ambiance (au moins une), services (tous), vérifiés, position et rayon ; ordre public : vérification de moins d’un an, horaires vérifiés depuis moins de 180 jours, mise à jour récente (ou distance).
+- `sponsored_shops` : 2 vitrines au plus dont la campagne `category` est `active` et en cours ; affichées à part avec l’étiquette « Sponsorisé ». `place_point` : position en coordonnées (carte, itinéraire).
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre d'emploi publiée et ouverte), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
