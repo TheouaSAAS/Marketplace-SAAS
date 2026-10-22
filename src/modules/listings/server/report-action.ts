@@ -14,10 +14,11 @@ const reportSchema = z
   .object({
     annonce: z.uuid().optional(),
     commentaire: z.uuid().optional(),
+    professionnel: z.uuid().optional(),
     motif: z.enum(REPORT_REASON_KEYS, { error: "Choisissez un motif." }),
     details: z.string().trim().max(2000, "2 000 caractères au maximum.").optional(),
   })
-  .refine((value) => Boolean(value.annonce) !== Boolean(value.commentaire), { message: "Contenu signalé introuvable." });
+  .refine((value) => [value.annonce, value.commentaire, value.professionnel].filter(Boolean).length === 1, { message: "Contenu signalé introuvable." });
 
 /**
  * Signale une annonce ou un commentaire à l'équipe de modération. Un seul
@@ -29,6 +30,7 @@ export async function reportContentAction(_previous: FormState, formData: FormDa
   const parsed = reportSchema.safeParse({
     annonce: formData.get("annonce") || undefined,
     commentaire: formData.get("commentaire") || undefined,
+    professionnel: formData.get("professionnel") || undefined,
     motif: formData.get("motif"),
     details: formData.get("details") || undefined,
   });
@@ -51,6 +53,7 @@ export async function reportContentAction(_previous: FormState, formData: FormDa
     reporter_id: user.id,
     listing_id: parsed.data.annonce ?? null,
     comment_id: parsed.data.commentaire ?? null,
+    business_id: parsed.data.professionnel ?? null,
     reason: parsed.data.motif,
     details: parsed.data.details ?? null,
   });
