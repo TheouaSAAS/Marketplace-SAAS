@@ -227,5 +227,14 @@ Seules les positions publiques sont affichées ; une position approximative est 
 ## D75 — Comptes de test : nettoyage robuste
 Chaque appel d'administration des tests est retenté (réseau du poste instable) ; au démarrage, les comptes de test orphelins (adresses `e2e-…@test.invalid` seulement) d'une exécution interrompue sont supprimés.
 
+## D76 — Événements : le temps d'abord, jamais de passé « à venir »
+L'agenda (`/evenements`) ne liste que des événements non terminés, du plus proche au plus lointain, groupés par jour ; le calendrier mensuel grise les jours passés et ne remonte pas avant le mois courant. La fiche d'un événement terminé le dit, puis l'événement est archivé 30 jours après sa fin. Aucune programmation n'est inventée : l'agenda vide le dit.
+
+## D77 — Report et annulation : visibles, motivés, notifiés
+Un report ou une annulation ne renvoie pas l'événement en modération (sinon il disparaîtrait au moment où le public doit être prévenu) : il reste publié avec un bandeau (« Annulé » avec le motif, « Reporté » avec la date initiale et la nouvelle), et les personnes qui l'ont en favori reçoivent une notification. Seuls l'organisateur, son organisation ou l'équipe peuvent le faire (fonction en base).
+
+## D78 — Proposition modérée, rappels sans données personnelles
+Tout membre peut proposer un événement ; il est publié après décision de l'équipe de modération (refus motivé), l'organisateur est notifié. Les rappels passent par les favoris (notification la veille) ou par un fichier d'agenda `.ics` que la personne importe et règle elle-même. Les dernières notifications s'affichent dans le profil en attendant le centre de notifications (niveau 24).
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

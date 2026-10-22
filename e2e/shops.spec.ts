@@ -109,7 +109,8 @@ test.describe("Commerces", () => {
 
       await owner.goto("/profil");
       await expect(owner.getByText(/Exemple — Quincaillerie/).first()).toBeVisible();
-      await expect(owner.getByText("Validée")).toBeVisible();
+      // Ligne de la revendication dans « Mes revendications » (la notification dit aussi « validée »).
+      await expect(owner.getByText(/· Validée$/)).toBeVisible();
 
       const client = await asUser(browser, "E2E_USER");
       await client.goto(CLAIMED);

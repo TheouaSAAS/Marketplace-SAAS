@@ -135,6 +135,15 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 
 - `map_features(ville, couches, zone ouest/sud/est/nord, quartier, limite)` (SECURITY INVOKER, 500 au plus, 300 demandés par l’interface) : couches immobilier et emploi (annonces), services (fiches pro), commerces et tourisme (lieux), événements à venir. Seules les coordonnées publiables sont lues : `location_public` des annonces et fiches pro (exacte, arrondie à ~550 m, ou absente selon le choix de l’annonceur), position publique des lieux et événements. Chaque élément garde sa couche, son identifiant, son statut de vérification et sa précision ; le quartier est la relation réelle (`neighborhood_id`). Les colonnes `location` des annonces et fiches pro restent illisibles pour le public (vérifié par test).
 
+## Événements (niveau 16, migrations `20261029000100_events.sql` et `…000200_event_point.sql`)
+
+- Catégories (sous-catégories d’« Événements », administrables) : concerts et spectacles, sport, culture et traditions, salons et conférences, et désormais formation et ateliers, communauté et solidarité, tourisme et sorties, autres.
+- `search_events` (SECURITY INVOKER) : catégories, période, gratuit ou payant, quartier, texte ; tri par date de début ; jamais un événement terminé (fin, ou début à défaut, avant maintenant).
+- `change_event_schedule` (organisateur, son organisation ou l’équipe) : report (nouvelle date à venir) ou annulation, motif obligatoire affiché au public ; l’événement reste publié (pas de retour en modération), `track_event_schedule` conserve la date initiale ; notification aux personnes qui l’ont en favori.
+- Publication : un membre ne crée qu’un brouillon ou une proposition « en attente » (règle du niveau 2) ; `notify_event_moderation` notifie l’organisateur de la décision (publication ou refus motivé).
+- Tâches planifiées : `archive_past_events` (toutes les heures, archivé 30 jours après la fin), `send_event_reminders` (toutes les 15 minutes, rappel unique dans les 24 h avant le début pour les événements en favori, `event_reminders`).
+- `start_event_conversation` (messagerie avec l’organisateur) ; `my_conversations` et `conversation_header` renvoient `event_title`, `event_slug`. `event_point` : position publique (carte, itinéraire).
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre d'emploi publiée et ouverte), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
