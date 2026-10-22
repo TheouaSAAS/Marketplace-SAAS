@@ -3350,6 +3350,14 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"]
       }
       demo_content_public: { Args: never; Returns: boolean }
+      event_point: {
+        Args: { p_event: string }
+        Returns: {
+          lat: number
+          lng: number
+          location_precision: Database["public"]["Enums"]["location_precision"]
+        }[]
+      }
       expire_listings: { Args: never; Returns: number }
       export_my_data: { Args: never; Returns: Json }
       grant_public_columns: {

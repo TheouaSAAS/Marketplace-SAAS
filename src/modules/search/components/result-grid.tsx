@@ -45,7 +45,7 @@ function ResultCard({ item, now, index }: { item: SearchItem; now: Date; index: 
     case "professionnels":
       return <BusinessCard business={item.data} now={now} index={index} context={context} href={href("professionalDetail", { params: { slug: item.data.slug } })} />;
     case "evenements":
-      return <EventCard event={item.data} now={now} index={index} context={context} />;
+      return <EventCard event={item.data} now={now} index={index} context={context} href={href("eventDetail", { params: { slug: item.data.slug } })} />;
     case "guide":
       return (
         <GuideCard

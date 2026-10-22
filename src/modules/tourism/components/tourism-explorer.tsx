@@ -105,7 +105,7 @@ export async function TourismExplorer({
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {data.events.map((event, index) => (
                 <li key={event.id} className="flex [&>article]:flex-1">
-                  <EventCard event={event} now={now} index={index} />
+                  <EventCard event={event} now={now} index={index} href={href("eventDetail", { params: { slug: event.slug } })} />
                 </li>
               ))}
             </ul>

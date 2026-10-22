@@ -77,9 +77,9 @@ const AVAILABILITY: Record<ListingCardData["availability_status"], { label: stri
 };
 
 /** Titre de carte ; avec `href`, le lien couvre toute la carte (un seul arrêt au clavier). */
-function CardTitle({ title, href }: { title: string; href?: string }) {
+function CardTitle({ title, href, className }: { title: string; href?: string; className?: string }) {
   return (
-    <h3 className="line-clamp-2 font-bold leading-snug">
+    <h3 className={cn("line-clamp-2 font-bold leading-snug", className)}>
       {href ? (
         <Link href={href} className="after:absolute after:inset-0 hover:text-brand-700 focus-visible:outline-none">
           {title}
@@ -130,7 +130,7 @@ export function PlaceCard({ place, now, index, context, href, badge }: CardProps
 const DAY_FORMAT = new Intl.DateTimeFormat("fr-FR", { day: "numeric", timeZone: "Africa/Abidjan" });
 const MONTH_FORMAT = new Intl.DateTimeFormat("fr-FR", { month: "short", timeZone: "Africa/Abidjan" });
 
-export function EventCard({ event, now, index, context }: CardProps & { event: EventCardData }) {
+export function EventCard({ event, now, index, context, href }: CardProps & { event: EventCardData; href?: string }) {
   const startsAt = new Date(event.starts_at);
   const badge = eventBadge(startsAt, event.ends_at ? new Date(event.ends_at) : null, event.schedule_status, now);
   const cancelled = event.schedule_status === "cancelled";
@@ -152,7 +152,7 @@ export function EventCard({ event, now, index, context }: CardProps & { event: E
         <Badge tone={badge.tone}>{badge.label}</Badge>
         <PublicVerification status={event.verification_status} verifiedAt={event.verified_at} now={now} kind="event" />
       </div>
-      <h3 className={cn("line-clamp-2 font-bold leading-snug", cancelled && "text-ink-muted line-through")}>{event.title}</h3>
+      <CardTitle title={event.title} href={href} className={cancelled ? "text-ink-muted line-through" : undefined} />
       <p className="text-sm font-medium first-letter:uppercase">{formatDateTime(event.starts_at)}</p>
       <Meta items={[event.category?.name, event.neighborhood?.name]} />
       <p className="mt-auto pt-2 text-sm font-semibold text-brand-800">

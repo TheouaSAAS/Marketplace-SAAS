@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Download } from "lucide-react";
 import { href } from "@/config/routes";
-import { isAdmin, isCurator, ROLE_LABELS } from "@/domain/roles";
+import { isAdmin, isCurator, isStaff, ROLE_LABELS } from "@/domain/roles";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink, buttonClasses } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { DeleteSavedSearchForm } from "@/modules/search/components/saved-search-
 import { listSavedSearches } from "@/modules/search/server/saved";
 import { CLAIM_STATUSES } from "@/modules/shops/domain/claims";
 import { listMyClaims } from "@/modules/shops/server/claims";
+import { listRecentNotifications } from "@/modules/accounts/server/notifications";
 import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Alert } from "@/components/ui/feedback";
@@ -59,7 +60,7 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
     .limit(1)
     .maybeSingle()) ?? { data: null };
 
-  const [newcomer, savedSearches, claims] = await Promise.all([getSavedNewcomerAnswers(), listSavedSearches(), listMyClaims(account.id).catch(() => [])]);
+  const [newcomer, savedSearches, claims, notifications] = await Promise.all([getSavedNewcomerAnswers(), listSavedSearches(), listMyClaims(account.id).catch(() => []), listRecentNotifications().catch(() => [])]);
   const name = account.displayName ?? account.email ?? "Mon compte";
   const isProfessional = account.role === "professional";
 
@@ -132,6 +133,11 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
             Rédiger le guide pratique
           </ButtonLink>
         )}
+        {isStaff(account.role) && (
+          <ButtonLink href={href("adminEvents")} variant="secondary">
+            Modérer les événements
+          </ButtonLink>
+        )}
         {isCurator(account.role) && (
           <ButtonLink href={href("adminNeighborhoods")} variant="secondary">
             Gérer les quartiers et leurs périmètres
@@ -146,6 +152,35 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
 
       <Section title="Communications">
         <MarketingConsentForm granted={Boolean(marketing?.granted)} />
+      </Section>
+
+      {notifications.length > 0 && (
+        <Section title="Notifications récentes">
+          <ul className="flex flex-col gap-2 text-sm">
+            {notifications.map((notification) => (
+              <li key={notification.id} className="flex flex-col">
+                {notification.link?.startsWith("/") && !notification.link.startsWith("//") ? (
+                  <Link className="font-semibold underline" href={notification.link}>
+                    {notification.title}
+                  </Link>
+                ) : (
+                  <span className="font-semibold">{notification.title}</span>
+                )}
+                <span className="text-xs text-ink-muted">
+                  {formatDate(notification.created_at)}
+                  {notification.body ? ` · ${notification.body}` : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      <Section title="Mes événements">
+        <p className="text-sm text-ink-muted">Proposez un événement, suivez sa modération, reportez-le ou annulez-le.</p>
+        <ButtonLink href={href("myEvents")} variant="secondary">
+          Gérer mes événements
+        </ButtonLink>
       </Section>
 
       {claims.length > 0 && (

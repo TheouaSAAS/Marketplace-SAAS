@@ -135,7 +135,7 @@ async function TabContent({ hood, tab }: { hood: NeighborhoodDetail; tab: Neighb
           ))}
           {events.map((event, index) => (
             <li key={event.id} className="flex [&>article]:flex-1">
-              <EventCard event={event} now={now} index={cards.length + index} context="Événement" />
+              <EventCard event={event} now={now} index={cards.length + index} context="Événement" href={href("eventDetail", { params: { slug: event.slug } })} />
             </li>
           ))}
         </ul>

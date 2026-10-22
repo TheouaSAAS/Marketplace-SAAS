@@ -44,6 +44,14 @@ async function Conversation({ params }: Pick<Props, "params">) {
             </Link>
           </p>
         )}
+        {header.event_title && header.event_slug && (
+          <p className="text-sm">
+            À propos de l’événement{" "}
+            <Link href={href("eventDetail", { params: { slug: header.event_slug } })} className="font-semibold text-brand-700 hover:underline">
+              {header.event_title}
+            </Link>
+          </p>
+        )}
         {header.place_name && header.place_slug && (
           <p className="text-sm">
             À propos de la vitrine{" "}

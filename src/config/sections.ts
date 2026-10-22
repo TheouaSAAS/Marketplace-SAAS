@@ -76,18 +76,6 @@ export const SECTION_PREVIEWS = {
     parent: "directory",
     related: ["directory", "publish", "contact"],
   },
-  events: {
-    title: "Événements",
-    intro: "Ce qui se passe à San Pedro : culture, sport, formation, rencontres professionnelles.",
-    upcoming: [
-      "Agenda : aujourd’hui, ce week-end, ce mois-ci",
-      "Reports et annulations clairement signalés",
-      "Organisateur, source et date de dernière vérification sur chaque fiche",
-    ],
-    parent: "discover",
-    categories: ["evenements"],
-    related: ["discover", "tourism", "publish"],
-  },
 } as const satisfies Partial<Record<RouteKey, SectionPreviewConfig>>;
 
 export type PreviewSectionKey = keyof typeof SECTION_PREVIEWS;

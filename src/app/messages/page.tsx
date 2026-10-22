@@ -41,8 +41,8 @@ async function ConversationList() {
           >
             <div className="min-w-0">
               <p className={cn("truncate", conversation.unread > 0 ? "font-bold" : "font-semibold")}>{conversation.other_name}</p>
-              {(conversation.listing_title ?? conversation.place_name) && (
-                <p className="truncate text-sm text-brand-700">{conversation.listing_title ?? conversation.place_name}</p>
+              {(conversation.listing_title ?? conversation.place_name ?? conversation.event_title) && (
+                <p className="truncate text-sm text-brand-700">{conversation.listing_title ?? conversation.place_name ?? conversation.event_title}</p>
               )}
               {conversation.last_message && (
                 <p className="truncate text-sm text-ink-muted">
