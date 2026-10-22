@@ -32,7 +32,7 @@ export const ROUTES = {
 
   // Annonces & opportunités
   listings: { path: "/annonces", label: "Annonces", level: 7, status: "preview" },
-  listingDetail: { path: "/annonces/[slug]", label: "Détail d’une annonce", level: 8, status: "planned" },
+  listingDetail: { path: "/annonces/[slug]", label: "Détail d’une annonce", level: 8, status: "live" },
   realEstate: { path: "/immobilier", label: "Immobilier", level: 9, status: "preview" },
   jobs: { path: "/emploi", label: "Emploi et opportunités", level: 17, status: "preview" },
   publish: { path: "/publier", label: "Publier une annonce", level: 18, status: "preview" },

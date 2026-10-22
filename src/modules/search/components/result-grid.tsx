@@ -1,3 +1,4 @@
+import { href } from "@/config/routes";
 import { BusinessCard, EventCard, GuideCard, ListingCard, PlaceCard } from "@/components/content/content-cards";
 import { formatDate } from "@/lib/format";
 import { SEARCH_TYPES } from "../domain/params";
@@ -38,7 +39,7 @@ function ResultCard({ item, now, index }: { item: SearchItem; now: Date; index: 
   const context = resultContext(item);
   switch (item.type) {
     case "annonces":
-      return <ListingCard listing={item.data} now={now} index={index} context={context} />;
+      return <ListingCard listing={item.data} now={now} index={index} context={context} href={href("listingDetail", { params: { slug: item.data.slug } })} />;
     case "lieux":
       return <PlaceCard place={item.data} now={now} index={index} context={context} />;
     case "professionnels":

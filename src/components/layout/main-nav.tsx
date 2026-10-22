@@ -9,20 +9,26 @@ import { hasPage, href, ROUTES } from "@/config/routes";
 import { Popover } from "@/components/ui/popover";
 import { NavItemLink } from "./nav-item-link";
 
-function isSectionActive(section: NavSection, pathname: string): boolean {
+function isSectionActive(section: NavSection, pathname: string | null): boolean {
+  if (pathname === null) return false;
   return [section.route, ...section.links.map((link) => link.route)].some((route) => {
     const path = ROUTES[route].path;
     return path !== "/" && (pathname === path || pathname.startsWith(`${path}/`));
   });
 }
 
+/** Lit l'adresse courante : à placer sous <Suspense> (adresses dynamiques inconnues au prérendu). */
+export function MainNav({ className }: { className?: string }) {
+  return <MainNavView className={className} pathname={usePathname()} />;
+}
+
 /**
  * Navigation principale (ordinateur) : une barre sous l'en-tête, avec un menu
  * déroulant par rubrique et l'accès signature « Nouveau à San Pedro ? ».
+ * `pathname` null : aucune rubrique active (repli pendant le chargement).
  */
-export function MainNav({ className }: { className?: string }) {
-  const pathname = usePathname();
-  const newcomerActive = pathname.startsWith(ROUTES.newcomer.path);
+export function MainNavView({ className, pathname }: { className?: string; pathname: string | null }) {
+  const newcomerActive = pathname?.startsWith(ROUTES.newcomer.path) ?? false;
 
   return (
     <nav aria-label="Navigation principale" className={cn("items-center gap-1", className)}>

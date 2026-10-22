@@ -16,16 +16,22 @@ const ICONS: Record<(typeof MOBILE_TABS)[number]["icon"], ReactNode> = {
   user: <UserRound aria-hidden className="h-6 w-6" />,
 };
 
-function isActive(path: string, pathname: string): boolean {
+function isActive(path: string, pathname: string | null): boolean {
+  if (pathname === null) return false;
   return path === "/" ? pathname === "/" : pathname === path || pathname.startsWith(`${path}/`);
+}
+
+/** Lit l'adresse courante : à placer sous <Suspense> (adresses dynamiques inconnues au prérendu). */
+export function BottomNav() {
+  return <BottomNavView pathname={usePathname()} />;
 }
 
 /**
  * Barre de navigation basse (mobile et tablette) : les cinq destinations
  * principales à portée de pouce. Respecte la zone de sécurité des écrans à encoche.
+ * `pathname` null : aucun onglet actif (repli pendant le chargement).
  */
-export function BottomNav() {
-  const pathname = usePathname();
+export function BottomNavView({ pathname }: { pathname: string | null }) {
   // Les espaces de compte (connexion, profil…) sont tous rattachés à l'onglet « Compte ».
   const accountPaths = [ROUTES.profile.path, ROUTES.login.path, ROUTES.signup.path];
 

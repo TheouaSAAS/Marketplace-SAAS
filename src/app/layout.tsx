@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { Suspense } from "react";
 import { SITE } from "@/config/site";
 import { AssistantLauncher } from "@/components/layout/assistant-launcher";
-import { BottomNav } from "@/components/layout/bottom-nav";
+import { BottomNav, BottomNavView } from "@/components/layout/bottom-nav";
 import { ServiceWorkerRegistration } from "@/components/layout/service-worker-registration";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -60,7 +61,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </main>
           <SiteFooter />
-          <BottomNav />
+          <Suspense fallback={<BottomNavView pathname={null} />}>
+            <BottomNav />
+          </Suspense>
           <AssistantLauncher enabled={isFeatureEnabled("ai_assistant")} />
         </ToastProvider>
         <ServiceWorkerRegistration />

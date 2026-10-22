@@ -10,7 +10,7 @@ import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/brand/logo";
 import { CitySelector, CitySelectorFallback } from "./city-selector";
 import { HeaderSearch } from "./header-search";
-import { MainNav } from "./main-nav";
+import { MainNav, MainNavView } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 import { RouteButton } from "./nav-item-link";
 
@@ -69,7 +69,9 @@ export function SiteHeader() {
       </Container>
       <div className="hidden border-t border-border lg:block">
         <Container>
-          <MainNav className="flex h-14" />
+          <Suspense fallback={<MainNavView className="flex h-14" pathname={null} />}>
+            <MainNav className="flex h-14" />
+          </Suspense>
         </Container>
       </div>
     </header>

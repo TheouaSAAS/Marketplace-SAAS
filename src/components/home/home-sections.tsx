@@ -79,7 +79,7 @@ export async function HomeSections() {
         ) : (
           <SectionGrid>
             {listings.value.map((listing, index) => (
-              <ListingCard key={listing.id} listing={listing} now={now} index={index} />
+              <ListingCard key={listing.id} listing={listing} now={now} index={index} href={href("listingDetail", { params: { slug: listing.slug } })} />
             ))}
           </SectionGrid>
         )}
