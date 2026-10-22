@@ -4,7 +4,6 @@ const SECTIONS: [string, string][] = [
   ["/annonces", "Annonces et opportunités"],
   ["/emploi", "Emploi et opportunités"],
   ["/professionnels", "Professionnels et entreprises"],
-  ["/carte", "Carte interactive"],
   ["/evenements", "Événements"],
   ["/publier", "Publier une annonce"],
   ["/offres", "Offres pour les professionnels"],

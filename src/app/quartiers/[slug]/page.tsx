@@ -66,11 +66,20 @@ async function TabContent({ hood, tab }: { hood: NeighborhoodDetail; tab: Neighb
   const now = new Date();
   if (tab === "carte") {
     const geojson = await getNeighborhoodBoundary(hood.id);
+    const onMap = (
+      <Link href={href("map", { query: { quartier: hood.slug } })} className="inline-flex min-h-11 w-fit items-center gap-1 font-semibold text-brand-700 hover:underline">
+        Voir les éléments rattachés sur la carte interactive
+        <ArrowRight aria-hidden className="h-4 w-4" />
+      </Link>
+    );
     if (!geojson) {
       return (
-        <Alert tone="warning" title="Pas de périmètre validé">
-          Ce quartier n’a pas encore de limites tracées et validées par l’équipe locale : nous n’en dessinons pas d’approximatives.
-        </Alert>
+        <div className="flex flex-col gap-2">
+          <Alert tone="warning" title="Pas de périmètre validé">
+            Ce quartier n’a pas encore de limites tracées et validées par l’équipe locale : nous n’en dessinons pas d’approximatives.
+          </Alert>
+          {onMap}
+        </div>
       );
     }
     return (
@@ -86,6 +95,7 @@ async function TabContent({ hood, tab }: { hood: NeighborhoodDetail; tab: Neighb
           <p className="text-sm text-ink-muted">Carte désactivée pour le moment.</p>
         )}
         {hood.boundary_validated_at && <p className="text-xs text-ink-subtle">Périmètre validé le {formatDate(hood.boundary_validated_at)}.</p>}
+        {onMap}
       </div>
     );
   }

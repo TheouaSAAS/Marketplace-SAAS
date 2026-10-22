@@ -62,7 +62,7 @@ export const ROUTES = {
   neighborhoodDetail: { path: "/quartiers/[slug]", label: "Fiche d’un quartier", level: 14, status: "live" },
   adminNeighborhoods: { path: "/admin/quartiers", label: "Quartiers : fiches et périmètres", level: 14, status: "live", private: true },
   adminNeighborhood: { path: "/admin/quartiers/[slug]", label: "Modifier un quartier", level: 14, status: "live", private: true },
-  map: { path: "/carte", label: "Carte interactive", level: 15, status: "preview" },
+  map: { path: "/carte", label: "Carte interactive", level: 15, status: "live" },
   events: { path: "/evenements", label: "Événements", level: 16, status: "preview" },
   eventDetail: { path: "/evenements/[slug]", label: "Détail d’un événement", level: 16, status: "planned" },
   placeDetail: { path: "/lieux/[slug]", label: "Vitrine d’un lieu", level: 11, status: "live" },

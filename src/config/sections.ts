@@ -76,17 +76,6 @@ export const SECTION_PREVIEWS = {
     parent: "directory",
     related: ["directory", "publish", "contact"],
   },
-  map: {
-    title: "Carte interactive",
-    intro: "Explorer San Pedro par catégorie et par proximité, sur une carte synchronisée avec la liste des résultats.",
-    upcoming: [
-      "Couches : immobilier, services, commerces, tourisme, événements",
-      "« Autour de moi » sur autorisation explicite, position jamais enregistrée",
-      "Positions des annonces volontairement approximatives pour protéger les annonceurs",
-    ],
-    parent: "discover",
-    related: ["discover", "neighborhoods", "services"],
-  },
   events: {
     title: "Événements",
     intro: "Ce qui se passe à San Pedro : culture, sport, formation, rencontres professionnelles.",
