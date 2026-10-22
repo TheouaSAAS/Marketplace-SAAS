@@ -25,11 +25,13 @@ export function TourismFiltersForm({
   action,
   filters,
   types,
+  neighborhoods,
   hasPosition,
 }: {
   action: string;
   filters: TourismFilters;
   types: Category[];
+  neighborhoods: { slug: string; name: string }[];
   hasPosition: boolean;
 }) {
   return (
@@ -49,6 +51,20 @@ export function TourismFiltersForm({
                 {types.map((type) => (
                   <option key={type.slug} value={type.slug}>
                     {type.name}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </Field>
+        )}
+        {neighborhoods.length > 0 && (
+          <Field label="Quartier">
+            {(props) => (
+              <Select {...props} name="quartier" defaultValue={filters.quartier ?? ""}>
+                <option value="">Toute la ville et les environs</option>
+                {neighborhoods.map((item) => (
+                  <option key={item.slug} value={item.slug}>
+                    {item.name}
                   </option>
                 ))}
               </Select>

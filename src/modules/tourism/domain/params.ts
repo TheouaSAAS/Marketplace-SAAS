@@ -7,6 +7,7 @@ import { isAccessibility, isAudience, isTheme, isVisitDuration, type Accessibili
 export interface TourismFilters {
   q: string;
   type: string | null;
+  quartier: string | null;
   themes: Theme[];
   public: Audience[];
   duree: VisitDuration | null;
@@ -21,6 +22,7 @@ export interface TourismFilters {
 export const EMPTY_TOURISM_FILTERS: TourismFilters = {
   q: "",
   type: null,
+  quartier: null,
   themes: [],
   public: [],
   duree: null,
@@ -44,6 +46,7 @@ export function parseTourismFilters(raw: Raw): TourismFilters {
   return {
     q: (first(raw.q) ?? "").replace(/\s+/g, " ").trim().slice(0, 120),
     type: slug(first(raw.type)),
+    quartier: slug(first(raw.quartier)),
     themes: keys(raw.themes, isTheme),
     public: keys(raw.public, isAudience),
     duree: duree && isVisitDuration(duree) ? duree : null,
@@ -60,6 +63,7 @@ export function tourismQuery(filters: TourismFilters): string {
   const query = new URLSearchParams();
   if (filters.q) query.set("q", filters.q);
   if (filters.type) query.set("type", filters.type);
+  if (filters.quartier) query.set("quartier", filters.quartier);
   if (filters.themes.length) query.set("themes", filters.themes.join(","));
   if (filters.public.length) query.set("public", filters.public.join(","));
   if (filters.duree) query.set("duree", filters.duree);

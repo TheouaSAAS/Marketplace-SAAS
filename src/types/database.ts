@@ -3459,6 +3459,20 @@ export type Database = {
         Args: { p_neighborhood: string }
         Returns: string
       }
+      neighborhood_boundary_history: {
+        Args: { p_neighborhood: string }
+        Returns: {
+          area_km2: number
+          geojson: string
+          id: string
+          note: string
+          proposed_at: string
+          review_note: string
+          reviewed_at: string
+          source_title: string
+          status: string
+        }[]
+      }
       neighborhood_resource_counts: {
         Args: { p_neighborhood: string }
         Returns: {
@@ -3536,6 +3550,20 @@ export type Database = {
           p_verification: Database["public"]["Enums"]["verification_status"]
         }
         Returns: string
+      }
+      save_neighborhood: {
+        Args: {
+          p_alt_names: string[]
+          p_change_note: string
+          p_description: string
+          p_id: string
+          p_is_active: boolean
+          p_make_me_steward: boolean
+          p_name: string
+          p_source: string
+          p_verification: Database["public"]["Enums"]["verification_status"]
+        }
+        Returns: undefined
       }
       search_anonymize: { Args: { p_query: string }; Returns: string }
       search_content: {

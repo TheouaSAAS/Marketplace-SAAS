@@ -121,5 +121,27 @@ begin
     and exists (select 1 from public.admin_audit_log where entity_id = v_hood and action = 'neighborhood_boundary.clear'));
 end $$;
 
+do $$
+declare
+  v_hood uuid := (select id from public.neighborhoods where slug = 'q14-test');
+  v_err text;
+begin
+  perform pg_temp.act_as('00000000-0000-4000-8000-000000000502');
+  begin
+    perform public.save_neighborhood(v_hood, 'Zqn Renommé', '{}', null, 'pending_validation', null, true, false, 'Essai');
+  exception when others then v_err := sqlstate;
+  end;
+  perform pg_temp.back();
+  perform pg_temp.record('un membre ne modifie pas une fiche quartier', v_err = '42501', v_err);
+
+  perform pg_temp.act_as('00000000-0000-4000-8000-000000000501');
+  perform public.save_neighborhood(v_hood, 'Zqn Quartier test', '{Zqn ancien nom}', 'Description neutre de test.', 'pending_validation', null, true, true, 'Ajout d''un nom alternatif');
+  perform pg_temp.back();
+  perform pg_temp.record('l''équipe locale modifie la fiche et se désigne responsable',
+    exists (select 1 from public.neighborhoods where id = v_hood and alt_names = '{Zqn ancien nom}' and steward_id = '00000000-0000-4000-8000-000000000501'));
+  perform pg_temp.record('la modification est historisée avec sa note',
+    exists (select 1 from public.content_revisions where entity_id = v_hood and reason = 'Ajout d''un nom alternatif'));
+end $$;
+
 select test, ok, detail from results order by n;
 rollback;

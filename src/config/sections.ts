@@ -76,17 +76,6 @@ export const SECTION_PREVIEWS = {
     parent: "directory",
     related: ["directory", "publish", "contact"],
   },
-  neighborhoods: {
-    title: "Quartiers",
-    intro: "Les quartiers de San Pedro et ce que la plateforme y recense réellement : logements, commerces, services, lieux.",
-    upcoming: [
-      "Fiches neutres : aucun quartier qualifié de « sûr » ou « meilleur » sans critère sourcé",
-      "Périmètres affichés seulement lorsqu’ils sont validés",
-      "Filtre par quartier dans toutes les rubriques",
-    ],
-    parent: "discover",
-    related: ["realEstate", "map", "guide"],
-  },
   map: {
     title: "Carte interactive",
     intro: "Explorer San Pedro par catégorie et par proximité, sur une carte synchronisée avec la liste des résultats.",

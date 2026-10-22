@@ -57,7 +57,7 @@ export async function TourismExplorer({
       </Link>
       <div className="grid gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start">
         <aside aria-label="Affiner">
-          <TourismFiltersForm key={tourismQuery(data.filters)} action={action} filters={data.filters} types={data.types} hasPosition={data.position !== null} />
+          <TourismFiltersForm key={tourismQuery(data.filters)} action={action} filters={data.filters} types={data.types} neighborhoods={data.neighborhoods} hasPosition={data.position !== null} />
         </aside>
         <section aria-labelledby="lieux" className="flex min-w-0 flex-col gap-4">
           <h2 id="lieux" className="text-xl font-bold">

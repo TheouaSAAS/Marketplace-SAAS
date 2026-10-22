@@ -14,7 +14,7 @@ export type TourismCard = PlaceCardData & { distanceM: number | null };
 
 export async function searchTourism(
   filters: TourismFilters,
-  context: { cityId: string; categoryIds: string[]; position: { lat: number; lng: number } | null },
+  context: { cityId: string; categoryIds: string[]; neighborhoodId: string | null; position: { lat: number; lng: number } | null },
 ): Promise<{ total: number; items: TourismCard[] }> {
   const supabase = createPublicSupabaseClient();
   if (!supabase) throw new Error("Tourisme indisponible : base de données non configurée.");
@@ -34,6 +34,7 @@ export async function searchTourism(
     p_sort: context.position && filters.tri === "proximite" ? "proximite" : "pertinence",
     p_limit: TOURISM_PAGE_SIZE,
     p_offset: (filters.page - 1) * TOURISM_PAGE_SIZE,
+    p_neighborhood: context.neighborhoodId ?? undefined,
   });
   if (error) throw new Error(`Recherche touristique impossible : ${error.message}`);
   const rows = rowsSchema.parse(data);

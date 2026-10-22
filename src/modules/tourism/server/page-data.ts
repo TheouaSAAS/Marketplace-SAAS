@@ -2,6 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { logger } from "@/lib/logger";
+import { listNeighborhoods } from "@/modules/neighborhoods/server/queries";
 import { listUpcomingEvents } from "@/modules/events/server/queries";
 import { rawQueryString } from "@/modules/search/domain/params";
 import { parsePositionCookie, POSITION_COOKIE } from "@/modules/search/domain/position";
@@ -23,7 +24,7 @@ export async function loadTourismPage(raw: Raw, entry: TourismEntry | null) {
 
   const [{ current }, cookieStore] = await Promise.all([getCityContext(), cookies()]);
   if (!current.id) return { kind: "unconfigured" } as const;
-  const categories = await listCategories();
+  const [categories, neighborhoods] = await Promise.all([listCategories(), listNeighborhoods(current.id)]);
   const scope = entry ? [...TOURISM_ENTRIES[entry].categories] : TOURISM_CATEGORIES;
   const types = categories.filter((category) => scope.includes(category.slug));
   // Un type hors de l'entrée (ou désactivé) est ignoré plutôt que de vider la page.
@@ -31,10 +32,11 @@ export async function loadTourismPage(raw: Raw, entry: TourismEntry | null) {
   const filters: TourismFilters = type ? requested : { ...requested, type: null };
   const categoryIds = categoryIdsWithDescendants(categories, type ? [type.slug] : types.map((item) => item.slug));
   const position = isFeatureEnabled("geolocation") ? parsePositionCookie(cookieStore.get(POSITION_COOKIE)?.value) : null;
+  const neighborhood = filters.quartier ? neighborhoods.find((item) => item.slug === filters.quartier) : undefined;
 
   try {
     const [result, events] = await Promise.all([
-      searchTourism(filters, { cityId: current.id, categoryIds, position }),
+      searchTourism(filters, { cityId: current.id, categoryIds, neighborhoodId: neighborhood?.id ?? null, position }),
       entry === "sortir"
         ? listUpcomingEvents(current.id, 6).catch((error: unknown) => {
             logger.warn("Événements indisponibles", { module: "tourisme", error });
@@ -42,7 +44,7 @@ export async function loadTourismPage(raw: Raw, entry: TourismEntry | null) {
           })
         : Promise.resolve([]),
     ]);
-    return { kind: "ok", filters, types, type, position, events, pageSize: TOURISM_PAGE_SIZE, ...result } as const;
+    return { kind: "ok", filters, types, type, neighborhoods, position, events, pageSize: TOURISM_PAGE_SIZE, ...result } as const;
   } catch (error) {
     logger.error("Recherche touristique impossible", { module: "tourisme", error });
     return { kind: "error" } as const;
