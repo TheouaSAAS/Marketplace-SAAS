@@ -83,6 +83,12 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - Signalements : un seul ouvert par personne et par contenu, 10 par heure.
 - Code d’erreur `CP429` : limite atteinte (le message de la base est affiché tel quel).
 
+## Immobilier (niveau 9, migration `20261022000100_real_estate_search.sql`)
+
+- `search_real_estate(ville, catégories, séjour, texte, type, pièces, chambres, surface, meublé, prix, disponibles, confirmées depuis N jours, quartier, équipements, tri, pagination)` : SECURITY INVOKER, annonces publiées et actives seulement ; séjour `short` = prix à la nuit ou à la journée, `long` = le reste.
+- `attr_int`, `attr_bool` : lecture sûre des attributs déclarés (valeur mal typée → null, jamais d’erreur).
+- Attributs immobiliers reconnus à l’affichage : `type_bien`, `pieces`, `chambres`, `surface_m2`, `salles_de_bain`, `etage`, `meuble`, `equipements` (liste de clés).
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre d'emploi publiée et ouverte), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.

@@ -143,5 +143,17 @@ Avec Cache Components, une adresse dynamique (`/annonces/[slug]`, `/messages/[id
 ## D47 — Niveau 8 : périmètre livré et reporté
 Livré : fiche complète, favoris, « j'aime », partage, commentaires, signalement, contact, messagerie, similaires, états, données structurées. Reporté : galerie photo (avec l'ajout de photos, niveau 18 — un visuel neutre l'indique, aucune image inventée) ; compteur de vues (tables et fonction en base, non alimentées) ; temps réel instantané de la messagerie (la base diffuse les messages, l'interface rafraîchit le fil toutes les 20 s quand l'onglet est visible).
 
+## D48 — Immobilier : quatre entrées, attributs déclarés, aucune promesse
+Location, vente, séjour temporaire (facturé à la nuit ou à la journée) et locaux professionnels correspondent à des catégories du référentiel (administrables). Les filtres portent sur les attributs déclarés par l'annonceur (`listings.attributes`), lus de façon sûre en base (`attr_int`, `attr_bool` : une valeur mal typée est ignorée, jamais une erreur) ; un filtre inadapté à l'entrée n'est pas proposé (ni pièces ni mobilier pour un local). Le budget filtre les prix annoncés : ni estimation, ni conseil financier, ni prix moyen par quartier, et aucun quartier n'est présenté comme « meilleur ».
+
+## D49 — Fraîcheur des annonces immobilières
+La disponibilité est déclarative : une annonce publiée ou confirmée par l'annonceur il y a plus de 30 jours est signalée « à reconfirmer » sur la carte et la fiche, avec le conseil de vérifier avant de se déplacer ; un filtre « confirmées depuis moins de 30 jours » est proposé. Une annonce expirée n'apparaît plus (niveau 8).
+
+## D50 — Comparaison et conseils
+La comparaison (3 biens au plus) est gardée dans le navigateur seulement et passe par l'adresse (`?annonces=a,b,c`) ; elle n'est pas indexée et n'est pas un classement. La page de conseils combine des règles de prudence générales (aucune donnée locale) et les articles « Se loger » du guide, administrables, avec source et statut de vérification.
+
+## D51 — Formulaires de filtres recréés à chaque recherche
+Une navigation vers la même page avec d'autres critères conserve les composants : des champs non contrôlés garderaient leurs anciennes valeurs. Les formulaires de filtres (recherche générale, immobilier) ont donc pour clé la forme canonique des critères et se recréent quand elle change.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).
