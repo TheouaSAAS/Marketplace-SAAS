@@ -93,3 +93,22 @@ select (select id from public.guide_sections where slug = 'se-deplacer'), c.city
        'published', 'placeholder'
 from demo_ctx c
 on conflict (slug) do nothing;
+
+-- -----------------------------------------------------------------------------
+-- Fiches professionnelles (niveau 10) : aucun téléphone, horaire ni nom réel
+-- -----------------------------------------------------------------------------
+insert into public.business_profiles (owner_id, slug, name, description, category_id, city_id, neighborhood_id,
+                                      location, location_precision, public_location_precision, status, verification_status,
+                                      services, service_area, accepts_quotes)
+select c.owner_id, v.slug, v.name,
+       'Fiche de démonstration fictive, destinée à tester la plateforme. Elle ne décrit aucun professionnel réel.',
+       (select id from public.categories where slug = v.category), c.city_id, v.neighborhood,
+       pg_temp.demo_point(v.dlng, v.dlat), 'approximate', 'approximate', 'published', 'placeholder',
+       v.services::text[], 'Exemple : zone à préciser par le professionnel', true
+from demo_ctx c
+cross join lateral (values
+  ('exemple-electricien', 'Exemple — Électricien (à valider localement)', 'electricite', c.n_cite, 0.002, 0.003, '{"Exemple de prestation : dépannage","Exemple de prestation : installation"}'),
+  ('exemple-climatisation', 'Exemple — Climatisation (à valider localement)', 'climatisation', c.n_lac, -0.003, 0.002, '{"Exemple de prestation : entretien","Exemple de prestation : réparation"}'),
+  ('exemple-plombier', 'Exemple — Plombier (à valider localement)', 'plomberie', c.n_bardot, -0.006, -0.001, '{"Exemple de prestation : recherche de fuite"}')
+) as v (slug, name, category, neighborhood, dlng, dlat, services)
+on conflict (slug) do nothing;

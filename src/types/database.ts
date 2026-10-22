@@ -56,7 +56,10 @@ export type Database = {
       }
       business_profiles: {
         Row: {
+          accepts_quotes: boolean
           address_text: string | null
+          availability_declared_at: string | null
+          availability_note: string | null
           category_id: string | null
           city_id: string
           cover_path: string | null
@@ -78,6 +81,8 @@ export type Database = {
           published_at: string | null
           rejection_reason: string | null
           search_vector: unknown
+          service_area: string | null
+          services: string[]
           slug: string
           source_id: string | null
           status: Database["public"]["Enums"]["content_status"]
@@ -90,7 +95,10 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          accepts_quotes?: boolean
           address_text?: string | null
+          availability_declared_at?: string | null
+          availability_note?: string | null
           category_id?: string | null
           city_id: string
           cover_path?: string | null
@@ -112,6 +120,8 @@ export type Database = {
           published_at?: string | null
           rejection_reason?: string | null
           search_vector?: unknown
+          service_area?: string | null
+          services?: string[]
           slug: string
           source_id?: string | null
           status?: Database["public"]["Enums"]["content_status"]
@@ -124,7 +134,10 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          accepts_quotes?: boolean
           address_text?: string | null
+          availability_declared_at?: string | null
+          availability_note?: string | null
           category_id?: string | null
           city_id?: string
           cover_path?: string | null
@@ -146,6 +159,8 @@ export type Database = {
           published_at?: string | null
           rejection_reason?: string | null
           search_vector?: unknown
+          service_area?: string | null
+          services?: string[]
           slug?: string
           source_id?: string | null
           status?: Database["public"]["Enums"]["content_status"]
@@ -219,6 +234,7 @@ export type Database = {
           icon: string | null
           id: string
           is_active: boolean
+          keywords: string[]
           name: string
           parent_id: string | null
           slug: string
@@ -234,6 +250,7 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean
+          keywords?: string[]
           name: string
           parent_id?: string | null
           slug: string
@@ -249,6 +266,7 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean
+          keywords?: string[]
           name?: string
           parent_id?: string | null
           slug?: string
@@ -351,7 +369,9 @@ export type Database = {
       contact_requests: {
         Row: {
           business_id: string | null
+          consented_at: string | null
           created_at: string
+          details: Json
           event_id: string | null
           id: string
           kind: Database["public"]["Enums"]["contact_request_kind"]
@@ -368,7 +388,9 @@ export type Database = {
         }
         Insert: {
           business_id?: string | null
+          consented_at?: string | null
           created_at?: string
+          details?: Json
           event_id?: string | null
           id?: string
           kind?: Database["public"]["Enums"]["contact_request_kind"]
@@ -385,7 +407,9 @@ export type Database = {
         }
         Update: {
           business_id?: string | null
+          consented_at?: string | null
           created_at?: string
+          details?: Json
           event_id?: string | null
           id?: string
           kind?: Database["public"]["Enums"]["contact_request_kind"]
@@ -3220,6 +3244,28 @@ export type Database = {
         }[]
       }
       search_normalize: { Args: { p_query: string }; Returns: string }
+      search_professionals: {
+        Args: {
+          p_available_days?: number
+          p_categories?: string[]
+          p_city: string
+          p_contact?: string
+          p_lat?: number
+          p_limit?: number
+          p_lng?: number
+          p_neighborhood?: string
+          p_offset?: number
+          p_query?: string
+          p_radius_m?: number
+          p_sort?: string
+          p_verified_only?: boolean
+        }
+        Returns: {
+          distance_m: number
+          id: string
+          total_count: number
+        }[]
+      }
       search_real_estate: {
         Args: {
           p_categories: string[]
