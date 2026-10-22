@@ -43,6 +43,18 @@ const PAGES = [
     excludes: ["/design-system", "/admin", "/interne", "/tourisme", "/annonces", "/profil", "/hors-ligne"],
   },
   { path: "/annonces", status: 200, includes: ["En préparation", "noindex"] },
+  { path: "/immobilier", status: 200, includes: ["Immobilier à San Pedro", "Logements à louer", "Locations de courte durée"], excludes: ["En préparation"] },
+  { path: "/immobilier/location", status: 200, includes: DB ? ["Logements à louer", "Filtres et tri", "à reconfirmer"] : ["Logements à louer", ...SEARCH_DOWN] },
+  {
+    path: "/immobilier/location?q=studio%20meubl%C3%A9%20%C3%A0%20Cit%C3%A9",
+    status: 200,
+    includes: DB ? ["Nous avons interprété votre recherche", "Type : studio"] : SEARCH_DOWN,
+  },
+  { path: "/immobilier/professionnel", status: 200, includes: ["Bureaux et locaux commerciaux"], excludes: ["Pièces (min.)"] },
+  { path: "/immobilier/conseils", status: 200, includes: ["Avant une visite ou un paiement", "Guide pratique : se loger"] },
+  { path: "/immobilier/comparer?annonces=a", status: 200, includes: ["Choisissez au moins deux biens", "noindex"] },
+  // Paramètre dynamique inconnu : rendu « introuvable » non indexé (statut 200 en streaming, comme une annonce inconnue).
+  { path: "/immobilier/inconnu", status: 200, includes: ["introuvable", "noindex"] },
   { path: "/nouveau-arrivant", status: 200, includes: ["Nouveau à San Pedro ?", "Commencer"] },
   { path: "/nouveau-arrivant/questions", status: 200, includes: ["Questionnaire", "noindex"] },
   {

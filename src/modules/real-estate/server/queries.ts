@@ -69,3 +69,18 @@ export async function searchRealEstate(
 export function modeCategorySlugs(mode: RealEstateMode): readonly string[] {
   return REAL_ESTATE_MODES[mode].categories;
 }
+
+/** Biens à comparer (3 au plus), par leur adresse ; une annonce devenue invisible est ignorée. */
+export async function listRealEstateBySlugs(slugs: readonly string[]): Promise<RealEstateCardData[]> {
+  const supabase = createPublicSupabaseClient();
+  const wanted = [...new Set(slugs)].filter((slug) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)).slice(0, 3);
+  if (!supabase || wanted.length === 0) return [];
+  const { data, error } = await supabase
+    .from("listings")
+    .select(`${LISTING_CARD_COLUMNS}, attributes`)
+    .eq("status", "published")
+    .in("slug", wanted);
+  if (error) throw new Error(`Lecture des biens à comparer impossible : ${error.message}`);
+  const cards = z.array(realEstateCardSchema).parse(data);
+  return wanted.flatMap((slug) => cards.filter((card) => card.slug === slug));
+}

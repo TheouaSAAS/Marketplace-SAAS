@@ -1,4 +1,5 @@
 import "server-only";
+import { connection } from "next/server";
 import { logger } from "@/lib/logger";
 import { listNeighborhoods } from "@/modules/neighborhoods/server/queries";
 import { rawQueryString } from "@/modules/search/domain/params";
@@ -17,6 +18,8 @@ function onlyText(filters: RealEstateFilters): boolean {
 }
 
 export async function loadRealEstatePage(mode: RealEstateMode, raw: Raw) {
+  // Données de la requête réelle uniquement (jamais pendant un prérendu ou un préchargement).
+  await connection();
   const requested = parseRealEstateFilters(raw, mode);
   // Une seule adresse par recherche (champs vides du formulaire, valeurs invalides retirés).
   if (rawQueryString(raw) !== realEstateQuery(requested)) return { kind: "redirect", query: realEstateQuery(requested) } as const;

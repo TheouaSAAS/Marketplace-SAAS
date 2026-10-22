@@ -11,6 +11,7 @@ import { ModeNav } from "@/modules/real-estate/components/mode-nav";
 import { PropertyFilters } from "@/modules/real-estate/components/property-filters";
 import { PropertyResults } from "@/modules/real-estate/components/property-results";
 import { PropertySearchBox } from "@/modules/real-estate/components/property-search-box";
+import { realEstateQuery } from "@/modules/real-estate/domain/filters";
 import { isRealEstateMode, REAL_ESTATE_MODE_KEYS, REAL_ESTATE_MODES, type RealEstateMode } from "@/modules/real-estate/domain/modes";
 import { loadRealEstatePage } from "@/modules/real-estate/server/page-data";
 
@@ -45,7 +46,8 @@ async function Results({ mode, searchParams }: { mode: RealEstateMode; searchPar
       )}
       <div className="grid gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start">
         <aside aria-label="Affiner la recherche">
-          <PropertyFilters mode={mode} filters={data.filters} neighborhoods={data.neighborhoods} />
+          {/* Clé : le formulaire se recrée quand les critères changent (champs non contrôlés). */}
+          <PropertyFilters key={realEstateQuery(data.filters)} mode={mode} filters={data.filters} neighborhoods={data.neighborhoods} />
         </aside>
         <section aria-labelledby="resultats" className="flex min-w-0 flex-col gap-4">
           <h2 id="resultats" className="text-xl font-bold">

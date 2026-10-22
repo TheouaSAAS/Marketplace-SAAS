@@ -21,6 +21,11 @@ describe("interpretQuery", () => {
     expect(result.understood).toEqual(["Annonces immobilières à louer", "Près de vous"]);
   });
 
+  it("« je cherche un logement » : annonces immobilières, sans mot-clé restant", () => {
+    const result = interpretQuery("Je cherche un logement", { ...context, categorySlugs: new Set([...context.categorySlugs, "immobilier"]) });
+    expect(result).toEqual({ keywords: "", filters: { type: "annonces", categorie: "immobilier" }, near: false, understood: ["Annonces immobilières"] });
+  });
+
   it("« électricien » reste un simple mot-clé (aucune catégorie inventée)", () => {
     const result = interpret("électricien");
     expect(result).toEqual({ keywords: "électricien", filters: {}, near: false, understood: [] });

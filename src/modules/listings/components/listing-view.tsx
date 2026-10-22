@@ -8,6 +8,7 @@ import { displayAttributes } from "../domain/attributes";
 import { listingState, STATE_NOTICES, type ContactChannel } from "../domain/presentation";
 import type { LoadedListing } from "../server/page-data";
 import { listingCategoryHref, listingJsonLd, listingUrl } from "../server/seo";
+import { RealEstateNotice } from "@/modules/real-estate/components/real-estate-notice";
 import { ListingAside } from "./listing-aside";
 import { ListingHeader } from "./listing-header";
 import { ListingJsonLd } from "./listing-json-ld";
@@ -52,6 +53,9 @@ export function ListingView({ data }: { data: LoadedListing }) {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <div className="flex min-w-0 flex-col gap-6">
           <ListingHeader listing={listing} now={now} active={state === "active"} />
+          {listing.category?.attribute_schema === "immobilier" && state === "active" && (
+            <RealEstateNotice lastConfirmedAt={listing.last_confirmed_at} publishedAt={listing.published_at} now={now} />
+          )}
           <div>
             <CategoryVisual icon={listing.category?.icon} fallback={Package} tone="brand" className="rounded-card lg:aspect-[21/9]" />
             <p className="mt-1 text-xs text-ink-subtle">Pas encore de photo : l’ajout de photos arrive avec la publication d’annonces.</p>

@@ -284,6 +284,7 @@ export async function SearchContent({ searchParams }: { searchParams: Promise<Ra
       <div className="grid gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start">
         <aside className="flex flex-col gap-4 lg:sticky lg:top-24" aria-label="Affiner la recherche">
           <SearchFilters
+            key={query}
             params={params}
             sort={page?.sort ?? null}
             categories={categories}

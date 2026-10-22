@@ -212,6 +212,16 @@ export function interpretQuery(text: string, context: InterpretationContext): In
     note(Math.max(rentAt, saleAt), category ? `Annonces immobilières ${what}` : `Annonces ${what}`);
   }
 
+  // « Je cherche un logement » : annonces immobilières (location ou vente, non précisé).
+  if (!filters.type && hasCategory("immobilier")) {
+    const at = take(tokens, ["logements", "logement"]);
+    if (at >= 0) {
+      filters.type = "annonces";
+      filters.categorie = "immobilier";
+      note(at, "Annonces immobilières");
+    }
+  }
+
   if (!filters.categorie) {
     for (const [slug, phrases] of JOBS) {
       if (!hasCategory(slug)) continue;
