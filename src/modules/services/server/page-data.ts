@@ -7,6 +7,7 @@ import { rawQueryString } from "@/modules/search/domain/params";
 import { parsePositionCookie, POSITION_COOKIE } from "@/modules/search/domain/position";
 import { getCityContext } from "@/server/city-context";
 import { isFeatureEnabled } from "@/server/features";
+import { listListingsByCategories, type ListingCardData } from "@/modules/listings/server/queries";
 import { categoryIdsWithDescendants, listCategories } from "@/server/repositories/categories";
 import { interpretNeed } from "../domain/need";
 import { EMPTY_SERVICE_FILTERS, parseServiceFilters, serviceQuery, type ServiceFilters } from "../domain/params";
@@ -40,7 +41,13 @@ export async function loadServicesPage(raw: Raw) {
       neighborhoodId: neighborhood?.id ?? null,
       position,
     });
-    return { kind: "ok", filters, need, tree, trade, neighborhoods, position, pageSize: SERVICES_PAGE_SIZE, ...result } as const;
+    // Annonces de service du métier choisi (ou de tous les métiers), les plus récentes.
+    const listingCategoryIds = trade ? categoryIdsWithDescendants(categories, [trade.slug]) : trades.map((item) => item.id);
+    const listings: ListingCardData[] = await listListingsByCategories(current.id, listingCategoryIds, 3).catch((error: unknown) => {
+      logger.warn("Annonces de service indisponibles", { module: "services", error });
+      return [];
+    });
+    return { kind: "ok", filters, need, tree, trade, neighborhoods, position, listings, pageSize: SERVICES_PAGE_SIZE, ...result } as const;
   } catch (error) {
     logger.error("Recherche de professionnels impossible", { module: "services", error });
     return { kind: "error" } as const;

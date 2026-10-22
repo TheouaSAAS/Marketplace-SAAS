@@ -1,7 +1,7 @@
 # État de construction — Carrefour des Possibles
 
 > À lire au début de chaque session, puis vérifier l'état réel du code (`git log`, `npm run check`, `npm run db:verify`).
-> Dernière mise à jour : **2026-10-18** — niveau 5 terminé.
+> Dernière mise à jour : **2026-10-22** — niveau 10 terminé.
 
 ## Niveaux
 
@@ -17,8 +17,9 @@
 | 7 | Moteur de recherche | ✅ terminé — recherche transversale (annonces, lieux, professionnels, événements, guide), aperçu par type puis onglets paginés, filtres facettés et tri expliqué dans l'adresse, fautes de frappe tolérées, langage courant par règles fixes, « autour de moi » sur autorisation, recherches enregistrées, statistiques anonymes |
 | 8 | Détail d'annonce, favoris et contact | ✅ terminé — fiche (vérification, prix, caractéristiques, localisation selon le choix de l'annonceur avec carte, annonceur), favoris, « j'aime », partage, commentaires sans coordonnées, signalement, contact par messagerie, coordonnées seulement si partagées, annonces similaires expliquées, états expirée / en attente, données structurées ; messagerie /messages. Non livrés : galerie photo (avec la publication), compteur de vues, temps réel instantané (rafraîchissement toutes les 20 s) |
 | 9 | Immobilier | ✅ terminé — accueil et quatre entrées (location, vente, séjour temporaire, locaux professionnels), phrase en langage courant traduite en filtres, filtres adaptés à l’entrée (type, pièces, chambres, surface, meublé, budget sans conseil financier, équipements, quartier, disponibles, confirmées), cartes avec fraîcheur et « à reconfirmer », comparaison de 3 biens, conseils (règles de prudence + articles « Se loger » du guide), fiche immobilière avec alerte de fraîcheur |
-| 10 | Services de proximité | ⏭️ prochain |
-| 11–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
+| 10 | Services de proximité | ✅ terminé — métiers et mots-clés administrables, besoin en langage courant rapproché d’un métier (« ma climatisation ne fonctionne plus »), recherche de professionnels (métier, quartier, distance, disponibilité déclarée et datée, vérification, mode de contact) avec ordre expliqué, annonces de service du métier, fiche professionnelle (prestations, zone, horaires seulement si vérifiés), demande de devis avec accord explicite, suivi des demandes envoyées et reçues (/devis). Reportés : édition de la fiche (espace pro), édition des métiers dans l’interface (admin), photos, avis |
+| 11 | Commerces | ⏭️ prochain |
+| 12–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
 
 ## Pages et routes
 
@@ -31,13 +32,16 @@
 | `/profil`, `/profil/export` | Profil, type de compte, sécurité, communications, export JSON, suppression | live (protégé) |
 | `/conditions-utilisation`, `/confidentialite`, `/mentions-legales` | Pages légales **provisoires** (à valider par un juriste ; mentions « à compléter ») | live |
 | `/aide`, `/verification`, `/signaler`, `/contact` | Aide (FAQ), méthode de vérification, signalement, contact | live |
-| 15 rubriques : `/annonces`, `/emploi`, `/publier`, `/services`, `/commerces`, `/professionnels`, `/offres`, `/decouvrir`, `/tourisme`, `/guide`, `/quartiers`, `/carte`, `/evenements` | Écrans d'attente explicites, catégories réelles, `noindex` | preview |
+| 14 rubriques : `/annonces`, `/emploi`, `/publier`, `/commerces`, `/professionnels`, `/offres`, `/decouvrir`, `/tourisme`, `/guide`, `/quartiers`, `/carte`, `/evenements` | Écrans d'attente explicites, catégories réelles, `noindex` | preview |
 | `/nouveau-arrivant` | Introduction du parcours, rappel du plan enregistré | live |
 | `/nouveau-arrivant/questions`, `/nouveau-arrivant/plan` | Questionnaire et plan personnalisé (réponses dans l'adresse, `noindex`) | live (privées) |
 | `/recherche` | Recherche transversale (filtres dans l'adresse, `noindex`) | live (privée) |
 | `/immobilier`, `/immobilier/[mode]` (location, vente, temporaire, professionnel) | Immobilier : entrées, recherche et filtres dans l’adresse | live |
 | `/immobilier/comparer`, `/immobilier/conseils` | Comparaison (privée, non indexée) et conseils pour se loger | live |
 | `/annonces/[slug]` | Fiche d’une annonce (publique, auteur, expirée) | live |
+| `/services` | Services de proximité : besoin en langage courant, métiers, filtres dans l’adresse, ordre expliqué, annonces de service | live |
+| `/professionnels/[slug]` | Fiche d’un professionnel, demande de devis avec accord, signalement | live |
+| `/devis` | Demandes de devis envoyées (statut) et reçues (coordonnées transmises avec accord, statut modifiable) | live (privée) |
 | `/favoris` | Annonces mises en favori (protégé) | live (privée) |
 | `/messages`, `/messages/[id]` | Messagerie : conversations et fil (protégé, participants uniquement) | live (privées) |
 | `/maintenance`, `/hors-ligne` | Pages techniques | live (privées) |
@@ -54,19 +58,20 @@
 - **Comptes** (`src/modules/accounts`) : schémas Zod, actions serveur, formulaires ; `src/server/auth.ts` (identité vérifiée), `src/server/rate-limit.ts` (anti-abus en base).
 - **Recherche** (`src/modules/search`) : paramètres et adresse canonique, interprétation du langage courant, périodes, position, fonctions SQL `search_*`, chargeurs de cartes par identifiants, recherches enregistrées, statistiques anonymes.
 - **Parcours nouvel arrivant** (`src/modules/newcomer`) : modèle de réponses et passage par l'adresse, règles du plan (17 blocs, 8 au plus), questionnaire client, actions d'enregistrement et de suppression.
-- **Données** : Supabase `towkxqwdvjdajlohevxt` (PostgreSQL 17, eu-west-1), 16 migrations, 46 tables avec RLS, tâches `pg_cron` (expiration des annonces, purges anti-abus, statistiques, vues, coordonnées consultées), types générés, démonstration étiquetée (11 éléments).
+- **Services** (`src/modules/services`) : besoin → métier par mots-clés, filtres et adresse canonique, recherche de professionnels, fiche, demande de devis (accord obligatoire) et suivi des statuts.
+- **Données** : Supabase `towkxqwdvjdajlohevxt` (PostgreSQL 17, eu-west-1), 19 migrations, 46 tables avec RLS, tâches `pg_cron` (expiration des annonces, purges anti-abus, statistiques, vues, coordonnées consultées), types générés, démonstration étiquetée (14 éléments, dont 3 fiches professionnelles).
 
-## Tests (dernière exécution : 2026-10-18)
+## Tests (dernière exécution : 2026-10-22)
 
 | Suite | Résultat |
 | --- | --- |
 | `npm run typecheck` (strict + `noUncheckedIndexedAccess`) | ✅ |
 | `npm run lint` | ✅ |
-| `npm test` | ✅ 278 tests (domaine, immobilier : filtres, langage courant, fraîcheur, règles du plan nouvel arrivant, recherche : adresse, langage courant, périodes, fiche annonce : attributs, similaires, données structurées, catégories, configuration, composants, proxy, délai réseau, SQL statique, alignement des types) |
-| `npm run db:verify` (base réelle, transactions annulées) | ✅ 153/153 |
+| `npm test` | ✅ 291 tests (domaine, services : besoin → métier, filtres, détails et statuts des devis, immobilier : filtres, langage courant, fraîcheur, règles du plan nouvel arrivant, recherche : adresse, langage courant, périodes, fiche annonce : attributs, similaires, données structurées, catégories, configuration, composants, proxy, délai réseau, SQL statique, alignement des types) |
+| `npm run db:verify` (base réelle, transactions annulées) | ✅ 166/166 |
 | `npm run build` | ✅ |
-| `npm run smoke` | ✅ 47 vérifications + scan du bundle navigateur ; adapté à l’absence de base (CI) |
-| `npm run e2e` (Edge, mobile + ordinateur, 2 navigateurs à la fois, 2 comptes de test créés/supprimés automatiquement) | ✅ 131 réussis, 17 ignorés par conception ; sans base (CI) : 76 réussis, 72 ignorés |
+| `npm run smoke` | ✅ 43 pages + scan du bundle navigateur ; adapté à l’absence de base (CI) |
+| `npm run e2e` (Edge, mobile + ordinateur, 2 navigateurs à la fois, 2 comptes de test créés/supprimés automatiquement) | ✅ 138 réussis, 18 ignorés par conception ; sans base (CI) : non remesuré depuis le niveau 8 |
 | CI GitHub Actions | écrite, **jamais exécutée** (dépôt non poussé) |
 
 ## Problèmes connus et blocages
@@ -86,4 +91,4 @@ Voir `docs/data-governance.md` (centre de la ville, quartiers, démonstration).
 
 ## Prochaine étape
 
-Niveau 10 — services de proximité : taxonomie administrable des métiers, répertoire de professionnels et annonces de service, filtres (métier, quartier, distance, disponibilité déclarée, vérification, mode de contact), recherche « ma climatisation ne fonctionne plus », fiches de service, demande de devis avec accord explicite.
+Niveau 11 — commerces (`/commerces`, actuellement en préparation) : reprendre le cahier du niveau 11 dans le plan en 28 niveaux. Réutilisables : `business_profiles`, `search_professionals` (modèle de recherche par catégories), `BusinessCard`, fiche `/professionnels/[slug]`.

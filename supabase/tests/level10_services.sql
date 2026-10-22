@@ -94,6 +94,25 @@ begin
   exception when others then v_err := sqlstate;
   end;
   perform pg_temp.record('une demande de devis exige un accord de transmission', v_err = '23514', v_err);
+
+  -- Suivi : le professionnel change le statut, jamais le contenu.
+  perform pg_temp.act_as('00000000-0000-4000-8000-000000000101');
+  update public.contact_requests set status = 'replied' where business_id = v_clim;
+  get diagnostics n = row_count;
+  v_err := null;
+  begin
+    update public.contact_requests set message = 'Message réécrit par le destinataire.' where business_id = v_clim;
+  exception when others then v_err := sqlstate;
+  end;
+  perform pg_temp.back();
+  perform pg_temp.record('le professionnel met à jour le statut d''une demande reçue', n = 1, n::text);
+  perform pg_temp.record('le professionnel ne peut pas modifier le contenu d''une demande', v_err = '42501', v_err);
+
+  perform pg_temp.act_as('00000000-0000-4000-8000-000000000102');
+  update public.contact_requests set status = 'archived' where business_id = v_clim;
+  get diagnostics n = row_count;
+  perform pg_temp.back();
+  perform pg_temp.record('l''expéditeur ne change pas le statut d''une demande envoyée', n = 0, n::text);
 end $$;
 
 select test, ok, detail from results order by n;

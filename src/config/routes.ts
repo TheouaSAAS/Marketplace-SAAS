@@ -45,7 +45,7 @@ export const ROUTES = {
   shops: { path: "/commerces", label: "Commerces", level: 11, status: "preview" },
   directory: { path: "/professionnels", label: "Professionnels et entreprises", level: 19, status: "preview" },
   professionalDetail: { path: "/professionnels/[slug]", label: "Fiche d’un professionnel", level: 10, status: "live" },
-  quoteRequests: { path: "/devis", label: "Mes demandes de devis", level: 10, status: "planned", private: true },
+  quoteRequests: { path: "/devis", label: "Mes demandes de devis", level: 10, status: "live", private: true },
   pricing: { path: "/offres", label: "Offres et visibilité", level: 21, status: "preview" },
 
   // Découvrir & sortir

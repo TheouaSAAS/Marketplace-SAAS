@@ -89,6 +89,15 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `attr_int`, `attr_bool` : lecture sûre des attributs déclarés (valeur mal typée → null, jamais d’erreur).
 - Attributs immobiliers reconnus à l’affichage : `type_bien`, `pieces`, `chambres`, `surface_m2`, `salles_de_bain`, `etage`, `meuble`, `equipements` (liste de clés).
 
+## Services de proximité (niveau 10, migrations `20261023000100` à `…000300`)
+
+- Métiers = catégories du référentiel (groupes « services professionnels » et « transport et livraison »), avec `categories.keywords` : synonymes et problèmes courants (« fuite », « clim »…), administrables sans migration.
+- `business_profiles` : `services` (30 prestations au plus), `service_area`, `accepts_quotes`, `availability_note` ; `availability_declared_at` est posée par la base (`stamp_business_availability`) quand la note change, jamais par le client.
+- `search_professionals(ville, métiers, texte, quartier, vérifiés, disponibles depuis N jours, mode de contact, position, rayon, tri, pagination)` : SECURITY INVOKER, fiches publiées ; ordre public : vérification de moins d’un an, disponibilité déclarée depuis moins de 30 jours, mise à jour la plus récente (ou distance). Aucun critère payant.
+- `business_public_point` : position publique (jamais l’exacte si elle est masquée).
+- Demande de devis (`contact_requests.kind = 'devis'`) : `details` (prestation, délai, quartier), `consented_at` obligatoire (contrainte `contact_requests_quote_consent`) ; `enforce_quote_rules` refuse un professionnel qui n’accepte pas les devis et limite à 5 demandes par heure (`CP429`).
+- `protect_contact_request_content` : le destinataire ne change que le statut (nouvelle, lue, répondue, archivée) ; message, coordonnées et accord restent tels qu’envoyés (`42501`).
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre d'emploi publiée et ouverte), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.

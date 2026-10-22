@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { interpretNeed, type Trade } from "./need";
 import { parseServiceFilters, serviceQuery } from "./params";
+import { isQuoteStatus, quoteDetails } from "./quote";
 
 const trades: Trade[] = [
   { slug: "climatisation", name: "Climatisation et froid", keywords: ["climatisation", "clim", "climatiseur"] },
@@ -31,5 +32,18 @@ describe("parseServiceFilters", () => {
   it("lit et réécrit une adresse canonique, ignore l'invalide", () => {
     const filters = parseServiceFilters({ metier: "plomberie", contact: "devis", dispo: "1", rayon: "500", page: "2", tri: "hasard" });
     expect(serviceQuery(filters)).toBe("metier=plomberie&dispo=1&contact=devis&page=2");
+  });
+});
+
+describe("demandes de devis", () => {
+  it("lit les détails structurés et ignore les valeurs inconnues", () => {
+    expect(quoteDetails({ prestation: " Réparation ", quand: "semaine", quartier: "" })).toEqual({ prestation: "Réparation", quand: "Dans la semaine", quartier: null });
+    expect(quoteDetails({ prestation: 42, quand: "hier" })).toEqual({ prestation: null, quand: null, quartier: null });
+  });
+
+  it("reconnaît les statuts de suivi", () => {
+    expect(isQuoteStatus("replied")).toBe(true);
+    expect(isQuoteStatus("toString")).toBe(false);
+    expect(isQuoteStatus(undefined)).toBe(false);
   });
 });

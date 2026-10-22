@@ -155,5 +155,17 @@ La comparaison (3 biens au plus) est gardée dans le navigateur seulement et pas
 ## D51 — Formulaires de filtres recréés à chaque recherche
 Une navigation vers la même page avec d'autres critères conserve les composants : des champs non contrôlés garderaient leurs anciennes valeurs. Les formulaires de filtres (recherche générale, immobilier) ont donc pour clé la forme canonique des critères et se recréent quand elle change.
 
+## D52 — Services : du besoin au métier par mots-clés administrables
+« Ma climatisation ne fonctionne plus » est rapproché d'un métier par les mots-clés du référentiel (sans accents, mot-clé le plus long l'emporte), sans intelligence artificielle ; le métier reconnu et le mot déclencheur sont affichés. Une urgence exprimée est signalée mais ne devient jamais une promesse de disponibilité. Les métiers et leurs mots-clés se modifient en base, sans déploiement.
+
+## D53 — Disponibilité déclarée et datée, horaires seulement vérifiés
+La disponibilité d'un professionnel est une déclaration datée par la base, affichée avec sa date et la mention « rien n'est garanti en temps réel » ; le filtre « disponibles » retient les déclarations de moins de 30 jours. Les horaires ne sont annoncés que si la fiche a été vérifiée récemment. L'ordre des résultats est public (« Pourquoi cet ordre ? ») et rien n'est payant.
+
+## D54 — Demande de devis : accord explicite, suivi par le destinataire
+Une demande de devis est structurée (prestation, délai, quartier, besoin) et n'est envoyée qu'avec une case d'accord non cochée par défaut ; l'accord est daté en base et exigé par une contrainte. Le professionnel retrouve les coordonnées dans « Mes demandes de devis » avec la date de l'accord, et ne peut modifier que le statut ; l'expéditeur suit ce statut. Les comptes de test e2e suppriment leurs demandes au nettoyage.
+
+## D55 — Niveau 10 : périmètre livré et reporté
+Livré : métiers administrables, recherche de professionnels (métier, quartier, distance, disponibilité déclarée, vérification, mode de contact), annonces de service du métier, fiche professionnelle, devis avec accord, suivi des demandes. Reporté : édition de la fiche par le professionnel (espace pro, niveau 21), édition des métiers depuis l'interface (administration, niveau 22), photos de réalisations, avis clients, horaires détaillés.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

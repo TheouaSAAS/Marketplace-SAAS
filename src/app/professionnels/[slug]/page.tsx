@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { href } from "@/config/routes";
 import { displayedVerification, isReliable } from "@/domain/verification";
@@ -31,6 +32,8 @@ async function Professional({ params }: Pick<Props, "params">) {
   const { slug } = await params;
   const pro = await getPublicBusiness(slug);
   if (!pro) notFound();
+  // Disponibilité et vérification jugées à la date de la requête.
+  await connection();
   const now = new Date();
   const back = href("professionalDetail", { params: { slug } });
   const hoursReliable = isReliable(pro.verification_status, pro.verified_at, now, "opening_hours");

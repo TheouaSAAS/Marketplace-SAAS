@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Form from "next/form";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Info, Search } from "lucide-react";
@@ -7,7 +8,7 @@ import { href } from "@/config/routes";
 import { Container } from "@/components/ui/container";
 import { Alert, EmptyState, ErrorState } from "@/components/ui/feedback";
 import { Skeleton } from "@/components/ui/spinner";
-import { BusinessCard } from "@/components/content/content-cards";
+import { BusinessCard, ListingCard } from "@/components/content/content-cards";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { SERVICES_RANKING_RULE } from "@/modules/services/domain/params";
 import { availabilityText, proContext } from "@/modules/services/domain/present";
@@ -93,6 +94,29 @@ async function Results({ searchParams }: Pick<PageProps<"/services">, "searchPar
           )}
         </section>
       </div>
+      {data.listings.length > 0 && (
+        <section aria-labelledby="annonces-service" className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 id="annonces-service" className="text-xl font-bold">
+              Annonces de service{data.trade ? ` · ${data.trade.name}` : ""}
+            </h2>
+            <Link
+              className="text-sm font-medium underline"
+              href={href("search", { query: { type: "annonces", categorie: data.trade?.slug ?? "services-professionnels" } })}
+            >
+              Toutes les annonces de service
+            </Link>
+          </div>
+          <p className="text-sm text-ink-muted">Les plus récentes, publiées par des particuliers ou des professionnels.</p>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {data.listings.map((listing, index) => (
+              <li key={listing.id} className="flex [&>article]:flex-1">
+                <ListingCard listing={listing} now={now} index={index} href={href("listingDetail", { params: { slug: listing.slug } })} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

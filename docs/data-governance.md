@@ -70,4 +70,5 @@ Les contenus déposés par les utilisateurs (annonces, vitrines, événements) s
 | Taxonomie des catégories | `supabase/seed.sql` | choix produit, modifiable |
 | Textes des conseils du parcours nouvel arrivant (17 blocs) | `src/modules/newcomer/domain/plan.ts` | à relire localement |
 | Rubriques du guide (11) | migration `…000500_domains.sql` | choix produit, modifiable |
-| Données de démonstration (5 lieux, 4 annonces, 1 événement, 1 article) | `supabase/seeds/demo.sql` | `placeholder`, à supprimer avant le lancement (`demo_remove.sql`) ou masquer (`demo.public_placeholders`) |
+| 12 métiers de services et leurs mots-clés (vocabulaire local : « clim », « tresses »…) | migration `20261023000100_services.sql` (`categories.keywords`) | choix produit, à compléter avec les termes utilisés à San Pedro |
+| Données de démonstration (5 lieux, 4 annonces, 1 événement, 1 article, 3 fiches professionnelles « Exemple — … ») | `supabase/seeds/demo.sql` | `placeholder`, à supprimer avant le lancement (`demo_remove.sql`) ou masquer (`demo.public_placeholders`) |

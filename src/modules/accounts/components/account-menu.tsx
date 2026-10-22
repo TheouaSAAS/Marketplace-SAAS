@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, LogOut, MessagesSquare, UserRound } from "lucide-react";
+import { FileText, Heart, LogOut, MessagesSquare, UserRound } from "lucide-react";
 import { href } from "@/config/routes";
 import { Avatar } from "@/components/ui/avatar";
 import { Popover } from "@/components/ui/popover";
@@ -37,6 +37,11 @@ export function AccountMenu({ name, avatarUrl }: { name: string; avatarUrl: stri
           <li>
             <Link href={href("favorites")} onClick={close} className={ITEM}>
               <Heart aria-hidden className="h-4 w-4" /> Mes favoris
+            </Link>
+          </li>
+          <li>
+            <Link href={href("quoteRequests")} onClick={close} className={ITEM}>
+              <FileText aria-hidden className="h-4 w-4" /> Mes demandes de devis
             </Link>
           </li>
           <li className="mt-1 border-t border-border pt-1">
