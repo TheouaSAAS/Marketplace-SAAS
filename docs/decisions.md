@@ -215,5 +215,17 @@ Un périmètre se propose en GeoJSON (contrôlé en base), se prévisualise, pui
 ## D71 — Liste des quartiers en un appel
 La liste des quartiers et le nombre de contenus rattachés viennent d'une seule fonction (`neighborhood_overview`) : vingt appels parallèles depuis San Pedro dépassaient parfois le délai réseau et faisaient échouer toute la page.
 
+## D72 — Carte : fournisseur configurable, liste toujours présente
+Le fond de carte vient de `NEXT_PUBLIC_MAP_TILE_URL` (OpenStreetMap par défaut, sans clé) ; Leaflet est chargé seulement dans le navigateur. Sans carte (drapeau désactivé, tuiles ou script indisponibles), la liste des mêmes éléments reste utilisable, avec quartier et lien vers la fiche. Carte et liste partagent les mêmes données : un clic d'un côté sélectionne l'élément de l'autre et ouvre une fiche rapide.
+
+## D73 — Carte : sobriété des requêtes et regroupement maison
+La carte ne recharge rien d'elle-même : déplacer ou zoomer propose « Rechercher dans cette zone », qui met la zone dans l'adresse (une requête par demande, 300 éléments au plus, message s'il y en a davantage). Les marqueurs proches sont regroupés par une grille de pixels calculée selon le zoom (fonction pure testée), sans bibliothèque supplémentaire. Les points du guide n'ont pas de position : la couche est annoncée comme indisponible, avec la raison.
+
+## D74 — Carte : confidentialité et itinéraire
+Seules les positions publiques sont affichées ; une position approximative est dessinée en pointillés et n'ouvre pas d'itinéraire. « Autour de moi » reprend la position facultative du niveau 7 (accord explicite, arrondie à ~100 m, 30 minutes dans le navigateur, jamais dans l'adresse). L'itinéraire s'ouvre dans OpenStreetMap : la plateforme ne prétend pas guider.
+
+## D75 — Comptes de test : nettoyage robuste
+Chaque appel d'administration des tests est retenté (réseau du poste instable) ; au démarrage, les comptes de test orphelins (adresses `e2e-…@test.invalid` seulement) d'une exécution interrompue sont supprimés.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

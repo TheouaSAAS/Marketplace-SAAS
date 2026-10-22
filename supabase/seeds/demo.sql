@@ -18,6 +18,15 @@ values ('00000000-0000-4000-8000-00000000d3e0', '00000000-0000-0000-0000-0000000
         'demonstration@carrefour-des-possibles.invalid', '{"display_name":"Compte de démonstration"}', now(), now())
 on conflict (id) do nothing;
 
+-- L'API d'administration des comptes (GoTrue) échoue sur un compte dont les jetons sont NULL :
+-- « Database error finding users ». Ils doivent être des chaînes vides.
+update auth.users
+set confirmation_token = coalesce(confirmation_token, ''), recovery_token = coalesce(recovery_token, ''),
+    email_change_token_new = coalesce(email_change_token_new, ''), email_change = coalesce(email_change, ''),
+    email_change_token_current = coalesce(email_change_token_current, ''), phone_change = coalesce(phone_change, ''),
+    phone_change_token = coalesce(phone_change_token, ''), reauthentication_token = coalesce(reauthentication_token, '')
+where id = '00000000-0000-4000-8000-00000000d3e0';
+
 create temp table demo_ctx on commit drop as
 select
   '00000000-0000-4000-8000-00000000d3e0'::uuid as owner_id,

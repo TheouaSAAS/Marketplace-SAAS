@@ -26,7 +26,7 @@ Le socle partagé reste hors des modules : `src/components/ui` (design system), 
 | `tourism` | 12 | entrées « Découvrir », exploration filtrable, itinéraires déterministes, infos pratiques |
 | `guide` | 13 | rubriques, articles (Markdown restreint, sommaire, statut, versions), suggestions, rédaction, ressources liées, préparation de l’assistant |
 | `neighborhoods` | 14 | fiches neutres, onglets de ressources rattachées, périmètres (brouillon, validation, historique), administration |
-| `map` | 15 | carte, couches, géolocalisation |
+| `map` | 15 | couches, filtres dans l’adresse, regroupement des marqueurs, carte et liste synchronisées, fiche rapide |
 | `events` | 16 | événements |
 | `jobs` | 17 | emploi et opportunités |
 | `newcomer` | 6 | parcours « Nouveau à San Pedro ? » |
