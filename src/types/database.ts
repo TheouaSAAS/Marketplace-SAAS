@@ -2089,9 +2089,110 @@ export type Database = {
           },
         ]
       }
+      place_claims: {
+        Row: {
+          claimant_id: string
+          claimant_role: string
+          created_at: string
+          decision_note: string | null
+          evidence: string
+          id: string
+          message: string
+          phone: string
+          place_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          claimant_id: string
+          claimant_role: string
+          created_at?: string
+          decision_note?: string | null
+          evidence: string
+          id?: string
+          message: string
+          phone: string
+          place_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          claimant_id?: string
+          claimant_role?: string
+          created_at?: string
+          decision_note?: string | null
+          evidence?: string
+          id?: string
+          message?: string
+          phone?: string
+          place_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "place_claims_claimant_id_fkey"
+            columns: ["claimant_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "place_claims_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "place_claims_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      place_likes: {
+        Row: {
+          created_at: string
+          place_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          place_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          place_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "place_likes_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "place_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       places: {
         Row: {
           address_text: string | null
+          ambiance: string[]
           business_id: string | null
           category_id: string
           city_id: string
@@ -2099,16 +2200,21 @@ export type Database = {
           created_by: string | null
           description: string | null
           email: string | null
+          features: string[]
           id: string
           kind: Database["public"]["Enums"]["place_kind"]
           location: unknown
           location_precision: Database["public"]["Enums"]["location_precision"]
+          manager_id: string | null
           name: string
           neighborhood_id: string | null
           opening_hours: Json | null
+          opening_hours_source_id: string | null
+          opening_hours_verified_at: string | null
           organization_id: string | null
           phone: string | null
           price_level: number | null
+          products: string[]
           published_at: string | null
           rejection_reason: string | null
           search_vector: unknown
@@ -2126,6 +2232,7 @@ export type Database = {
         }
         Insert: {
           address_text?: string | null
+          ambiance?: string[]
           business_id?: string | null
           category_id: string
           city_id: string
@@ -2133,16 +2240,21 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           email?: string | null
+          features?: string[]
           id?: string
           kind: Database["public"]["Enums"]["place_kind"]
           location?: unknown
           location_precision?: Database["public"]["Enums"]["location_precision"]
+          manager_id?: string | null
           name: string
           neighborhood_id?: string | null
           opening_hours?: Json | null
+          opening_hours_source_id?: string | null
+          opening_hours_verified_at?: string | null
           organization_id?: string | null
           phone?: string | null
           price_level?: number | null
+          products?: string[]
           published_at?: string | null
           rejection_reason?: string | null
           search_vector?: unknown
@@ -2160,6 +2272,7 @@ export type Database = {
         }
         Update: {
           address_text?: string | null
+          ambiance?: string[]
           business_id?: string | null
           category_id?: string
           city_id?: string
@@ -2167,16 +2280,21 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           email?: string | null
+          features?: string[]
           id?: string
           kind?: Database["public"]["Enums"]["place_kind"]
           location?: unknown
           location_precision?: Database["public"]["Enums"]["location_precision"]
+          manager_id?: string | null
           name?: string
           neighborhood_id?: string | null
           opening_hours?: Json | null
+          opening_hours_source_id?: string | null
+          opening_hours_verified_at?: string | null
           organization_id?: string | null
           phone?: string | null
           price_level?: number | null
+          products?: string[]
           published_at?: string | null
           rejection_reason?: string | null
           search_vector?: unknown
@@ -2222,10 +2340,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "places_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "places_neighborhood_id_fkey"
             columns: ["neighborhood_id"]
             isOneToOne: false
             referencedRelation: "neighborhoods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "places_opening_hours_source_id_fkey"
+            columns: ["opening_hours_source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
             referencedColumns: ["id"]
           },
           {
@@ -3040,6 +3172,8 @@ export type Database = {
           listing_title: string
           other_id: string
           other_name: string
+          place_name: string
+          place_slug: string
         }[]
       }
       current_user_role: {
@@ -3155,6 +3289,8 @@ export type Database = {
           listing_slug: string
           listing_title: string
           other_name: string
+          place_name: string
+          place_slug: string
           unread: number
         }[]
       }
@@ -3162,6 +3298,15 @@ export type Database = {
         Args: { p_role: Database["public"]["Enums"]["organization_role"] }
         Returns: number
       }
+      place_engagement: {
+        Args: { p_place: string }
+        Returns: {
+          favorite: boolean
+          liked: boolean
+          likes: number
+        }[]
+      }
+      place_is_public: { Args: { p_place: string }; Returns: boolean }
       purge_rate_limits: { Args: never; Returns: number }
       record_listing_view: {
         Args: { p_listing: string; p_viewer_hash: string }
@@ -3179,6 +3324,10 @@ export type Database = {
       reveal_listing_contact: {
         Args: { p_channel: string; p_listing: string }
         Returns: string
+      }
+      review_place_claim: {
+        Args: { p_approve: boolean; p_claim: string; p_note?: string }
+        Returns: undefined
       }
       search_anonymize: { Args: { p_query: string }; Returns: string }
       search_content: {
@@ -3300,11 +3449,46 @@ export type Database = {
           total_count: number
         }[]
       }
+      search_shops: {
+        Args: {
+          p_ambiance?: string[]
+          p_budget_max?: number
+          p_categories?: string[]
+          p_city: string
+          p_features?: string[]
+          p_lat?: number
+          p_limit?: number
+          p_lng?: number
+          p_neighborhood?: string
+          p_offset?: number
+          p_query?: string
+          p_radius_m?: number
+          p_sort?: string
+          p_verified_only?: boolean
+        }
+        Returns: {
+          distance_m: number
+          id: string
+          total_count: number
+        }[]
+      }
       search_tsquery: { Args: { p_query: string }; Returns: unknown }
+      sponsored_shops: {
+        Args: { p_categories?: string[]; p_city: string; p_limit?: number }
+        Returns: {
+          ends_at: string
+          id: string
+        }[]
+      }
       start_listing_conversation: {
         Args: { p_body: string; p_listing: string }
         Returns: string
       }
+      start_place_conversation: {
+        Args: { p_body: string; p_place: string }
+        Returns: string
+      }
+      valid_opening_hours: { Args: { p_hours: Json }; Returns: boolean }
       verification_publicly_visible: {
         Args: { p_status: Database["public"]["Enums"]["verification_status"] }
         Returns: boolean

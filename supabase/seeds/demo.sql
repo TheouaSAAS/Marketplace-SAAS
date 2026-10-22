@@ -112,3 +112,29 @@ cross join lateral (values
   ('exemple-plombier', 'Exemple — Plombier (à valider localement)', 'plomberie', c.n_bardot, -0.006, -0.001, '{"Exemple de prestation : recherche de fuite"}')
 ) as v (slug, name, category, neighborhood, dlng, dlat, services)
 on conflict (slug) do nothing;
+
+-- -----------------------------------------------------------------------------
+-- Vitrines de commerces (niveau 11) : services et ambiance d'exemple, aucun
+-- horaire (les vitrines affichent alors « horaires non renseignés »)
+-- -----------------------------------------------------------------------------
+insert into public.places (kind, created_by, slug, name, summary, description, category_id, city_id, neighborhood_id,
+                           location, location_precision, status, verification_status)
+select 'etablissement', c.owner_id, v.slug, v.name, v.summary,
+       'Fiche de démonstration fictive, destinée à tester la plateforme. Elle ne décrit aucun commerce réel.',
+       (select id from public.categories where slug = v.category), c.city_id, v.neighborhood,
+       pg_temp.demo_point(v.dlng, v.dlat), 'approximate', 'published', 'placeholder'
+from demo_ctx c
+cross join lateral (values
+  ('exemple-alimentation', 'Exemple — Alimentation (à valider localement)', 'Exemple de vitrine alimentaire.', 'alimentation', c.n_lac, 0.001, 0.004),
+  ('exemple-quincaillerie', 'Exemple — Quincaillerie (à valider localement)', 'Exemple de vitrine de quincaillerie.', 'quincaillerie-materiaux', c.n_bardot, -0.004, -0.002)
+) as v (slug, name, summary, category, neighborhood, dlng, dlat)
+on conflict (slug) do nothing;
+
+update public.places p set features = v.features::text[], ambiance = v.ambiance::text[], products = v.products::text[]
+from (values
+  ('exemple-restaurant', '{sur_place,a_emporter,paiement_mobile}', '{familiale,decontractee}', '{"Exemple de plat","Exemple de boisson"}'),
+  ('exemple-boutique', '{paiement_mobile}', '{}', '{"Exemple d’article"}'),
+  ('exemple-alimentation', '{livraison,paiement_mobile,parking}', '{}', '{"Exemple de produit frais","Exemple de produit d’épicerie"}'),
+  ('exemple-quincaillerie', '{livraison}', '{}', '{"Exemple d’outillage","Exemple de matériau"}')
+) as v (slug, features, ambiance, products)
+where p.slug = v.slug and p.verification_status = 'placeholder';
