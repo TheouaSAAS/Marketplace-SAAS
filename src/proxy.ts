@@ -16,7 +16,7 @@ import { hasSupabaseSessionCookie, refreshSupabaseSession } from "@/lib/supabase
  *    (aucun coût pour les visiteurs anonymes).
  */
 
-const PROTECTED_PREFIXES = ["/profil", "/favoris", "/messages", "/espace-pro", "/admin"];
+const PROTECTED_PREFIXES = ["/profil", "/favoris", "/messages", "/devis", "/espace-pro", "/admin"];
 
 /** Chemins toujours servis, même en maintenance (supervision et page elle-même). */
 const MAINTENANCE_EXEMPT = ["/maintenance", "/interne", "/api/health"];

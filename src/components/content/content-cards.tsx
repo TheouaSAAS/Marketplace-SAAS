@@ -161,13 +161,13 @@ export function EventCard({ event, now, index, context }: CardProps & { event: E
   );
 }
 
-export function BusinessCard({ business, now, index, context }: CardProps & { business: BusinessCardData }) {
+export function BusinessCard({ business, now, index, context, href }: CardProps & { business: BusinessCardData; href?: string }) {
   return (
     <CardShell index={index} context={context} visual={<CategoryVisual icon={business.category?.icon} fallback={BriefcaseBusiness} tone="lagoon" />}>
       <div className="flex flex-wrap gap-1.5">
         <PublicVerification status={business.verification_status} verifiedAt={business.verified_at} now={now} />
       </div>
-      <h3 className="line-clamp-2 font-bold leading-snug">{business.name}</h3>
+      <CardTitle title={business.name} href={href} />
       {business.description && <p className="line-clamp-2 text-sm text-ink-muted">{business.description}</p>}
       <Meta items={[business.category?.name, business.neighborhood?.name]} />
     </CardShell>

@@ -54,17 +54,6 @@ export const SECTION_PREVIEWS = {
     parent: "listings",
     related: ["signup", "listings", "help"],
   },
-  services: {
-    title: "Services de proximité",
-    intro: "Trouver rapidement un artisan, un dépanneur ou un prestataire à San Pedro.",
-    upcoming: [
-      "Répertoire par métier, quartier et zone desservie",
-      "Demande de devis sans divulguer vos coordonnées sans votre accord",
-      "Disponibilités déclarées et datées, jamais présentées comme garanties",
-    ],
-    categories: ["services-professionnels", "transport-livraison"],
-    related: ["directory", "shops", "publish"],
-  },
   shops: {
     title: "Commerces de proximité",
     intro: "Les commerces et boutiques de San Pedro, avec leurs horaires sourcés ou signalés « à confirmer ».",

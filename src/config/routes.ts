@@ -41,9 +41,11 @@ export const ROUTES = {
   publish: { path: "/publier", label: "Publier une annonce", level: 18, status: "preview" },
 
   // Services & professionnels
-  services: { path: "/services", label: "Services de proximité", level: 10, status: "preview" },
+  services: { path: "/services", label: "Services de proximité", level: 10, status: "live" },
   shops: { path: "/commerces", label: "Commerces", level: 11, status: "preview" },
   directory: { path: "/professionnels", label: "Professionnels et entreprises", level: 19, status: "preview" },
+  professionalDetail: { path: "/professionnels/[slug]", label: "Fiche d’un professionnel", level: 10, status: "live" },
+  quoteRequests: { path: "/devis", label: "Mes demandes de devis", level: 10, status: "live", private: true },
   pricing: { path: "/offres", label: "Offres et visibilité", level: 21, status: "preview" },
 
   // Découvrir & sortir
