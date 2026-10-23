@@ -394,3 +394,21 @@ export async function moderateReviewAction(_previous: FormState, formData: FormD
   updateTag(BUSINESSES_CACHE_TAG);
   redirect(href("adminReviews", { query: { decision: parsed.data.decision === "publier" ? "publie" : "refuse" } }));
 }
+
+// -----------------------------------------------------------------------------
+// Espace professionnel : boîte de réception
+// -----------------------------------------------------------------------------
+const requestStatusSchema = z.object({ page: z.uuid(), demande: z.uuid(), statut: z.enum(["read", "replied", "archived", "new"]) });
+
+/** Statut d'une demande reçue (gestionnaires de la page ; la base interdit de modifier son contenu). */
+export async function updateRequestStatusAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const parsed = requestStatusSchema.safeParse({ page: formData.get("page"), demande: formData.get("demande"), statut: formData.get("statut") });
+  if (!parsed.success) return { status: "error", message: "Choix invalide." };
+  const back = href("proInbox", { params: { id: parsed.data.page } });
+  const { supabase } = await session(back);
+  const { data, error } = await supabase.from("contact_requests").update({ status: parsed.data.statut }).eq("id", parsed.data.demande).eq("business_id", parsed.data.page).select("id");
+  if (error) return databaseError(error, "Le statut n’a pas pu être enregistré");
+  if (!data?.length) return { status: "error", message: "Demande introuvable ou réservée aux gestionnaires de la page." };
+  revalidatePath(back);
+  return { status: "success", message: "Statut enregistré." };
+}

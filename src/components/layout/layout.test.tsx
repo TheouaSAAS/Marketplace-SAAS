@@ -35,8 +35,8 @@ describe("NavItemLink", () => {
 
 describe("RouteButton", () => {
   it("désactive l'action tant que la page n'existe pas", () => {
-    render(<RouteButton route="pro">Espace pro</RouteButton>);
-    expect(screen.getByRole("button", { name: "Espace pro" })).toBeDisabled();
+    render(<RouteButton route="city">Page de ville</RouteButton>);
+    expect(screen.getByRole("button", { name: "Page de ville" })).toBeDisabled();
   });
 
   it("devient un lien quand la page existe", () => {

@@ -178,9 +178,16 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `filter_muted_notification` (avant insertion) : ne crée pas une notification d’une catégorie coupée (`notification_channels -> type ->> 'site' = 'false'`) parmi avis, candidature, équipe, événement, rappel ; les autres types sont toujours créés.
 - `my_listing_stats()` : vues, favoris, coordonnées vues, conversations de mes annonces ; `my_listing_history(annonce)` : changements de statut et de disponibilité tirés de `content_revisions` (auteur seulement).
 
+## Espace professionnel (niveau 21, migration `20261103000100_pro_dashboard.sql`)
+
+- `business_view_counts`, `business_view_marks` (illisibles par l’API), `record_business_view` (rôle de service) : un visiteur distinct par jour ; tâche `purger-vues-pages-pro` (empreintes de plus d’un jour). Les vues d’annonces (`record_listing_view`, niveau 8) sont désormais réellement comptées par l’application.
+- `is_page_member` (titulaire ou membre de l’équipe), `is_page_manager` (éditeur et plus). Demandes de contact : lecture et statut pour les gestionnaires de la page (`contact_requests_page_select`, `…_update`) ; `protect_contact_request` interdit de modifier leur contenu.
+- `validate_listing_business` : rattacher une annonce à une page exige de la gérer.
+- `pro_listings`, `pro_events` (membres, tous statuts, avec statistiques par annonce), `pro_stats` (agrégats uniquement), `pro_moderation_history` (changements de statut de la page et de ses annonces, motif des refus).
+
 ## Règles en base (déclencheurs)
 
-`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `filter_muted_notification` (catégories coupées), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
+`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `filter_muted_notification` (catégories coupées), `protect_contact_request` (statut seul), `validate_listing_business` (annonce au nom d’une page), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
 
 Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_service_request()`, jamais `is_service_context()` (voir décision D20).
 
@@ -198,6 +205,7 @@ Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_servi
 | `purger-statistiques-recherche` | chaque jour à 3 h 30 | supprime les statistiques de recherche de plus de 180 jours |
 | `purger-vues-annonces` | chaque jour à 3 h 20 | supprime les marques de vues de plus de 2 jours |
 | `purger-coordonnees-consultees` | chaque jour à 3 h 25 | supprime les traces de coordonnées consultées de plus de 90 jours |
+| `purger-vues-pages-pro` | chaque jour à 3 h 22 | supprime les empreintes de vues des pages pro de plus d’un jour |
 
 ## Sauvegardes
 

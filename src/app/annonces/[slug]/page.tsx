@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/container";
 import { Skeleton } from "@/components/ui/spinner";
 import { ListingUnavailable } from "@/modules/listings/components/listing-unavailable";
 import { ListingView } from "@/modules/listings/components/listing-view";
+import { recordContentView } from "@/server/views";
 import { getPublicListing, ownerAllowsIndexing } from "@/modules/listings/server/detail";
 import { loadListingPage } from "@/modules/listings/server/page-data";
 import { listingUrl } from "@/modules/listings/server/seo";
@@ -34,6 +35,7 @@ async function ListingContent({ params }: Pick<Props, "params">) {
   const data = await loadListingPage(slug);
   if (data.kind === "missing") notFound();
   if (data.kind === "unavailable") return <ListingUnavailable state={data.state} />;
+  if (data.isPublic) await recordContentView("annonce", data.listing.id, { viewerId: data.userId, ownerIds: [data.listing.owner_id] });
   return <ListingView data={data} />;
 }
 

@@ -287,5 +287,17 @@ Nom public, ancienneté, nombre d'annonces et indexation par les moteurs se règ
 ## D95 — Statistiques sobres, limites dites
 Vues (visiteurs distincts par jour, estimation), favoris, coordonnées vues et conversations : chaque chiffre a sa définition et ses limites à côté. Aucune comparaison ni classement entre annonceurs.
 
+## D96 — Un espace par page, cloisonné par la base
+L'espace professionnel s'ouvre page par page ; chaque lecture passe par une fonction qui vérifie l'appartenance à l'équipe de la page (sinon 404, sans révéler son existence). Lecteur : consultation ; éditeur : annonces, demandes, réponses ; administrateur : équipe ; titulaire : tout. Les coordonnées des clients ne sont visibles qu'à partir du rôle éditeur.
+
+## D97 — Statistiques agrégées, vues réellement comptées
+Les vues n'étaient enregistrées nulle part : elles le sont désormais après l'envoi de la page (aucune latence), pour un visiteur distinct par jour, robots, préchargements et annonceur exclus, sous forme d'empreinte HMAC du jour purgée le lendemain. L'espace pro n'affiche que des totaux, chacun défini ; aucun visiteur n'est identifiable et aucun classement entre professionnels n'est montré.
+
+## D98 — Publier au nom d'une page
+Depuis l'espace, une annonce ou une offre se publie au nom de la page : elle est rattachée à la page et à son équipe, ce que la base n'autorise qu'aux gestionnaires de la page. Elle suit la même modération ; la correction demandée apparaît dans l'espace et dans l'historique.
+
+## D99 — Offres présentées, rien à payer
+`/offres` et l'espace affichent les offres du référentiel, avec la mention explicite qu'aucun paiement n'est ouvert ni demandé tant que le drapeau `payments` (prestataire configuré) est inactif. Rien ne s'achète, la page reste gratuite et complète.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

@@ -55,6 +55,9 @@ async function Pages({ searchParams }: { searchParams: Promise<Raw> }) {
                 {page.name}
               </Link>
               {page.status === "rejected" && page.rejection_reason && <p className="text-sm text-danger">Motif du refus : {page.rejection_reason}</p>}
+              <Link href={href("proWorkspace", { params: { id: page.id } })} className="text-sm font-semibold underline">
+                Espace professionnel : demandes, annonces, statistiques
+              </Link>
             </li>
           ))}
         </ul>

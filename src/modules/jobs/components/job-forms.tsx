@@ -202,7 +202,7 @@ export function RevealContactButton({ candidateId }: { candidateId: string }) {
 }
 
 /** Publication d'une offre : rappel des règles, pré-remplissage depuis un texte collé, envoi en modération. */
-export function PublishJobForm({ categories, neighborhoods }: { categories: { id: string; name: string }[]; neighborhoods: { id: string; name: string }[] }) {
+export function PublishJobForm({ categories, neighborhoods, pageId }: { categories: { id: string; name: string }[]; neighborhoods: { id: string; name: string }[]; pageId?: string }) {
   const [state, action] = useActionState(publishJobAction, INITIAL_FORM_STATE);
   const [draft, setDraft] = useState<OfferDraft | null>(null);
   const pasted = useRef<HTMLTextAreaElement>(null);
@@ -245,6 +245,7 @@ export function PublishJobForm({ categories, neighborhoods }: { categories: { id
         </div>
       </details>
       <form key={draft ? JSON.stringify(draft) : "vide"} action={action} className="flex flex-col gap-4">
+        {pageId && <input type="hidden" name="page" value={pageId} />}
         <FormStatus state={state} />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Type d’annonce" error={errors.categorie}>

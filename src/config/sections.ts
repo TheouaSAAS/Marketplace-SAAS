@@ -31,17 +31,6 @@ export const SECTION_PREVIEWS = {
     categories: ["immobilier", "emploi-stages", "annonces-biens", "vehicules", "opportunites-commerciales", "formation"],
     related: ["realEstate", "jobs", "publish", "newcomer"],
   },
-  pricing: {
-    title: "Offres pour les professionnels",
-    intro: "La publication et la vitrine de base sont gratuites. Des options de visibilité seront proposées aux professionnels.",
-    upcoming: [
-      "Offres transparentes, prix affichés avant toute souscription",
-      "Mises en avant toujours signalées « Sponsorisé »",
-      "Paiement Mobile Money ou carte, uniquement après confirmation réelle",
-    ],
-    parent: "directory",
-    related: ["directory", "publish", "contact"],
-  },
 } as const satisfies Partial<Record<RouteKey, SectionPreviewConfig>>;
 
 export type PreviewSectionKey = keyof typeof SECTION_PREVIEWS;

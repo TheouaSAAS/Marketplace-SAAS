@@ -46,11 +46,11 @@ async function schemaOf(categoryId: string): Promise<string | null | undefined> 
 // -----------------------------------------------------------------------------
 // Brouillon : création, enregistrement automatique, suppression
 // -----------------------------------------------------------------------------
-const startSchema = z.object({ categorie: z.uuid(), texte: z.string().trim().max(10000).optional() });
+const startSchema = z.object({ categorie: z.uuid(), texte: z.string().trim().max(10000).optional(), page: z.uuid().optional() });
 
 /** Crée un brouillon privé dans la catégorie choisie ; un texte libre éventuel devient des suggestions (règles). */
 export async function startDraftAction(formData: FormData): Promise<void> {
-  const parsed = startSchema.safeParse({ categorie: formData.get("categorie"), texte: formData.get("texte") || undefined });
+  const parsed = startSchema.safeParse({ categorie: formData.get("categorie"), texte: formData.get("texte") || undefined, page: formData.get("page") || undefined });
   if (!parsed.success) redirect(href("publish"));
   const account = await getCurrentAccount();
   if (!account) redirect(href("login", { query: { suivant: href("publish") } }));
@@ -61,10 +61,14 @@ export async function startDraftAction(formData: FormData): Promise<void> {
   const { supabase } = await session();
   const { current } = await getCityContext();
   if (!current.id) redirect(href("publish"));
+  // Au nom d'une page professionnelle : rattachée à la page et à son équipe.
+  const page = parsed.data.page ? (await supabase.from("business_profiles").select("id, organization_id").eq("id", parsed.data.page).maybeSingle()).data : null;
   const { data, error } = await supabase
     .from("listings")
     .insert({
       owner_id: account.id,
+      business_id: page?.id ?? null,
+      organization_id: page?.organization_id ?? null,
       slug: `brouillon-${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`,
       title: "",
       description: "",

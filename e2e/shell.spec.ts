@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 
 const SECTIONS: [string, string][] = [
   ["/annonces", "Annonces et opportunités"],
-  ["/offres", "Offres pour les professionnels"],
 ];
 
 test.describe("Shell — rubriques", () => {

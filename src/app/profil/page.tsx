@@ -88,7 +88,7 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
 
       <Section title="Mes publications">
         <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-          {(["myListings", "proPages", "myEvents", "receivedApplications", "myApplications"] as const).map((key) => (
+          {(["myListings", "pro", "proPages", "myEvents", "receivedApplications", "myApplications"] as const).map((key) => (
             <li key={key}>
               <Link href={href(key)} className="font-semibold underline">
                 {ROUTES[key].label}

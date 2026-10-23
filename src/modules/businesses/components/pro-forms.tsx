@@ -15,6 +15,7 @@ import {
   respondReviewAction,
   submitProPageAction,
   submitReviewAction,
+  updateRequestStatusAction,
 } from "../server/pro-actions";
 
 const decisionButton = "inline-flex h-11 items-center rounded-control px-4 text-sm font-semibold";
@@ -196,6 +197,30 @@ export function ReviewModerationForm({ reviewId }: { reviewId: string }) {
           Refuser
         </button>
       </div>
+    </form>
+  );
+}
+
+/** Statut d'une demande reçue (gestionnaires de la page). */
+export function RequestStatusForm({ pageId, requestId, current }: { pageId: string; requestId: string; current: string }) {
+  const [state, action] = useActionState(updateRequestStatusAction, INITIAL_FORM_STATE);
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-2">
+      <input type="hidden" name="page" value={pageId} />
+      <input type="hidden" name="demande" value={requestId} />
+      <label className="sr-only" htmlFor={`statut-${requestId}`}>
+        Statut de la demande
+      </label>
+      <select id={`statut-${requestId}`} name="statut" defaultValue={current === "new" ? "read" : current} className="min-h-9 rounded-control border border-border-strong bg-surface px-2 text-sm">
+        <option value="read">Lue</option>
+        <option value="replied">Répondue</option>
+        <option value="archived">Archivée</option>
+        <option value="new">Remettre en nouvelle</option>
+      </select>
+      <SubmitButton variant="secondary" fullWidth={false}>
+        Enregistrer
+      </SubmitButton>
+      <FormStatus state={state} />
     </form>
   );
 }

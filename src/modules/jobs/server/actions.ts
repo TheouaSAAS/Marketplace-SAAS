@@ -207,8 +207,13 @@ export async function publishJobAction(_previous: FormState, formData: FormData)
       lien_candidature: data.candidature === "externe" ? safeApplyLink(data.lien)?.href : undefined,
     }).filter(([, value]) => value !== undefined),
   );
+  // Au nom d'une page professionnelle : rattachée à la page et à son équipe (droit vérifié en base).
+  const pageId = z.uuid().safeParse(formData.get("page"));
+  const page = pageId.success ? (await session.supabase.from("business_profiles").select("id, organization_id").eq("id", pageId.data).maybeSingle()).data : null;
   const { error } = await session.supabase.from("listings").insert({
     owner_id: session.user.id,
+    business_id: page?.id ?? null,
+    organization_id: page?.organization_id ?? null,
     slug: `${slugify(data.titre).slice(0, 60) || "offre"}-${crypto.randomUUID().slice(0, 6)}`,
     title: data.titre,
     description: data.description,

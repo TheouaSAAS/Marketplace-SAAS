@@ -13,6 +13,7 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { suggestCategories } from "@/modules/publishing/domain/assistant";
 import { LISTING_RULES } from "@/modules/publishing/domain/rules";
 import { startDraftAction } from "@/modules/publishing/server/actions";
+import { getManageablePage } from "@/modules/businesses/server/workspace";
 import { listMyListings, publishableCategories, type CategoryGroup, type PublishableCategory } from "@/modules/publishing/server/queries";
 import { getCurrentAccount } from "@/server/auth";
 
@@ -23,11 +24,12 @@ export const metadata: Metadata = {
 
 type Raw = Record<string, string | string[] | undefined>;
 
-function CategoryButton({ category, text, highlight }: { category: PublishableCategory; text?: string; highlight?: string }) {
+function CategoryButton({ category, text, highlight, pageId }: { category: PublishableCategory; text?: string; highlight?: string; pageId?: string }) {
   return (
     <form action={startDraftAction}>
       <input type="hidden" name="categorie" value={category.id} />
       {text && <input type="hidden" name="texte" value={text} />}
+      {pageId && <input type="hidden" name="page" value={pageId} />}
       <button
         type="submit"
         className="flex min-h-11 w-full items-center justify-between gap-2 rounded-control border border-border bg-surface px-3 py-2 text-left text-sm font-semibold hover:border-brand-600 hover:bg-sand-100"
@@ -56,8 +58,10 @@ async function Categories({ searchParams }: { searchParams: Promise<Raw> }) {
   }
   if (flat.length === 0) return <ErrorState title="Publication indisponible" description="Aucune catégorie n’est ouverte à la publication pour l’instant." />;
   const suggested = text ? suggestCategories(text, flat) : [];
+  const page = await getManageablePage(typeof raw.page === "string" ? raw.page : undefined).catch(() => null);
   return (
     <div className="flex flex-col gap-8">
+      {page && <Alert tone="info">Annonce publiée au nom de la page « {page.name} » : visible de son équipe dans l’espace professionnel.</Alert>}
       {raw.limite === "1" && <Alert tone="warning">Vous avez créé beaucoup de brouillons aujourd’hui : terminez ou supprimez-en avant d’en créer d’autres.</Alert>}
       {raw.erreur === "1" && <Alert tone="danger">Le brouillon n’a pas pu être créé. Réessayez.</Alert>}
       <section aria-labelledby="decrire" className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 sm:p-6">
@@ -93,7 +97,7 @@ async function Categories({ searchParams }: { searchParams: Promise<Raw> }) {
                     const category = flat.find((candidate) => candidate.id === item.id)!;
                     return (
                       <li key={item.id}>
-                        <CategoryButton category={{ ...category, name: item.name }} text={text} highlight={`Mots reconnus : ${item.matched.join(", ")}`} />
+                        <CategoryButton category={{ ...category, name: item.name }} text={text} highlight={`Mots reconnus : ${item.matched.join(", ")}`} pageId={page?.id} />
                       </li>
                     );
                   })}
@@ -117,7 +121,7 @@ async function Categories({ searchParams }: { searchParams: Promise<Raw> }) {
               <ul className="grid gap-2 sm:grid-cols-2">
                 {group.children.map((category) => (
                   <li key={category.id}>
-                    <CategoryButton category={category} text={text || undefined} />
+                    <CategoryButton category={category} text={text || undefined} pageId={page?.id} />
                   </li>
                 ))}
               </ul>

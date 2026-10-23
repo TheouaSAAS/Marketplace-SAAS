@@ -332,6 +332,58 @@ export type Database = {
           },
         ]
       }
+      business_view_counts: {
+        Row: {
+          business_id: string
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          business_id: string
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          business_id?: string
+          updated_at?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_view_counts_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: true
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_view_marks: {
+        Row: {
+          business_id: string
+          day: string
+          viewer_hash: string
+        }
+        Insert: {
+          business_id: string
+          day?: string
+          viewer_hash: string
+        }
+        Update: {
+          business_id?: string
+          day?: string
+          viewer_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_view_marks_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_profiles: {
         Row: {
           available: boolean
@@ -3777,6 +3829,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_page_manager: { Args: { p_business: string }; Returns: boolean }
+      is_page_member: { Args: { p_business: string }; Returns: boolean }
       is_service_context: { Args: never; Returns: boolean }
       is_service_request: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
@@ -4049,6 +4103,64 @@ export type Database = {
           location_precision: Database["public"]["Enums"]["location_precision"]
         }[]
       }
+      pro_events: {
+        Args: { p_business: string }
+        Returns: {
+          id: string
+          rejection_reason: string
+          slug: string
+          starts_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+        }[]
+      }
+      pro_listings: {
+        Args: { p_business: string }
+        Returns: {
+          availability_status: Database["public"]["Enums"]["availability_status"]
+          category_name: string
+          contact_reveals: number
+          conversations: number
+          expires_at: string
+          favorites: number
+          id: string
+          rejection_reason: string
+          schema: string
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          views: number
+        }[]
+      }
+      pro_moderation_history: {
+        Args: { p_business: string }
+        Returns: {
+          changed_at: string
+          entity: string
+          reason: string
+          status_after: string
+          status_before: string
+          title: string
+        }[]
+      }
+      pro_stats: {
+        Args: { p_business: string }
+        Returns: {
+          conversations: number
+          listing_contact_reveals: number
+          listing_favorites: number
+          listing_views: number
+          listings_published: number
+          page_favorites: number
+          page_views: number
+          rating_average: number
+          requests_30d: number
+          requests_total: number
+          requests_unanswered: number
+          reviews_published: number
+        }[]
+      }
       propose_neighborhood_boundary: {
         Args: {
           p_geojson: string
@@ -4085,6 +4197,10 @@ export type Database = {
           response_body: string
           status: Database["public"]["Enums"]["review_status"]
         }[]
+      }
+      record_business_view: {
+        Args: { p_business: string; p_viewer_hash: string }
+        Returns: boolean
       }
       record_listing_view: {
         Args: { p_listing: string; p_viewer_hash: string }

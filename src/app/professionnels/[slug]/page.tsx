@@ -27,6 +27,7 @@ import { ReviewForm } from "@/modules/businesses/components/pro-forms";
 import { getProPublicExtras, listProListings } from "@/modules/businesses/server/pro-queries";
 import { getSessionUser } from "@/server/auth";
 import { isFeatureEnabled } from "@/server/features";
+import { recordContentView } from "@/server/views";
 
 type Props = PageProps<"/professionnels/[slug]">;
 
@@ -62,6 +63,8 @@ async function Professional({ params }: Pick<Props, "params">) {
   // Disponibilité, vérification et session jugées à la date de la requête.
   await connection();
   const [extras, user] = await Promise.all([getProPublicExtras(pro.id), getSessionUser()]);
+  // Vue comptée après l'envoi de la page ; le titulaire ne compte pas.
+  await recordContentView("pro", pro.id, { viewerId: user?.id ?? null, ownerIds: [pro.owner_id] });
   const listings = extras.listingIds.length ? await listProListings(extras.listingIds) : [];
   const now = new Date();
   const back = href("professionalDetail", { params: { slug } });

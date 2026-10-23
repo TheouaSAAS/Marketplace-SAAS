@@ -57,6 +57,10 @@ Une page professionnelle est déclarative et modérée ; elle n'est « vérifié
 
 Chaque lecture du tableau de bord passe par la session : la base ne renvoie que les données de la personne. Les statistiques sont des estimations expliquées. Les choix de confidentialité (nom, ancienneté, nombre d'annonces, indexation) s'appliquent sur le site public ; les consentements gardent leur historique (une ligne par choix, jamais modifiée).
 
+## Espace professionnel (niveau 21)
+
+Les statistiques sont des totaux sans donnée de visiteur ; les empreintes servant à dédoublonner les vues ne permettent pas de retrouver une personne et sont supprimées le lendemain. Les demandes de contact portent les coordonnées que le client a choisi de transmettre, visibles des seuls gestionnaires de la page concernée.
+
 ## IA
 
 Niveau 18 : l'assistant de publication propose des champs tirés du seul document de l'auteur (texte, photo, PDF), jamais d'informations extérieures ; rien n'est publié sans validation explicite, et une photo ou un PDF n'est jamais tenu pour une source fiable (confiance plafonnée, rappel de vérification). Les PDF ne sont pas conservés ; la consommation de l'IA est enregistrée sans aucun contenu.

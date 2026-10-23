@@ -61,7 +61,7 @@ export const ROUTES = {
   adminReviews: { path: "/admin/avis", label: "Avis à modérer", level: 19, status: "live", private: true },
   professionalDetail: { path: "/professionnels/[slug]", label: "Fiche d’un professionnel", level: 10, status: "live" },
   quoteRequests: { path: "/devis", label: "Mes demandes de devis", level: 10, status: "live", private: true },
-  pricing: { path: "/offres", label: "Offres et visibilité", level: 21, status: "preview" },
+  pricing: { path: "/offres", label: "Offres et visibilité", level: 21, status: "live" },
 
   // Découvrir & sortir
   discover: { path: "/decouvrir", label: "Découvrir et sortir", level: 12, status: "live" },
@@ -102,7 +102,13 @@ export const ROUTES = {
   favorites: { path: "/favoris", label: "Mes favoris", level: 8, status: "live", private: true },
   messages: { path: "/messages", label: "Mes messages", level: 8, status: "live", private: true },
   messageThread: { path: "/messages/[id]", label: "Conversation", level: 8, status: "live", private: true },
-  pro: { path: "/espace-pro", label: "Espace professionnel", level: 21, status: "planned", private: true },
+  pro: { path: "/espace-pro", label: "Espace professionnel", level: 21, status: "live", private: true },
+  proWorkspace: { path: "/espace-pro/[id]", label: "Aperçu", level: 21, status: "live", private: true },
+  proListings: { path: "/espace-pro/[id]/annonces", label: "Annonces et offres", level: 21, status: "live", private: true },
+  proInbox: { path: "/espace-pro/[id]/demandes", label: "Demandes reçues", level: 21, status: "live", private: true },
+  proStats: { path: "/espace-pro/[id]/statistiques", label: "Statistiques", level: 21, status: "live", private: true },
+  proModeration: { path: "/espace-pro/[id]/verification", label: "Vérification et modération", level: 21, status: "live", private: true },
+  proOffers: { path: "/espace-pro/[id]/offres", label: "Visibilité et offres", level: 21, status: "live", private: true },
   admin: { path: "/admin", label: "Administration", level: 22, status: "planned", private: true },
   adminCategories: { path: "/admin/categories", label: "Catégories", level: 10, status: "live", private: true },
 
