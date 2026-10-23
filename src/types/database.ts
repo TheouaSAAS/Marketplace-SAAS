@@ -54,6 +54,47 @@ export type Database = {
           },
         ]
       }
+      ai_usage: {
+        Row: {
+          cost_usd: number
+          created_at: string
+          feature: string
+          id: string
+          input_tokens: number
+          model: string
+          output_tokens: number
+          user_id: string | null
+        }
+        Insert: {
+          cost_usd: number
+          created_at?: string
+          feature: string
+          id?: string
+          input_tokens: number
+          model: string
+          output_tokens: number
+          user_id?: string | null
+        }
+        Update: {
+          cost_usd?: number
+          created_at?: string
+          feature?: string
+          id?: string
+          input_tokens?: number
+          model?: string
+          output_tokens?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_profiles: {
         Row: {
           accepts_quotes: boolean
@@ -1262,7 +1303,10 @@ export type Database = {
       images: {
         Row: {
           alt_text: string | null
+          bucket: string
           business_id: string | null
+          byte_size: number | null
+          content_hash: string | null
           created_at: string
           event_id: string | null
           height: number | null
@@ -1276,7 +1320,10 @@ export type Database = {
         }
         Insert: {
           alt_text?: string | null
+          bucket?: string
           business_id?: string | null
+          byte_size?: number | null
+          content_hash?: string | null
           created_at?: string
           event_id?: string | null
           height?: number | null
@@ -1290,7 +1337,10 @@ export type Database = {
         }
         Update: {
           alt_text?: string | null
+          bucket?: string
           business_id?: string | null
+          byte_size?: number | null
+          content_hash?: string | null
           created_at?: string
           event_id?: string | null
           height?: number | null
@@ -1570,6 +1620,72 @@ export type Database = {
           },
           {
             foreignKeyName: "listing_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_suggestions: {
+        Row: {
+          confidence: number
+          created_at: string
+          decided_at: string | null
+          excerpt: string | null
+          field: string
+          id: string
+          input_kind: string
+          listing_id: string
+          model: string | null
+          origin: string
+          previous_value: Json | null
+          status: string
+          user_id: string
+          value: Json
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          decided_at?: string | null
+          excerpt?: string | null
+          field: string
+          id?: string
+          input_kind: string
+          listing_id: string
+          model?: string | null
+          origin: string
+          previous_value?: Json | null
+          status?: string
+          user_id?: string
+          value: Json
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          decided_at?: string | null
+          excerpt?: string | null
+          field?: string
+          id?: string
+          input_kind?: string
+          listing_id?: string
+          model?: string | null
+          origin?: string
+          previous_value?: Json | null
+          status?: string
+          user_id?: string
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_suggestions_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_suggestions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -3326,6 +3442,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ai_month_cost: { Args: never; Returns: number }
       archive_past_events: { Args: never; Returns: number }
       attr_bool: {
         Args: { p_attributes: Json; p_key: string }
@@ -3497,6 +3614,13 @@ export type Database = {
           parent_id: string
         }[]
       }
+      listing_editor_point: {
+        Args: { p_listing: string }
+        Returns: {
+          lat: number
+          lng: number
+        }[]
+      }
       listing_engagement: {
         Args: { p_listing: string }
         Returns: {
@@ -3504,6 +3628,14 @@ export type Database = {
           liked: boolean
           likes: number
           views: number
+        }[]
+      }
+      listing_image_duplicates: {
+        Args: { p_listing: string }
+        Returns: {
+          image_id: string
+          other_matches: number
+          own_matches: number
         }[]
       }
       listing_is_contactable: { Args: { p_listing: string }; Returns: boolean }

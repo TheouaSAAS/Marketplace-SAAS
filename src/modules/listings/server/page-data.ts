@@ -4,6 +4,7 @@ import {
   getListingComments,
   getListingEngagement,
   getListingForSession,
+  getListingImages,
   getListingPoint,
   getListingPublicState,
   getListingSeller,
@@ -31,7 +32,7 @@ export async function loadListingPage(slug: string) {
   }
 
   const isPublic = publicListing !== null;
-  const [seller, point, engagement, comments, favorite, similar, others] = await Promise.all([
+  const [seller, point, engagement, comments, favorite, similar, others, images] = await Promise.all([
     getListingSeller(listing.id, !isPublic),
     getListingPoint(listing.id, !isPublic),
     getListingEngagement(listing.id),
@@ -49,6 +50,8 @@ export async function loadListingPage(slug: string) {
         })
       : [],
     isPublic ? getOtherListingsFromOwner(listing.owner_id, listing.id) : [],
+    // Photos publiées seulement : celles d'une annonce en attente restent privées.
+    getListingImages(listing.id),
   ]);
 
   return {
@@ -63,6 +66,7 @@ export async function loadListingPage(slug: string) {
     favorite,
     similar,
     others,
+    images,
   } as const;
 }
 

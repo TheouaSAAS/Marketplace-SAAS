@@ -154,9 +154,17 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `notify_listing_moderation` : l’auteur d’une annonce (dont une offre) est notifié de la publication ou du refus motivé.
 - `enforce_content_rules` ignore désormais `availability_status` : clôturer une offre ou marquer un bien indisponible ne renvoie pas en modération.
 
+## Publication (niveau 18, migrations `20261031000100_publishing.sql` et `…000200_publishing_editor.sql`)
+
+- Brouillon incomplet : `listings_title_check` et `listings_description_check` n’imposent les longueurs minimales qu’hors brouillon ; la position reste exigée à la soumission (`require_listing_location`).
+- Photos : `images.bucket` (`media` public ou `private-media` privé), `content_hash` (SHA-256), `byte_size`. `protect_image` : une photo d’annonce déposée par son auteur est privée d’office, 10 au plus par annonce, et l’auteur ne modifie que la légende et l’ordre ; l’équipe la rend publique à la publication (copie de fichier par le serveur). `listing_image_duplicates(annonce)` : nombre de photos identiques dans d’autres annonces du même compte ou d’un autre, sans détail.
+- `listing_suggestions` : suggestions de l’assistant (champ, valeur, origine `regles` ou `ia`, source `texte`, `photo` ou `pdf`, confiance, extrait, modèle), privées (auteur et équipe). `protect_listing_suggestion` : naît « proposée », la valeur ne change jamais, décisions proposée → acceptée ou rejetée, acceptée → annulée, datées ; `previous_value` (valeur remplacée) n’est fixée qu’à l’acceptation.
+- `ai_usage` : volumes et coût estimé de chaque appel à l’IA, écrits par le serveur seul (clé secrète) ; lecture administrateurs. `ai_month_cost()` (rôle de service) pour le budget mensuel.
+- `listing_editor_point(annonce)` : position privée pour l’auteur ou l’équipe (éditeur, contrôle de soumission).
+
 ## Règles en base (déclencheurs)
 
-`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
+`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
 
 Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_service_request()`, jamais `is_service_context()` (voir décision D20).
 

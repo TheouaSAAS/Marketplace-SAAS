@@ -134,6 +134,8 @@ export async function getListingImages(listingId: string): Promise<ListingImage[
     .from("images")
     .select("id, storage_path, alt_text, width, height")
     .eq("listing_id", listingId)
+    // Les photos encore privées (annonce non publiée ou modifiée) ne sont jamais montrées au public.
+    .eq("bucket", "media")
     .order("sort_order");
   if (error) throw new Error(`Lecture des images impossible : ${error.message}`);
   return z

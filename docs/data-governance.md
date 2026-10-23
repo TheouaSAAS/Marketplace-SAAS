@@ -51,6 +51,8 @@ Les offres sont déclarées par leurs auteurs et modérées ; elles ne sont pas 
 
 ## IA
 
+Niveau 18 : l'assistant de publication propose des champs tirés du seul document de l'auteur (texte, photo, PDF), jamais d'informations extérieures ; rien n'est publié sans validation explicite, et une photo ou un PDF n'est jamais tenu pour une source fiable (confiance plafonnée, rappel de vérification). Les PDF ne sont pas conservés ; la consommation de l'IA est enregistrée sans aucun contenu.
+
 L'IA ne crée aucune donnée locale. Elle ne répond qu'à partir de contenus `verified` (ou, si le contexte l'autorise explicitement, `pending_validation` signalés comme tels), cite ses sources internes et répond « je ne dispose pas d'information vérifiée » en l'absence de source.
 
 ## Parcours « Nouveau à San Pedro ? » (niveau 6)

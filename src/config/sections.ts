@@ -31,17 +31,6 @@ export const SECTION_PREVIEWS = {
     categories: ["immobilier", "emploi-stages", "annonces-biens", "vehicules", "opportunites-commerciales", "formation"],
     related: ["realEstate", "jobs", "publish", "newcomer"],
   },
-  publish: {
-    title: "Publier une annonce",
-    intro: "Publiez gratuitement une annonce, vérifiée par l’équipe de modération avant sa mise en ligne.",
-    upcoming: [
-      "Formulaire guidé selon la catégorie, brouillon enregistré automatiquement",
-      "Aide facultative à la rédaction, toujours modifiable avant publication",
-      "Suivi du statut : brouillon, en attente, publiée",
-    ],
-    parent: "listings",
-    related: ["signup", "listings", "help"],
-  },
   directory: {
     title: "Professionnels et entreprises",
     intro: "L’annuaire des professionnels de San Pedro : commerces, artisans, agences, opérateurs.",

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Download } from "lucide-react";
-import { href } from "@/config/routes";
+import { href, ROUTES } from "@/config/routes";
 import { isAdmin, isCurator, isStaff, ROLE_LABELS } from "@/domain/roles";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -96,6 +96,21 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
         </CardBody>
       </Card>
 
+      <Section title="Mes publications">
+        <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          {(["myListings", "myEvents", "receivedApplications", "myApplications"] as const).map((key) => (
+            <li key={key}>
+              <Link href={href(key)} className="font-semibold underline">
+                {ROUTES[key].label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <ButtonLink href={href("publish")} variant="secondary">
+          Publier une annonce
+        </ButtonLink>
+      </Section>
+
       <Section title="Informations publiques">
         <ProfileForm displayName={account.displayName ?? ""} />
       </Section>
@@ -136,6 +151,11 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
         {isStaff(account.role) && (
           <ButtonLink href={href("adminEvents")} variant="secondary">
             Modérer les événements
+          </ButtonLink>
+        )}
+        {isStaff(account.role) && (
+          <ButtonLink href={href("adminListings")} variant="secondary">
+            Modérer les annonces
           </ButtonLink>
         )}
         {isStaff(account.role) && (

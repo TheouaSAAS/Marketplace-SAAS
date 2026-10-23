@@ -5,10 +5,10 @@ import { EQUIPMENTS } from "@/modules/real-estate/domain/modes";
  * Attributs propres à une catégorie d'annonce (`categories.attribute_schema`),
  * stockés dans `listings.attributes`. Ce registre sert à l'AFFICHAGE : seuls
  * les attributs connus et du bon type sont montrés ; rien n'est déduit ni
- * complété. La validation à la saisie arrive avec la publication (niveau 18).
+ * complété. La saisie est validée par `src/modules/publishing/domain/fields.ts`.
  */
 
-type AttributeKind =
+export type AttributeKind =
   | { kind: "text" }
   | { kind: "integer"; unit?: string }
   | { kind: "boolean" }
@@ -16,7 +16,7 @@ type AttributeKind =
   | { kind: "choice"; options: Record<string, string> }
   | { kind: "list"; options: Record<string, string> };
 
-interface AttributeDefinition {
+export interface AttributeDefinition {
   label: string;
   type: AttributeKind;
 }

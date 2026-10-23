@@ -44,7 +44,11 @@ export const ROUTES = {
   candidateProfile: { path: "/emploi/profil-candidat", label: "Mon profil candidat", level: 17, status: "live", private: true },
   candidates: { path: "/emploi/candidats", label: "Profils candidats", level: 17, status: "live", private: true },
   adminJobs: { path: "/admin/offres", label: "Offres à modérer", level: 17, status: "live", private: true },
-  publish: { path: "/publier", label: "Publier une annonce", level: 18, status: "preview" },
+  publish: { path: "/publier", label: "Publier une annonce", level: 18, status: "live" },
+  publishEditor: { path: "/publier/[id]", label: "Rédiger une annonce", level: 18, status: "live", private: true },
+  publishPreview: { path: "/publier/[id]/apercu", label: "Aperçu de l’annonce", level: 18, status: "live", private: true },
+  myListings: { path: "/mes-annonces", label: "Mes annonces", level: 18, status: "live", private: true },
+  adminListings: { path: "/admin/annonces", label: "Annonces à modérer", level: 18, status: "live", private: true },
 
   // Services & professionnels
   services: { path: "/services", label: "Services de proximité", level: 10, status: "live" },

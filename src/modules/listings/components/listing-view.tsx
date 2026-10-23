@@ -12,6 +12,7 @@ import { listingCategoryHref, listingJsonLd, listingUrl } from "../server/seo";
 import { JobApplyPanel } from "@/modules/jobs/components/apply-panel";
 import { RealEstateNotice } from "@/modules/real-estate/components/real-estate-notice";
 import { ListingAside } from "./listing-aside";
+import { ListingGallery } from "./listing-gallery";
 import { ListingHeader } from "./listing-header";
 import { ListingJsonLd } from "./listing-json-ld";
 import { ListingLocation } from "./listing-location";
@@ -21,7 +22,7 @@ import { ListingAttributes, ListingDescription } from "./listing-text";
 const POSITIONLESS = ["emploi", "opportunite", "appel_offres", "formation"];
 
 export function ListingView({ data }: { data: LoadedListing }) {
-  const { listing, isPublic, userId, seller, point, engagement, comments, favorite, similar, others } = data;
+  const { listing, isPublic, userId, seller, point, engagement, comments, favorite, similar, others, images } = data;
   const now = new Date();
   const state = listingState(listing, now);
   const isOwner = userId === listing.owner_id;
@@ -60,10 +61,14 @@ export function ListingView({ data }: { data: LoadedListing }) {
           {listing.category?.attribute_schema === "immobilier" && state === "active" && (
             <RealEstateNotice lastConfirmedAt={listing.last_confirmed_at} publishedAt={listing.published_at} now={now} />
           )}
-          <div>
-            <CategoryVisual icon={listing.category?.icon} fallback={Package} tone="brand" className="rounded-card lg:aspect-[21/9]" />
-            <p className="mt-1 text-xs text-ink-subtle">Pas encore de photo : l’ajout de photos arrive avec la publication d’annonces.</p>
-          </div>
+          {images.length > 0 ? (
+            <ListingGallery images={images} title={listing.title} />
+          ) : (
+            <div>
+              <CategoryVisual icon={listing.category?.icon} fallback={Package} tone="brand" className="rounded-card lg:aspect-[21/9]" />
+              <p className="mt-1 text-xs text-ink-subtle">Pas de photo fournie par l’annonceur.</p>
+            </div>
+          )}
           <ListingDescription text={listing.description} />
           {listing.category?.attribute_schema === "emploi" && (
             <Suspense fallback={null}>

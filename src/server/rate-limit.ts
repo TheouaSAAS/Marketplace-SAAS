@@ -23,6 +23,8 @@ export const RATE_RULES = {
   signIn: { limit: 10, windowSeconds: 900 },
   passwordReset: { limit: 5, windowSeconds: 3600 },
   sensitiveAccountAction: { limit: 10, windowSeconds: 3600 },
+  listingDraft: { limit: 20, windowSeconds: 86400 },
+  aiAssist: { limit: 30, windowSeconds: 86400 },
 } as const satisfies Record<string, RateRule>;
 
 export type RateAction = keyof typeof RATE_RULES;
