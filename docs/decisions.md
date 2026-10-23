@@ -329,5 +329,17 @@ Recherche : critères proposés en dernier recours et annoncés comme tels. Mod�
 ## D109 — Coupure, quotas et sobriété
 Un drapeau par usage, un interrupteur général en base (coupure sans redéploiement, journalisée), un budget mensuel, des quotas par personne (20 questions par heure, 40 recherches IA par jour). La consommation est enregistrée sans contenu ; la question n'est jamais conservée.
 
+## D110 — Une file d'envoi alimentée par la base
+Toute notification, quelle que soit son origine (action, déclencheur, tâche planifiée), passe par la même file : la base décide du canal selon les préférences, une tâche serveur envoie. Un envoi est réservé avant traitement (jamais deux fois), la clé d'idempotence est transmise au fournisseur, les échecs sont retentés puis abandonnés avec un code d'erreur, jamais le contenu.
+
+## D111 — Informer sans spam
+Une seule notification non lue par conversation, une relance par échéance d'annonce, une alerte par recherche et par jour au plus, dédoublonnage par clé ; les e-mails ne contiennent ni le texte des messages ni de coordonnées. Les alertes et rappels portant sur des contenus non vérifiés sont formulés au conditionnel.
+
+## D112 — Le choix de la personne, par canal
+Chaque catégorie se règle sur le site et par e-mail ; « aucun e-mail » coupe tout, y compris les décisions (qui restent affichées sur le site). Chaque e-mail permet de se désabonner de sa catégorie sans connexion : lien signé, confirmation par bouton (un antivirus qui ouvre le lien ne désabonne pas) et désabonnement en un clic par la messagerie (RFC 8058).
+
+## D113 — Fournisseurs facultatifs
+E-mail : Resend si configuré ; sans fournisseur, simulé dans la console en développement et ignoré en production (statut « ignoré », jamais « envoyé »). Push et SMS : abstraction prête, aucun envoi tant qu'aucun fournisseur n'est branché. Les e-mails de compte (vérification, réinitialisation) restent ceux de Supabase Auth.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

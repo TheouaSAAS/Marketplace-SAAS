@@ -58,3 +58,25 @@ export async function deleteSavedSearchAction(_previous: FormState, formData: Fo
   }
   return { status: "success", message: "Recherche supprimée." };
 }
+
+/**
+ * Alerte sur une recherche enregistrée : nouvelles annonces publiées depuis la
+ * dernière alerte, au plus une fois par jour ou par semaine. Le point de départ
+ * est le moment du réglage (aucune alerte sur les annonces déjà connues).
+ */
+export async function setSearchAlertAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const parsed = z.object({ id: z.uuid(), alerte: z.enum(["none", "daily", "weekly"]) }).safeParse({ id: formData.get("id"), alerte: formData.get("alerte") });
+  const user = await getSessionUser();
+  const supabase = await createSessionSupabaseClient();
+  if (!parsed.success || !user || !supabase) return { status: "error", message: "Réglage impossible." };
+  const { error } = await supabase
+    .from("saved_searches")
+    .update({ alert_frequency: parsed.data.alerte, last_alerted_at: new Date().toISOString() })
+    .eq("id", parsed.data.id)
+    .eq("user_id", user.id);
+  if (error) {
+    log.error("Réglage de l'alerte impossible", { code: error.code });
+    return { status: "error", message: "Le réglage n’a pas pu être enregistré. Réessayez." };
+  }
+  return { status: "success", message: parsed.data.alerte === "none" ? "Alerte désactivée." : "Alerte enregistrée : vous serez prévenu des nouvelles annonces." };
+}

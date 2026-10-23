@@ -35,6 +35,14 @@ export function listingActions(state: ListingState): ListingAction[] {
   }
 }
 
+/** Une annonce publiée se confirme (et se prolonge) dans les 7 jours qui précèdent sa fin de diffusion. */
+export const CONFIRM_WINDOW_DAYS = 7;
+export function canConfirm(expiresAt: string | null, now: Date): boolean {
+  if (!expiresAt) return false;
+  const remaining = new Date(expiresAt).getTime() - now.getTime();
+  return remaining > 0 && remaining <= CONFIRM_WINDOW_DAYS * 24 * 3600_000;
+}
+
 /** Actions irréversibles ou qui retirent l'annonce du site : confirmation explicite demandée. */
 export const SENSITIVE_ACTIONS: ListingAction[] = ["archiver", "supprimer"];
 
@@ -45,34 +53,58 @@ export const STATS_DEFINITIONS = [
   { label: "Conversations", definition: "Conversations ouvertes depuis l’annonce dans la messagerie." },
 ] as const;
 
-/** Notifications que la personne peut couper ; les décisions de modération, revendications et vérifications restent envoyées. */
+/**
+ * Catégories de notification (miroir de `public.notification_category`). Chacune
+ * se règle par canal : sur le site et par e-mail. Les décisions de l'équipe
+ * restent toujours affichées sur le site ; leur e-mail peut être coupé.
+ */
 export const NOTIFICATION_CATEGORIES = {
-  avis: { label: "Avis", explain: "Avis publiés sur vos pages professionnelles, décisions sur vos avis." },
-  candidature: { label: "Candidatures", explain: "Nouvelles candidatures reçues et décisions sur les vôtres." },
-  equipe: { label: "Équipe", explain: "Invitations acceptées dans vos équipes." },
-  evenement: { label: "Événements", explain: "Décisions sur vos événements, reports et annulations de vos favoris." },
-  rappel: { label: "Rappels", explain: "Rappel la veille d’un événement en favori." },
+  decisions: { label: "Décisions de l’équipe", explain: "Publication ou refus de vos annonces et pages, suspensions, revendications, vérifications.", siteMutable: false },
+  message: { label: "Messages", explain: "Nouveau message dans une conversation : une seule alerte tant qu’elle n’est pas lue.", siteMutable: true },
+  demande: { label: "Demandes reçues", explain: "Demandes de contact et de devis adressées à vous ou à vos pages.", siteMutable: true },
+  expiration: { label: "Annonces à confirmer", explain: "Annonce qui expire dans les 3 jours ou vient d’expirer.", siteMutable: true },
+  recherche: { label: "Alertes de recherche", explain: "Nouvelles annonces pour vos recherches enregistrées avec alerte.", siteMutable: true },
+  avis: { label: "Avis", explain: "Avis publiés sur vos pages professionnelles, décisions sur vos avis.", siteMutable: true },
+  candidature: { label: "Candidatures", explain: "Nouvelles candidatures reçues et décisions sur les vôtres.", siteMutable: true },
+  equipe: { label: "Équipe", explain: "Invitations acceptées dans vos équipes.", siteMutable: true },
+  evenement: { label: "Événements", explain: "Décisions sur vos événements, reports et annulations de vos favoris.", siteMutable: true },
+  rappel: { label: "Rappels", explain: "Rappel la veille d’un événement en favori.", siteMutable: true },
 } as const;
 export type NotificationCategory = keyof typeof NOTIFICATION_CATEGORIES;
+export const NOTIFICATION_CATEGORY_KEYS = Object.keys(NOTIFICATION_CATEGORIES) as NotificationCategory[];
 
-export const ESSENTIAL_NOTIFICATIONS = "Toujours envoyées : décisions de modération (annonces, pages), revendications et vérifications.";
+export const ESSENTIAL_NOTIFICATIONS = "Les décisions de l’équipe restent toujours affichées sur le site.";
 
-/** Lecture prudente des préférences enregistrées (JSON) : catégorie absente ou mal formée = activée. */
-export function mutedCategories(channels: unknown): NotificationCategory[] {
-  if (!channels || typeof channels !== "object" || Array.isArray(channels)) return [];
-  return (Object.keys(NOTIFICATION_CATEGORIES) as NotificationCategory[]).filter((key) => {
-    const value = (channels as Record<string, unknown>)[key];
-    return typeof value === "object" && value !== null && (value as Record<string, unknown>).site === false;
-  });
+export interface ChannelPreferences {
+  site: Record<NotificationCategory, boolean>;
+  email: Record<NotificationCategory, boolean>;
+  /** Plus aucun e-mail de notification. */
+  emailOff: boolean;
 }
 
-/** Préférences à enregistrer d'après les cases cochées (les autres clés sont conservées). */
-export function withSiteChannels(channels: unknown, enabled: NotificationCategory[]): Record<string, unknown> {
-  const base = channels && typeof channels === "object" && !Array.isArray(channels) ? { ...(channels as Record<string, unknown>) } : {};
-  for (const key of Object.keys(NOTIFICATION_CATEGORIES) as NotificationCategory[]) {
-    const previous = base[key] && typeof base[key] === "object" ? (base[key] as Record<string, unknown>) : {};
-    base[key] = { ...previous, site: enabled.includes(key) };
+const asRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+
+/** Lecture prudente des préférences enregistrées (JSON) : canal absent ou mal formé = activé. */
+export function channelPreferences(channels: unknown): ChannelPreferences {
+  const stored = asRecord(channels);
+  const site = {} as Record<NotificationCategory, boolean>;
+  const email = {} as Record<NotificationCategory, boolean>;
+  for (const key of NOTIFICATION_CATEGORY_KEYS) {
+    const value = asRecord(stored[key]);
+    site[key] = !NOTIFICATION_CATEGORIES[key].siteMutable || value.site !== false;
+    email[key] = value.email !== false;
   }
+  return { site, email, emailOff: asRecord(stored._email).off === true };
+}
+
+/** Préférences à enregistrer d'après les cases cochées (les clés inconnues sont conservées). */
+export function withChannels(channels: unknown, chosen: { site: NotificationCategory[]; email: NotificationCategory[]; emailOff: boolean }): Record<string, unknown> {
+  const base = { ...asRecord(channels) };
+  for (const key of NOTIFICATION_CATEGORY_KEYS) {
+    base[key] = { ...asRecord(base[key]), site: !NOTIFICATION_CATEGORIES[key].siteMutable || chosen.site.includes(key), email: chosen.email.includes(key) };
+  }
+  base._email = { ...asRecord(base._email), off: chosen.emailOff };
   return base;
 }
 

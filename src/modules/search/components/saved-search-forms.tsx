@@ -6,7 +6,7 @@ import { INITIAL_FORM_STATE } from "@/lib/form-state";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form-controls";
 import { FormStatus, SubmitButton } from "@/modules/accounts/components/form-parts";
-import { deleteSavedSearchAction, saveSearchAction } from "../server/actions";
+import { deleteSavedSearchAction, saveSearchAction, setSearchAlertAction } from "../server/actions";
 
 /**
  * Enregistrer la recherche affichée. Sans compte : passage par la connexion,
@@ -67,6 +67,32 @@ export function DeleteSavedSearchForm({ id, name }: { id: string; name: string }
       <Button type="submit" variant="ghost" size="icon" aria-label={`Supprimer la recherche « ${name} »`}>
         <Trash2 aria-hidden className="h-4 w-4" />
       </Button>
+    </form>
+  );
+}
+
+const ALERTS = { none: "Pas d’alerte", daily: "Chaque jour", weekly: "Chaque semaine" } as const;
+
+/** Fréquence des alertes (nouvelles annonces) d'une recherche enregistrée. */
+export function SearchAlertForm({ id, name, alert }: { id: string; name: string; alert: keyof typeof ALERTS }) {
+  const [state, action] = useActionState(setSearchAlertAction, INITIAL_FORM_STATE);
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-2">
+      <input type="hidden" name="id" value={id} />
+      <label className="sr-only" htmlFor={`alerte-${id}`}>
+        Alerte pour « {name} »
+      </label>
+      <select id={`alerte-${id}`} name="alerte" defaultValue={alert} className="min-h-9 rounded-control border border-border-strong bg-surface px-2 text-sm">
+        {Object.entries(ALERTS).map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
+      <Button type="submit" variant="secondary" size="sm">
+        Enregistrer l’alerte
+      </Button>
+      <FormStatus state={state} />
     </form>
   );
 }

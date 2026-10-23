@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { href } from "@/config/routes";
-import { ROLE_LABELS } from "@/domain/roles";
+import { isAdmin, ROLE_LABELS } from "@/domain/roles";
 import { logger } from "@/lib/logger";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/spinner";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { AccessDenied } from "@/modules/admin/components/admin-frame";
 import { PUBLICATION_WORKFLOW, sectionsFor, type Overview } from "@/modules/admin/domain/back-office";
-import { getOverview } from "@/modules/admin/server/back-office";
+import { getDeliveryStats, getOverview, type DeliveryStats } from "@/modules/admin/server/back-office";
 import { requireAccount } from "@/server/auth";
 
 export const metadata: Metadata = {
@@ -19,13 +19,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+const DELIVERY_LABELS = { sent: "Envoyés", simulated: "Simulés", pending: "En attente", skipped: "Ignorés", failed: "En échec" } as const;
+
 async function Dashboard() {
   const account = await requireAccount(href("admin"));
   const sections = sectionsFor(account.role);
   if (sections.length === 0) return <AccessDenied audience="team" />;
   let counts: Overview | null = null;
+  let deliveries: DeliveryStats | null = null;
   try {
-    counts = await getOverview();
+    [counts, deliveries] = await Promise.all([getOverview(), isAdmin(account.role) ? getDeliveryStats() : Promise.resolve(null)]);
   } catch (error) {
     logger.error("Tableau de bord d'administration indisponible", { module: "administration", error });
   }
@@ -64,6 +67,25 @@ async function Dashboard() {
           </ul>
         </section>
       ))}
+
+      {deliveries && (
+        <section aria-labelledby="envois" className="flex flex-col gap-2">
+          <h2 id="envois" className="text-xl font-bold">
+            Envois de notifications (7 jours)
+          </h2>
+          <p className="flex flex-wrap gap-2 text-sm">
+            {(["sent", "simulated", "pending", "skipped", "failed"] as const).map((status) => (
+              <Badge key={status} tone={status === "failed" && (deliveries.counts[status] ?? 0) > 0 ? "danger" : "neutral"}>
+                {DELIVERY_LABELS[status]} : {deliveries.counts[status] ?? 0}
+              </Badge>
+            ))}
+          </p>
+          {deliveries.recentErrors.length > 0 && (
+            <p className="text-sm text-ink-muted">Causes : {deliveries.recentErrors.map((item) => `${item.error} (${item.count})`).join(", ")}.</p>
+          )}
+          <p className="text-xs text-ink-muted">« Ignoré » : canal désactivé, aucun fournisseur ou adresse absente. « Simulé » : affiché dans la console en développement.</p>
+        </section>
+      )}
 
       <section aria-labelledby="cycle" className="flex flex-col gap-3">
         <h2 id="cycle" className="text-xl font-bold">

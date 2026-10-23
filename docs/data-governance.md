@@ -63,6 +63,10 @@ Chaque lecture du tableau de bord passe par la session : la base ne renvoie que 
 
 Les statistiques sont des totaux sans donnée de visiteur ; les empreintes servant à dédoublonner les vues ne permettent pas de retrouver une personne et sont supprimées le lendemain. Les demandes de contact portent les coordonnées que le client a choisi de transmettre, visibles des seuls gestionnaires de la page concernée.
 
+## Notifications (niveau 24)
+
+La file d'envoi ne garde que le statut, le nombre d'essais et un code d'erreur ; l'adresse e-mail est lue au moment de l'envoi, jamais copiée. Les e-mails ne reprennent ni le texte des messages ni les coordonnées des demandes. Les alertes et rappels sur des contenus non vérifiés le disent. Le désabonnement se fait sans connexion par un lien signé propre à la personne et à la catégorie.
+
 ## IA
 
 Niveau 18 : l'assistant de publication propose des champs tirés du seul document de l'auteur (texte, photo, PDF), jamais d'informations extérieures ; rien n'est publié sans validation explicite, et une photo ou un PDF n'est jamais tenu pour une source fiable (confiance plafonnée, rappel de vérification). Les PDF ne sont pas conservés ; la consommation de l'IA est enregistrée sans aucun contenu.

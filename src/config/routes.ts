@@ -97,6 +97,7 @@ export const ROUTES = {
   dashboard: { path: "/tableau-de-bord", label: "Tableau de bord", level: 20, status: "live", private: true },
   dashboardActivity: { path: "/tableau-de-bord/activite", label: "Favoris, recherches et échanges", level: 20, status: "live", private: true },
   dashboardNotifications: { path: "/tableau-de-bord/notifications", label: "Notifications", level: 20, status: "live", private: true },
+  unsubscribe: { path: "/notifications/desabonnement", label: "Désabonnement des e-mails", level: 24, status: "live", private: true },
   dashboardPrivacy: { path: "/tableau-de-bord/confidentialite", label: "Confidentialité et données", level: 20, status: "live", private: true },
   profileExport: { path: "/profil/export", label: "Export de mes données", level: 3, status: "live", private: true },
   favorites: { path: "/favoris", label: "Mes favoris", level: 8, status: "live", private: true },

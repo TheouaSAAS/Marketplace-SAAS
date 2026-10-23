@@ -203,6 +203,14 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `ai_usage.feature` : `publication`, `profil_pro`, `assistant`, `recherche`, `moderation` ; `ai_usage_summary()` (administrateurs) ; aucune colonne de contenu.
 - Interrupteur `ai.kill_switch` (`platform_settings`), basculé par `set_ai_kill_switch` (administrateurs, raison obligatoire, journalisé `ia.arret` / `ia.reprise`).
 
+## Notifications (niveau 24, migration `20261106000100_notifications.sql`)
+
+- `notifications.dedupe_key` (unique par personne) : une alerte, un rappel ou une relance n'est créé qu'une fois.
+- `notification_category(type)` : `decisions` (annonce, page pro, modération, revendication, vérification) ou le type lui-même ; `filter_muted_notification` coupe sur le site toute catégorie sauf `decisions`.
+- `notification_deliveries` : file d'envoi (un envoi par notification et par canal), alimentée par `enqueue_notification_delivery` selon `notification_channels` (`<catégorie>.email`, `_email.off`) et seulement vers une adresse confirmée ; illisible des membres (administrateurs : lecture). `claim_notification_deliveries` (réserve sans doublon, reprend un envoi bloqué depuis 10 min) et `complete_notification_delivery` (nouvel essai à 2, 4, 8, 16 min, abandon au 5e échec) : rôle de service.
+- Déclencheurs `messages_notify` (une notification non lue par conversation, sans le texte du message) et `contact_requests_notify`.
+- `notify_expiring_listings` (tâche `relancer-annonces-expirant`, 8 h 40) ; `confirm_listing` (auteur, 7 derniers jours : prolonge sans repasser en modération) ; `send_event_reminders` réécrite (conditionnel si l'événement n'est pas vérifié, dédoublonnée) ; `record_search_alert` (rôle de service).
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `filter_muted_notification` (catégories coupées), `protect_contact_request` (statut seul), `validate_listing_business` (annonce au nom d’une page), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), `audit_account_change` (journal des rôles et suspensions), versionnement du guide, `set_contact_request_recipient`.
@@ -225,6 +233,7 @@ Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_servi
 | `purger-coordonnees-consultees` | chaque jour à 3 h 25 | supprime les traces de coordonnées consultées de plus de 90 jours |
 | `purger-vues-pages-pro` | chaque jour à 3 h 22 | supprime les empreintes de vues des pages pro de plus d’un jour |
 | `purger-connaissances-evenements` | chaque jour à 3 h 35 | retire de la base de connaissances les événements passés |
+| `relancer-annonces-expirant` | chaque jour à 8 h 40 | relance les auteurs d’annonces qui expirent sous 3 jours ou viennent d’expirer |
 
 ## Sauvegardes
 

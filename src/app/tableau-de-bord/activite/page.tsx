@@ -13,7 +13,7 @@ import { REPORT_REASONS } from "@/modules/listings/domain/report-reasons";
 import { DeletePlanForm } from "@/modules/newcomer/components/plan-actions";
 import { answersToSearchParams } from "@/modules/newcomer/domain/answers";
 import { getSavedNewcomerAnswers } from "@/modules/newcomer/server/queries";
-import { DeleteSavedSearchForm } from "@/modules/search/components/saved-search-forms";
+import { DeleteSavedSearchForm, SearchAlertForm } from "@/modules/search/components/saved-search-forms";
 import { listSavedSearches } from "@/modules/search/server/saved";
 import { getOverview, listMyContactRequests, listMyReports, type MyReport } from "@/modules/dashboard/server/queries";
 import { requireAccount } from "@/server/auth";
@@ -86,11 +86,12 @@ async function Content() {
           <ul className="flex flex-col divide-y divide-border">
             {savedSearches.map((saved) => (
               <li key={saved.id} className="flex items-center justify-between gap-3 py-2">
-                <div className="min-w-0">
+                <div className="flex min-w-0 flex-col gap-1">
                   <Link href={`${href("search")}?${saved.query}`} className="block truncate font-semibold text-brand-700 hover:underline">
                     {saved.name}
                   </Link>
                   <p className="text-xs text-ink-muted">Enregistrée le {formatDate(saved.createdAt)}</p>
+                  <SearchAlertForm id={saved.id} name={saved.name} alert={saved.alert} />
                 </div>
                 <DeleteSavedSearchForm id={saved.id} name={saved.name} />
               </li>

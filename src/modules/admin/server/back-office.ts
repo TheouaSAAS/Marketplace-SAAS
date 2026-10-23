@@ -261,3 +261,22 @@ export async function knowledgeCounts(): Promise<{ type: string; verified: numbe
   }
   return [...counts.values()];
 }
+
+export interface DeliveryStats {
+  counts: Record<string, number>;
+  recentErrors: { error: string; count: number }[];
+}
+
+/** Envois de notifications des 7 derniers jours (administrateurs) : volumes par statut et erreurs. */
+export async function getDeliveryStats(): Promise<DeliveryStats> {
+  const since = new Date(Date.now() - 7 * 24 * 3600_000).toISOString();
+  const { data, error } = await (await client()).from("notification_deliveries").select("status, last_error").gte("created_at", since).limit(10000);
+  if (error) fail("Envois", error);
+  const counts: Record<string, number> = {};
+  const errors = new Map<string, number>();
+  for (const row of data ?? []) {
+    counts[row.status] = (counts[row.status] ?? 0) + 1;
+    if (row.last_error) errors.set(row.last_error, (errors.get(row.last_error) ?? 0) + 1);
+  }
+  return { counts, recentErrors: [...errors].map(([key, count]) => ({ error: key, count })).sort((a, b) => b.count - a.count).slice(0, 5) };
+}

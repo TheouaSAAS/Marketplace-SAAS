@@ -10,7 +10,7 @@ import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { BUSINESSES_CACHE_TAG } from "@/modules/businesses/server/queries";
 import { LISTINGS_CACHE_TAG } from "@/modules/listings/server/queries";
 import { getSessionUser } from "@/server/auth";
-import { NOTIFICATION_CATEGORIES, PRIVACY_OPTIONS, withSiteChannels, type NotificationCategory, type PrivacyOption } from "../domain/dashboard";
+import { NOTIFICATION_CATEGORY_KEYS, PRIVACY_OPTIONS, withChannels, type PrivacyOption } from "../domain/dashboard";
 
 async function session(back: string) {
   const user = await getSessionUser();
@@ -65,6 +65,18 @@ export async function setAvailabilityAction(_previous: FormState, formData: Form
   return { status: "success", message: parsed.data.dispo === "unavailable" ? "Annonce marquée indisponible." : "Annonce de nouveau disponible." };
 }
 
+/** « Toujours disponible » : l'annonce reste en ligne pour une nouvelle durée de diffusion. */
+export async function confirmListingAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const parsed = listingSchema.safeParse({ annonce: formData.get("annonce") });
+  if (!parsed.success) return { status: "error", message: "Annonce invalide." };
+  const { supabase } = await session(href("myListings"));
+  const { data, error } = await supabase.rpc("confirm_listing", { p_listing: parsed.data.annonce });
+  if (error) return failed(error, "La confirmation n’a pas pu être enregistrée");
+  updateTag(LISTINGS_CACHE_TAG);
+  revalidatePath(href("myListings"));
+  return { status: "success", message: `Annonce confirmée : en ligne jusqu’au ${new Date(data).toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "Africa/Abidjan" })}.` };
+}
+
 /** Préférences de confidentialité : appliquées sur le site public (règles en base). */
 export async function savePrivacyAction(_previous: FormState, formData: FormData): Promise<FormState> {
   const { user, supabase } = await session(href("dashboardPrivacy"));
@@ -80,9 +92,13 @@ export async function savePrivacyAction(_previous: FormState, formData: FormData
 
 export async function saveNotificationPrefsAction(_previous: FormState, formData: FormData): Promise<FormState> {
   const { user, supabase } = await session(href("dashboardNotifications"));
-  const enabled = (Object.keys(NOTIFICATION_CATEGORIES) as NotificationCategory[]).filter((key) => formData.get(key) === "1");
+  const chosen = {
+    site: NOTIFICATION_CATEGORY_KEYS.filter((key) => formData.get(`site:${key}`) === "1"),
+    email: NOTIFICATION_CATEGORY_KEYS.filter((key) => formData.get(`email:${key}`) === "1"),
+    emailOff: formData.get("email_off") === "1",
+  };
   const { data: current } = await supabase.from("user_preferences").select("notification_channels").eq("user_id", user.id).maybeSingle();
-  const { error } = await supabase.from("user_preferences").upsert({ user_id: user.id, notification_channels: withSiteChannels(current?.notification_channels, enabled) as never });
+  const { error } = await supabase.from("user_preferences").upsert({ user_id: user.id, notification_channels: withChannels(current?.notification_channels, chosen) as never });
   if (error) return failed(error, "Les préférences n’ont pas pu être enregistrées");
   revalidatePath(href("dashboardNotifications"));
   return { status: "success", message: "Préférences de notification enregistrées." };

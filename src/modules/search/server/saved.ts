@@ -14,6 +14,8 @@ export interface SavedSearch {
   /** Partie requête de l'adresse, revalidée à la lecture. */
   query: string;
   createdAt: string;
+  /** Alerte e-mail et site sur les nouvelles annonces. */
+  alert: "none" | "daily" | "weekly";
 }
 
 /** Recherches enregistrées du compte connecté (les plus récentes d'abord). */
@@ -23,7 +25,7 @@ export async function listSavedSearches(): Promise<SavedSearch[]> {
   if (!user || !supabase) return [];
   const { data, error } = await supabase
     .from("saved_searches")
-    .select("id, name, query, created_at")
+    .select("id, name, query, created_at, alert_frequency")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
   if (error) throw new Error(`Lecture des recherches enregistrées impossible : ${error.message}`);
@@ -31,6 +33,7 @@ export async function listSavedSearches(): Promise<SavedSearch[]> {
     const stored = storedQuerySchema.safeParse(row.query);
     if (!stored.success) return [];
     const query = toQueryString(parseSearchParams(Object.fromEntries(new URLSearchParams(stored.data.search))));
-    return [{ id: row.id, name: row.name, query, createdAt: row.created_at }];
+    const alert = row.alert_frequency === "daily" || row.alert_frequency === "weekly" ? row.alert_frequency : "none";
+    return [{ id: row.id, name: row.name, query, createdAt: row.created_at, alert }];
   });
 }

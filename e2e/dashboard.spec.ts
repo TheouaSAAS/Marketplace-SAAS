@@ -105,11 +105,14 @@ test.describe("Tableau de bord", () => {
 
       // Notifications : une catégorie coupée reste coupée.
       await page.goto("/tableau-de-bord/notifications");
-      await page.getByLabel("Avis", { exact: true }).uncheck();
+      await page.getByLabel("Site : Avis", { exact: true }).uncheck();
+      await page.getByLabel("E-mail : Messages", { exact: true }).uncheck();
       await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
       await expect(page.getByText("Préférences de notification enregistrées.")).toBeVisible({ timeout: NETWORK });
       await page.reload();
-      await expect(page.getByLabel("Avis", { exact: true })).not.toBeChecked();
+      await expect(page.getByLabel("Site : Avis", { exact: true })).not.toBeChecked();
+      await expect(page.getByLabel("E-mail : Messages", { exact: true })).not.toBeChecked();
+      await expect(page.getByLabel("Site : Décisions de l’équipe", { exact: true })).toBeDisabled();
     } finally {
       await service(`/rest/v1/listings?title=eq.${encodeURIComponent(title)}`, { method: "DELETE" });
       await service(`/rest/v1/user_preferences?user_id=eq.${process.env.E2E_USER_ID}`, {

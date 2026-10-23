@@ -19,7 +19,7 @@ import { hasSupabaseSessionCookie, refreshSupabaseSession } from "@/lib/supabase
 const PROTECTED_PREFIXES = ["/profil", "/favoris", "/messages", "/devis", "/espace-pro", "/admin"];
 
 /** Chemins toujours servis, même en maintenance (supervision et page elle-même). */
-const MAINTENANCE_EXEMPT = ["/maintenance", "/interne", "/api/health"];
+const MAINTENANCE_EXEMPT = ["/maintenance", "/interne", "/api/health", "/api/interne"];
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;

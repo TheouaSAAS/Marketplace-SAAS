@@ -5,13 +5,14 @@ import { INITIAL_FORM_STATE } from "@/lib/form-state";
 import { Checkbox } from "@/components/ui/choice-controls";
 import { FormStatus, SubmitButton } from "@/modules/accounts/components/form-parts";
 import { deleteDraftAction } from "@/modules/publishing/server/actions";
-import { NOTIFICATION_CATEGORIES, PRIVACY_OPTIONS, type NotificationCategory, type PrivacyOption } from "../domain/dashboard";
+import { NOTIFICATION_CATEGORIES, NOTIFICATION_CATEGORY_KEYS, PRIVACY_OPTIONS, type ChannelPreferences, type PrivacyOption } from "../domain/dashboard";
 import {
   archiveListingAction,
   markNotificationsReadAction,
   renewListingAction,
   savePrivacyAction,
   saveNotificationPrefsAction,
+  confirmListingAction,
   setAvailabilityAction,
 } from "../server/actions";
 
@@ -72,6 +73,18 @@ export function AvailabilityForm({ id, available }: { id: string; available: boo
   );
 }
 
+export function ConfirmListingForm({ id }: { id: string }) {
+  const [state, action] = useActionState(confirmListingAction, INITIAL_FORM_STATE);
+  if (state.status === "success") return <FormStatus state={state} />;
+  return (
+    <form action={action} className="flex flex-col gap-1">
+      <input type="hidden" name="annonce" value={id} />
+      <FormStatus state={state} />
+      <SubmitButton fullWidth={false}>Toujours disponible : prolonger</SubmitButton>
+    </form>
+  );
+}
+
 export function PrivacyForm({ values }: { values: Record<PrivacyOption, boolean> }) {
   const [state, action] = useActionState(savePrivacyAction, INITIAL_FORM_STATE);
   return (
@@ -88,18 +101,44 @@ export function PrivacyForm({ values }: { values: Record<PrivacyOption, boolean>
   );
 }
 
-export function NotificationPrefsForm({ muted }: { muted: NotificationCategory[] }) {
+export function NotificationPrefsForm({ preferences, emailAvailable }: { preferences: ChannelPreferences; emailAvailable: boolean }) {
   const [state, action] = useActionState(saveNotificationPrefsAction, INITIAL_FORM_STATE);
   return (
-    <form action={action} className="flex flex-col gap-3">
+    <form action={action} className="flex flex-col gap-4">
       <FormStatus state={state} />
-      {(Object.keys(NOTIFICATION_CATEGORIES) as NotificationCategory[]).map((key) => (
-        <div key={key} className="flex flex-col gap-0.5">
-          <Checkbox name={key} value="1" label={NOTIFICATION_CATEGORIES[key].label} defaultChecked={!muted.includes(key)} />
-          <p className="pl-7 text-xs text-ink-muted">{NOTIFICATION_CATEGORIES[key].explain}</p>
-        </div>
-      ))}
-      <SubmitButton fullWidth={false}>Enregistrer</SubmitButton>
+      <ul className="flex flex-col divide-y divide-border">
+        {NOTIFICATION_CATEGORY_KEYS.map((key) => {
+          const category = NOTIFICATION_CATEGORIES[key];
+          return (
+            <li key={key} className="flex flex-col gap-1 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="min-w-0">
+                <p className="font-semibold">{category.label}</p>
+                <p className="text-xs text-ink-muted">{category.explain}</p>
+              </div>
+              <div className="flex shrink-0 gap-4">
+                <Checkbox
+                  name={`site:${key}`}
+                  value="1"
+                  label={<span>Site<span className="sr-only"> : {category.label}</span></span>}
+                  defaultChecked={preferences.site[key]}
+                  disabled={!category.siteMutable}
+                />
+                <Checkbox
+                  name={`email:${key}`}
+                  value="1"
+                  label={<span>E-mail<span className="sr-only"> : {category.label}</span></span>}
+                  defaultChecked={preferences.email[key]}
+                />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <Checkbox name="email_off" value="1" label="Ne recevoir aucun e-mail de notification" defaultChecked={preferences.emailOff} />
+      {!emailAvailable && <p className="text-xs text-ink-muted">L’envoi d’e-mails n’est pas encore activé sur la plateforme : vos choix s’appliqueront dès son ouverture.</p>}
+      <div>
+        <SubmitButton fullWidth={false}>Enregistrer</SubmitButton>
+      </div>
     </form>
   );
 }

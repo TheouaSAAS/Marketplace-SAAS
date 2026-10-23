@@ -12,8 +12,8 @@ import { ButtonLink } from "@/components/ui/button";
 import { Alert, EmptyState, ErrorState } from "@/components/ui/feedback";
 import { Skeleton } from "@/components/ui/spinner";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { LISTING_STATE_ORDER, LISTING_STATES, listingActions, STATS_DEFINITIONS, type ListingState } from "@/modules/dashboard/domain/dashboard";
-import { ArchiveListingForm, AvailabilityForm, DeleteDraftForm, RenewListingForm } from "@/modules/dashboard/components/dashboard-forms";
+import { canConfirm, LISTING_STATE_ORDER, LISTING_STATES, listingActions, STATS_DEFINITIONS, type ListingState } from "@/modules/dashboard/domain/dashboard";
+import { ArchiveListingForm, AvailabilityForm, ConfirmListingForm, DeleteDraftForm, RenewListingForm } from "@/modules/dashboard/components/dashboard-forms";
 import { getListingHistory, listDashboardListings, type DashboardListing } from "@/modules/dashboard/server/queries";
 import { reopenAsDraftAction } from "@/modules/publishing/server/actions";
 import { requireAccount } from "@/server/auth";
@@ -108,6 +108,7 @@ function ListingItem({ listing }: { listing: DashboardListing }) {
             Voir l’annonce
           </Link>
         )}
+        {listing.status === "published" && canConfirm(listing.expires_at, new Date()) && <ConfirmListingForm id={listing.id} />}
         {actions.includes("disponibilite") && <AvailabilityForm id={listing.id} available={!unavailable} />}
         {actions.includes("renouveler") && <RenewListingForm id={listing.id} />}
         {actions.includes("archiver") && <ArchiveListingForm id={listing.id} />}

@@ -7,10 +7,11 @@ import { logger } from "@/lib/logger";
 import { ErrorState } from "@/components/ui/feedback";
 import { Skeleton } from "@/components/ui/spinner";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { ESSENTIAL_NOTIFICATIONS, mutedCategories } from "@/modules/dashboard/domain/dashboard";
+import { ESSENTIAL_NOTIFICATIONS, channelPreferences } from "@/modules/dashboard/domain/dashboard";
 import { MarkReadForm, NotificationPrefsForm } from "@/modules/dashboard/components/dashboard-forms";
 import { getPreferences, listNotifications } from "@/modules/dashboard/server/queries";
 import { requireAccount } from "@/server/auth";
+import { isFeatureEnabled } from "@/server/features";
 
 export const metadata: Metadata = { title: "Notifications" };
 
@@ -19,7 +20,7 @@ async function Content() {
   let data;
   try {
     const [notifications, preferences] = await Promise.all([listNotifications(account.id), getPreferences(account.id)]);
-    data = { notifications, muted: mutedCategories(preferences.notification_channels) };
+    data = { notifications, preferences: channelPreferences(preferences.notification_channels) };
   } catch (error) {
     logger.error("Notifications indisponibles", { module: "tableau-de-bord", error });
     return <ErrorState title="Notifications momentanément indisponibles" description="Réessayez dans quelques instants." />;
@@ -61,10 +62,12 @@ async function Content() {
       </section>
       <section aria-labelledby="preferences" className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
         <h2 id="preferences" className="text-lg font-bold">
-          Ce que je veux recevoir sur le site
+          Ce que je veux recevoir
         </h2>
-        <p className="text-sm text-ink-muted">{ESSENTIAL_NOTIFICATIONS} Les e-mails et les alertes de recherche arriveront avec le centre de notifications ; vous choisirez alors.</p>
-        <NotificationPrefsForm muted={data.muted} />
+        <p className="text-sm text-ink-muted">
+          {ESSENTIAL_NOTIFICATIONS} Chaque e-mail contient un lien pour vous désabonner de sa catégorie, sans connexion. Les alertes de recherche se règlent sur chaque recherche enregistrée.
+        </p>
+        <NotificationPrefsForm preferences={data.preferences} emailAvailable={isFeatureEnabled("email_notifications")} />
       </section>
     </>
   );

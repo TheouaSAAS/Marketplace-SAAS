@@ -2299,10 +2299,65 @@ export type Database = {
           },
         ]
       }
+      notification_deliveries: {
+        Row: {
+          attempts: number
+          channel: string
+          created_at: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          notification_id: string
+          sent_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          channel: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          notification_id: string
+          sent_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          notification_id?: string
+          sent_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_deliveries_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_deliveries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
           created_at: string
+          dedupe_key: string | null
           id: string
           link: string | null
           read_at: string | null
@@ -2313,6 +2368,7 @@ export type Database = {
         Insert: {
           body?: string | null
           created_at?: string
+          dedupe_key?: string | null
           id?: string
           link?: string | null
           read_at?: string | null
@@ -2323,6 +2379,7 @@ export type Database = {
         Update: {
           body?: string | null
           created_at?: string
+          dedupe_key?: string | null
           id?: string
           link?: string | null
           read_at?: string | null
@@ -3854,10 +3911,32 @@ export type Database = {
         Args: { p_max?: number; p_text: string }
         Returns: string[]
       }
+      claim_notification_deliveries: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempts: number
+          body: string
+          channel: string
+          created_at: string
+          delivery_id: string
+          display_name: string
+          email: string
+          link: string
+          notification_id: string
+          title: string
+          type: string
+          user_id: string
+        }[]
+      }
       clear_neighborhood_boundary: {
         Args: { p_neighborhood: string; p_note: string }
         Returns: undefined
       }
+      complete_notification_delivery: {
+        Args: { p_delivery: string; p_error?: string; p_status: string }
+        Returns: undefined
+      }
+      confirm_listing: { Args: { p_listing: string }; Returns: string }
       consume_rate_limit: {
         Args: { p_key_hash: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
@@ -4199,6 +4278,8 @@ export type Database = {
           total: number
         }[]
       }
+      notification_category: { Args: { p_type: string }; Returns: string }
+      notify_expiring_listings: { Args: never; Returns: number }
       organization_invitation_preview: {
         Args: { p_token: string }
         Returns: {
@@ -4394,6 +4475,15 @@ export type Database = {
           p_type: string
         }
         Returns: undefined
+      }
+      record_search_alert: {
+        Args: {
+          p_link: string
+          p_new: number
+          p_search: string
+          p_title: string
+        }
+        Returns: boolean
       }
       revalidation_threshold: { Args: never; Returns: string }
       reveal_candidate_contact: {

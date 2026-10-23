@@ -43,6 +43,9 @@ export const serverEnvSchema = z.object({
   /** Jeton d'accès à /interne/statut. Obligatoire en production pour consulter la page. */
   INTERNAL_STATUS_TOKEN: blankAsUndefined(z.string().min(24, "24 caractères minimum").optional()),
 
+  /** Secret des tâches planifiées (envoi des notifications, alertes) : en-tête « Authorization: Bearer … ». */
+  CRON_SECRET: blankAsUndefined(z.string().min(24, "24 caractères minimum").optional()),
+
   FEATURE_ACCOUNTS: flagOverride,
   FEATURE_PUBLISHING: flagOverride,
   FEATURE_PRO_PUBLISHING: flagOverride,
