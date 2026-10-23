@@ -224,6 +224,69 @@ export type Database = {
           },
         ]
       }
+      candidate_profiles: {
+        Row: {
+          available: boolean
+          contact_email: string | null
+          contact_phone: string | null
+          domains: string[]
+          experience: string | null
+          headline: string
+          neighborhood_id: string | null
+          share_contact: boolean
+          skills: string[]
+          summary: string | null
+          updated_at: string
+          user_id: string
+          visibility: string
+        }
+        Insert: {
+          available?: boolean
+          contact_email?: string | null
+          contact_phone?: string | null
+          domains?: string[]
+          experience?: string | null
+          headline: string
+          neighborhood_id?: string | null
+          share_contact?: boolean
+          skills?: string[]
+          summary?: string | null
+          updated_at?: string
+          user_id: string
+          visibility?: string
+        }
+        Update: {
+          available?: boolean
+          contact_email?: string | null
+          contact_phone?: string | null
+          domains?: string[]
+          experience?: string | null
+          headline?: string
+          neighborhood_id?: string | null
+          share_contact?: boolean
+          skills?: string[]
+          summary?: string | null
+          updated_at?: string
+          user_id?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_profiles_neighborhood_id_fkey"
+            columns: ["neighborhood_id"]
+            isOneToOne: false
+            referencedRelation: "neighborhoods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           attribute_schema: string | null
@@ -3390,6 +3453,7 @@ export type Database = {
         Returns: boolean
       }
       is_curator: { Args: never; Returns: boolean }
+      is_employer: { Args: never; Returns: boolean }
       is_org_member: {
         Args: {
           p_min_role?: Database["public"]["Enums"]["organization_role"]
@@ -3474,6 +3538,7 @@ export type Database = {
           title: string
         }[]
       }
+      listing_schema: { Args: { p_category: string }; Returns: string }
       listing_seller: {
         Args: { p_listing: string }
         Returns: {
@@ -3519,6 +3584,13 @@ export type Database = {
           total_count: number
           verification_status: Database["public"]["Enums"]["verification_status"]
           verified_at: string
+        }[]
+      }
+      my_candidate_contact: {
+        Args: never
+        Returns: {
+          contact_email: string
+          contact_phone: string
         }[]
       }
       my_conversations: {
@@ -3607,6 +3679,20 @@ export type Database = {
         Returns: string
       }
       purge_rate_limits: { Args: never; Returns: number }
+      received_applications: {
+        Args: never
+        Returns: {
+          applicant_id: string
+          applicant_name: string
+          created_at: string
+          id: string
+          listing_id: string
+          listing_slug: string
+          listing_title: string
+          message: string
+          status: Database["public"]["Enums"]["application_status"]
+        }[]
+      }
       record_listing_view: {
         Args: { p_listing: string; p_viewer_hash: string }
         Returns: boolean
@@ -3620,6 +3706,13 @@ export type Database = {
         }
         Returns: undefined
       }
+      reveal_candidate_contact: {
+        Args: { p_user: string }
+        Returns: {
+          contact_email: string
+          contact_phone: string
+        }[]
+      }
       reveal_listing_contact: {
         Args: { p_channel: string; p_listing: string }
         Returns: string
@@ -3632,6 +3725,7 @@ export type Database = {
         Args: { p_approve: boolean; p_claim: string; p_note?: string }
         Returns: undefined
       }
+      safe_date: { Args: { p_value: string }; Returns: string }
       save_guide_article: {
         Args: {
           p_body: string
@@ -3715,6 +3809,26 @@ export type Database = {
           p_offset?: number
           p_query?: string
           p_to?: string
+        }
+        Returns: {
+          id: string
+          total_count: number
+        }[]
+      }
+      search_jobs: {
+        Args: {
+          p_categories: string[]
+          p_city: string
+          p_contract?: string
+          p_domain?: string
+          p_experience?: string
+          p_limit?: number
+          p_neighborhood?: string
+          p_offset?: number
+          p_organization?: string
+          p_query?: string
+          p_remote?: string
+          p_since_days?: number
         }
         Returns: {
           id: string
