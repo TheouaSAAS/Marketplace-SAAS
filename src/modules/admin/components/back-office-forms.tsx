@@ -12,6 +12,7 @@ import {
   handleReportAction,
   mergePlacesAction,
   setAccountAction,
+  setAiKillSwitchAction,
   setCampaignStatusAction,
   setOrganizationAction,
 } from "../server/back-office-actions";
@@ -219,6 +220,24 @@ export function CampaignForm({ campaignId }: { campaignId: string }) {
       <div>
         <SubmitButton variant="secondary" fullWidth={false}>
           Appliquer
+        </SubmitButton>
+      </div>
+    </form>
+  );
+}
+
+export function AiKillSwitchForm({ disabled }: { disabled: boolean }) {
+  const [state, action] = useActionState(setAiKillSwitchAction, INITIAL_FORM_STATE);
+  return (
+    <form action={action} className="flex flex-col gap-2">
+      <input type="hidden" name="etat" value={disabled ? "reactiver" : "couper"} />
+      <FormStatus state={state} />
+      <Field label="Raison (journalisée)" required error={state.fieldErrors?.raison}>
+        {(props) => <Input {...props} name="raison" maxLength={1000} defaultValue={state.values?.raison} />}
+      </Field>
+      <div>
+        <SubmitButton variant={disabled ? "primary" : "danger"} fullWidth={false}>
+          {disabled ? "Réactiver l’IA" : "Couper toute l’IA"}
         </SubmitButton>
       </div>
     </form>

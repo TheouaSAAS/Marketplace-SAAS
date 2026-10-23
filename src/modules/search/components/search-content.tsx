@@ -13,7 +13,8 @@ import { getSessionUser } from "@/server/auth";
 import { getCityContext } from "@/server/city-context";
 import { isFeatureEnabled } from "@/server/features";
 import { categoryIdsWithDescendants, listCategories } from "@/server/repositories/categories";
-import { resolveSearch } from "../domain/effective";
+import { hasExplicitCriteria, resolveSearch } from "../domain/effective";
+import { interpretWithAi } from "../server/ai-interpretation";
 import { NO_SPONSORING, overviewRule, SORT_RULES, TYPE_DESCRIPTIONS } from "../domain/explanations";
 import { interpretQuery, type Interpretation } from "../domain/natural-language";
 import {
@@ -97,7 +98,11 @@ function InterpretationNotice({
           <li className="rounded-pill bg-white/70 px-2.5 py-0.5 font-medium">Mots-clés : « {interpretation.keywords} »</li>
         )}
       </ul>
-      <p className="mt-1">Règles fixes, sans intelligence artificielle : rien n’est ajouté à ce que vous avez écrit.</p>
+      <p className="mt-1">
+        {interpretation.source === "ia"
+          ? "Critères proposés par l’IA à partir de votre phrase, limités au référentiel du site : vérifiez-les, ou recherchez le texte exact."
+          : "Règles fixes, sans intelligence artificielle : rien n’est ajouté à ce que vous avez écrit."}
+      </p>
     </Alert>
   );
 }
@@ -198,13 +203,21 @@ export async function SearchContent({ searchParams }: { searchParams: Promise<Ra
   const position = geolocation ? parsePositionCookie(cookieStore.get(POSITION_COOKIE)?.value) : null;
   const [categories, neighborhoods, radiiKm] = await Promise.all([listCategories(), listNeighborhoods(cityId), getSearchRadiiKm()]);
 
-  const interpretation =
+  const ruled =
     requested.q && !requested.brut
       ? interpretQuery(requested.q, {
           neighborhoods: neighborhoods.map(({ slug, name }) => ({ slug, name })),
           categorySlugs: new Set(categories.map((category) => category.slug)),
         })
       : null;
+  // Les règles fixes d'abord ; l'IA (si activée) seulement quand elles n'ont rien compris.
+  const interpretation =
+    ruled && ruled.understood.length === 0 && !ruled.near && !hasExplicitCriteria(requested) && isFeatureEnabled("ai_search")
+      ? ((await interpretWithAi(requested.q, {
+          categories: categories.map(({ slug, name }) => ({ slug, name })),
+          neighborhoods: neighborhoods.map(({ slug, name }) => ({ slug, name })),
+        }).catch(() => null)) ?? ruled)
+      : ruled;
   const resolved = resolveSearch(requested, interpretation, position !== null);
   // Catégorie ou quartier inconnus (supprimés, mal saisis) : ignorés.
   const category = resolved.params.categorie ? categories.find((item) => item.slug === resolved.params.categorie) : undefined;

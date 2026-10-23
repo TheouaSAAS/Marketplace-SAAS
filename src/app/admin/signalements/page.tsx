@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, EmptyState, ErrorState } from "@/components/ui/feedback";
 import { AccessDenied, AdminFrame, teamAccount } from "@/modules/admin/components/admin-frame";
 import { ReportDecisionForm } from "@/modules/admin/components/back-office-forms";
+import { ModerationHint } from "@/modules/admin/components/moderation-hint";
+import { aiAvailability } from "@/server/ai";
 import { REPORT_STATUSES, REPORT_TARGETS, historyHref, reportTargetHref, stateLabel } from "@/modules/admin/domain/back-office";
 import { listReports, type AdminReport } from "@/modules/admin/server/back-office";
 import { REPORT_REASONS, type ReportReason } from "@/modules/listings/domain/report-reasons";
@@ -26,7 +28,7 @@ const NOTICES: Record<string, string> = {
 
 type Raw = Record<string, string | string[] | undefined>;
 
-function ReportCard({ report, open, canSanction }: { report: AdminReport; open: boolean; canSanction: boolean }) {
+function ReportCard({ report, open, canSanction, aiHint }: { report: AdminReport; open: boolean; canSanction: boolean; aiHint: boolean }) {
   const target = REPORT_TARGETS[report.target_type];
   const link = reportTargetHref({ type: report.target_type, slug: report.target_slug, parentType: report.target_parent_type, parentSlug: report.target_parent_slug });
   const history = report.target_id ? historyHref(report.target_type, report.target_id) : null;
@@ -65,6 +67,7 @@ function ReportCard({ report, open, canSanction }: { report: AdminReport; open: 
           </Link>
         )}
       </p>
+      {open && aiHint && <ModerationHint type="signalement" id={report.id} />}
       {open ? (
         <ReportDecisionForm reportId={report.id} suspendLabel={target.suspend} reviewing={report.status === "reviewing"} />
       ) : (
@@ -83,6 +86,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
   const params = await searchParams;
   const open = params.etat !== "traites";
   const notice = typeof params.decision === "string" ? NOTICES[params.decision] : undefined;
+  const aiHint = open && (await aiAvailability("moderation")).available;
   let reports: AdminReport[];
   try {
     reports = await listReports(open);
@@ -117,7 +121,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
       ) : (
         <ul className="flex flex-col gap-4">
           {reports.map((report) => (
-            <ReportCard key={report.id} report={report} open={open} canSanction={isAdmin(account.role)} />
+            <ReportCard key={report.id} report={report} open={open} canSanction={isAdmin(account.role)} aiHint={aiHint} />
           ))}
         </ul>
       )}

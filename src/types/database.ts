@@ -1565,6 +1565,7 @@ export type Database = {
           embedding: string | null
           embedding_model: string | null
           id: string
+          search_vector: unknown
           token_count: number | null
         }
         Insert: {
@@ -1574,6 +1575,7 @@ export type Database = {
           embedding?: string | null
           embedding_model?: string | null
           id?: string
+          search_vector?: unknown
           token_count?: number | null
         }
         Update: {
@@ -1583,6 +1585,7 @@ export type Database = {
           embedding?: string | null
           embedding_model?: string | null
           id?: string
+          search_vector?: unknown
           token_count?: number | null
         }
         Relationships: [
@@ -3764,6 +3767,16 @@ export type Database = {
         Returns: undefined
       }
       ai_month_cost: { Args: never; Returns: number }
+      ai_usage_summary: {
+        Args: never
+        Returns: {
+          calls: number
+          cost_usd: number
+          feature: string
+          input_tokens: number
+          output_tokens: number
+        }[]
+      }
       archive_past_events: { Args: never; Returns: number }
       attr_bool: {
         Args: { p_attributes: Json; p_key: string }
@@ -4308,7 +4321,23 @@ export type Database = {
         }
         Returns: string
       }
+      purge_past_event_knowledge: { Args: never; Returns: number }
       purge_rate_limits: { Args: never; Returns: number }
+      put_knowledge: {
+        Args: {
+          p_city: string
+          p_content: string
+          p_id: string
+          p_keep: boolean
+          p_source: string
+          p_status: Database["public"]["Enums"]["verification_status"]
+          p_title: string
+          p_type: string
+          p_url: string
+          p_verified_at: string
+        }
+        Returns: undefined
+      }
       quality_items: {
         Args: { p_kind: string }
         Returns: {
@@ -4504,6 +4533,20 @@ export type Database = {
           total_count: number
         }[]
       }
+      search_knowledge: {
+        Args: { p_limit?: number; p_query: string }
+        Returns: {
+          chunk_id: string
+          content: string
+          document_id: string
+          entity_type: string
+          rank: number
+          source_title: string
+          title: string
+          url_path: string
+          verified_at: string
+        }[]
+      }
       search_matches: {
         Args: {
           p_available_only?: boolean
@@ -4631,6 +4674,10 @@ export type Database = {
       }
       search_tsquery: { Args: { p_query: string }; Returns: unknown }
       send_event_reminders: { Args: never; Returns: number }
+      set_ai_kill_switch: {
+        Args: { p_disabled: boolean; p_reason: string }
+        Returns: undefined
+      }
       sponsored_shops: {
         Args: { p_categories?: string[]; p_city: string; p_limit?: number }
         Returns: {

@@ -63,7 +63,7 @@ test.describe("Shell — assistant et hors ligne", () => {
     await page.goto("/");
     await page.getByRole("button", { name: "Demandez à San Pedro" }).click();
     const panel = page.getByRole("dialog", { name: "Demandez à San Pedro" });
-    await expect(panel.getByText("L’assistant n’est pas encore disponible")).toBeVisible();
+    await expect(panel.getByText("Réponses rédigées non activées")).toBeVisible();
     await panel.getByRole("link", { name: /Guide pratique/ }).click();
     await expect(page).toHaveURL(/\/guide$/);
   });

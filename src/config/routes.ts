@@ -117,6 +117,7 @@ export const ROUTES = {
   adminDuplicates: { path: "/admin/doublons", label: "Doublons de lieux", level: 22, status: "live", private: true },
   adminSources: { path: "/admin/sources", label: "Sources", level: 22, status: "live", private: true },
   adminPromotions: { path: "/admin/mises-en-avant", label: "Mises en avant et abonnements", level: 22, status: "live", private: true },
+  adminAi: { path: "/admin/ia", label: "Intelligence artificielle", level: 23, status: "live", private: true },
   adminCategories: { path: "/admin/categories", label: "Catégories", level: 10, status: "live", private: true },
 
   // Aide, confiance et informations

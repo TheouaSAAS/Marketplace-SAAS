@@ -87,6 +87,7 @@ export const ADMIN_SECTIONS: { title: string; tools: AdminTool[] }[] = [
       { route: "adminAccounts", label: "Gérer les comptes et organisations", audience: "admin", description: "Rôles, suspensions et levées, toujours avec une raison." },
       { route: "adminAudit", label: "Consulter le journal et l’historique", audience: "team", description: "Qui a fait quoi, quand, pourquoi, avec l’avant et l’après." },
       { route: "adminPromotions", label: "Suivre les mises en avant et abonnements", audience: "admin", description: "Campagnes sponsorisées et abonnements : pause, arrêt ou refus, sans paiement en ligne." },
+      { route: "adminAi", label: "Piloter l’intelligence artificielle", audience: "admin", description: "Fonctions activées, interrupteur d’arrêt, consommation du mois, base de connaissances de l’assistant." },
     ],
   },
 ];
@@ -217,6 +218,8 @@ const AUDIT_ACTIONS: Record<string, string> = {
   "signalement.suspendre": "Contenu suspendu après signalement",
   "lieu.fusion": "Doublons de lieux fusionnés",
   "campagne.statut": "Statut d’une campagne modifié",
+  "ia.arret": "IA coupée (interrupteur général)",
+  "ia.reprise": "IA réactivée",
   "business.verify": "Page professionnelle vérifiée",
   "business.verify_reject": "Vérification de page refusée",
   "business_claim.approve": "Revendication de page acceptée",
@@ -242,6 +245,7 @@ export const AUDIT_FILTERS = [
   { value: "signalement.", label: "Signalements" },
   { value: "lieu.", label: "Fusions de lieux" },
   { value: "campagne.", label: "Campagnes" },
+  { value: "ia.", label: "Intelligence artificielle" },
 ] as const;
 
 /** Champs sans intérêt pour la relecture (techniques ou recalculés). */

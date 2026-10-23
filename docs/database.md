@@ -196,6 +196,13 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - Doublons : colonne `places.merged_into`, index trigramme sur le nom, `place_duplicates` et `merge_places` (éditeurs locaux ; doublon archivé, jamais supprimé).
 - Mises en avant : `admin_set_campaign_status` (pause, arrêt, refus ; activation impossible sans paiement).
 
+## Couche IA (niveau 23, migration `20261105000100_ai_layer.sql`)
+
+- Base de connaissances : `put_knowledge` (interne) et déclencheurs `places_knowledge`, `neighborhoods_knowledge`, `events_knowledge` (en plus du guide) : seuls les contenus publiés ET vérifiés y entrent, en sortent dès qu'ils perdent ce statut ; tâche `purger-connaissances-evenements` (événements passés).
+- `knowledge_chunks.search_vector` (français, sans accents, index GIN) ; `search_knowledge(question, limite)` : passages des documents vérifiés seulement, avec titre, adresse interne, date de vérification et source.
+- `ai_usage.feature` : `publication`, `profil_pro`, `assistant`, `recherche`, `moderation` ; `ai_usage_summary()` (administrateurs) ; aucune colonne de contenu.
+- Interrupteur `ai.kill_switch` (`platform_settings`), basculé par `set_ai_kill_switch` (administrateurs, raison obligatoire, journalisé `ia.arret` / `ia.reprise`).
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `filter_muted_notification` (catégories coupées), `protect_contact_request` (statut seul), `validate_listing_business` (annonce au nom d’une page), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), `audit_account_change` (journal des rôles et suspensions), versionnement du guide, `set_contact_request_recipient`.
@@ -217,6 +224,7 @@ Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_servi
 | `purger-vues-annonces` | chaque jour à 3 h 20 | supprime les marques de vues de plus de 2 jours |
 | `purger-coordonnees-consultees` | chaque jour à 3 h 25 | supprime les traces de coordonnées consultées de plus de 90 jours |
 | `purger-vues-pages-pro` | chaque jour à 3 h 22 | supprime les empreintes de vues des pages pro de plus d’un jour |
+| `purger-connaissances-evenements` | chaque jour à 3 h 35 | retire de la base de connaissances les événements passés |
 
 ## Sauvegardes
 

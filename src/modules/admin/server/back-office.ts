@@ -238,3 +238,26 @@ export async function listSubscriptions(): Promise<Subscription[]> {
   if (error) fail("Abonnements", error);
   return z.array(subscriptionSchema).parse(data);
 }
+
+const usageSchema = z.object({ feature: z.string(), calls: z.number(), input_tokens: z.coerce.number(), output_tokens: z.coerce.number(), cost_usd: z.coerce.number() });
+export type AiUsageLine = z.infer<typeof usageSchema>;
+
+export async function listAiUsage(): Promise<AiUsageLine[]> {
+  const { data, error } = await (await client()).rpc("ai_usage_summary");
+  if (error) fail("Consommation IA", error);
+  return z.array(usageSchema).parse(data);
+}
+
+/** Documents de la base de connaissances par type et statut (lisibles par l'équipe locale). */
+export async function knowledgeCounts(): Promise<{ type: string; verified: number; other: number }[]> {
+  const { data, error } = await (await client()).from("knowledge_documents").select("entity_type, verification_status").limit(5000);
+  if (error) fail("Base de connaissances", error);
+  const counts = new Map<string, { type: string; verified: number; other: number }>();
+  for (const row of data ?? []) {
+    const line = counts.get(row.entity_type) ?? { type: row.entity_type, verified: 0, other: 0 };
+    if (row.verification_status === "verified") line.verified += 1;
+    else line.other += 1;
+    counts.set(row.entity_type, line);
+  }
+  return [...counts.values()];
+}

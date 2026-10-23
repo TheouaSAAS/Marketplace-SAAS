@@ -13,7 +13,9 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { DeletePlanForm, SavePlanForm } from "@/modules/newcomer/components/plan-actions";
 import { PlanBlockCard, PlanBlockContent } from "@/modules/newcomer/components/plan-block";
 import { answersFromSearchParams, answersToSearchParams } from "@/modules/newcomer/domain/answers";
-import { buildPlan } from "@/modules/newcomer/domain/plan";
+import { BLOCKS, buildPlan } from "@/modules/newcomer/domain/plan";
+import { AssistantPanel } from "@/modules/assistant/components/assistant-panel";
+import { askAction } from "@/modules/assistant/server/ask-action";
 import { getSavedNewcomerAnswers } from "@/modules/newcomer/server/queries";
 import { getCityContext } from "@/server/city-context";
 
@@ -78,6 +80,17 @@ async function PlanContent({ searchParams }: Pick<PageProps<"/nouveau-arrivant/p
           </PlanBlockCard>
         ))}
       </ol>
+
+      <section aria-labelledby="question-plan" className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
+        <h2 id="question-plan" className="text-xl font-bold">
+          Une question sur votre installation ?
+        </h2>
+        <p className="text-sm text-ink-muted">
+          La réponse s’appuie sur les seuls contenus vérifiés de la plateforme, en tenant compte des priorités de votre plan ; vos réponses au
+          questionnaire ne sont pas transmises à l’IA ni conservées.
+        </p>
+        <AssistantPanel ask={askAction} context={plan.blocks.slice(0, 3).map((block) => BLOCKS[block.key].title).join(" ")} label="Votre question sur l’installation" />
+      </section>
     </div>
   );
 }

@@ -100,10 +100,11 @@ describe("Breadcrumbs", () => {
 });
 
 describe("AssistantLauncher", () => {
-  it("annonce honnêtement l'indisponibilité de l'IA et propose des parcours existants", async () => {
-    render(<AssistantLauncher enabled={false} />);
+  it("annonce honnêtement l'absence de réponse rédigée et propose des parcours existants", async () => {
+    render(<AssistantLauncher enabled={false} ask={async () => ({ status: "idle", question: "" })} />);
     await userEvent.click(screen.getByRole("button", { name: "Demandez à San Pedro" }));
-    expect(screen.getByText("L’assistant n’est pas encore disponible")).toBeInTheDocument();
+    expect(screen.getByText("Réponses rédigées non activées")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Votre question/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Nouveau à San Pedro/ })).toHaveAttribute("href", "/nouveau-arrivant");
   });
 });

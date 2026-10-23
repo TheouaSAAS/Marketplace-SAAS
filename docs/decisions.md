@@ -314,5 +314,20 @@ Une fusion de lieux archive le doublon, le relie à la fiche conservée (`merged
 ## D104 — L'IA ne décide pas dans le back-office
 Les champs proposés par l'IA restent signalés dans la file des annonces et comptés au tableau de bord ; aucune décision n'est automatique. L'assistant d'administration (suggestions) est livré avec la couche IA (niveau 23).
 
+## D105 — Recherche plein texte plutôt que vecteurs
+Le fournisseur retenu ne propose pas de modèle d'embeddings et le volume local reste modeste : les passages vérifiés sont retrouvés par recherche plein texte française (sans accents, préfixes, rang par pertinence), dans la base, sans service tiers. La colonne `embedding` reste prête si un fournisseur est ajouté.
+
+## D106 — Citer ou se taire
+L'assistant reçoit les passages comme documents avec citations activées ; seules les sources effectivement citées sont affichées, avec leur date de vérification. Sans passage vérifié, il répond « Je ne dispose pas d'information vérifiée » sans appeler le modèle ; une réponse sans citation n'est jamais affichée. Sans IA, les passages trouvés sont présentés tels quels avec leurs sources.
+
+## D107 — Les contenus sont des données
+Questions, documents et annonces envoyés au modèle sont nettoyés (caractères invisibles, formulations de consignes, balises) et présentés comme données ; les consignes système le rappellent. Les sorties sont revalidées par le code (référentiel, montants, mots réellement écrits, numéros de documents).
+
+## D108 — L'IA propose, l'équipe décide
+Recherche : critères proposés en dernier recours et annoncés comme tels. Modération : suggestion affichée à la demande, jamais appliquée. Publication : suggestions validées champ par champ (niveau 18). Aucun outil IA ne publie, ne refuse ni ne sanctionne.
+
+## D109 — Coupure, quotas et sobriété
+Un drapeau par usage, un interrupteur général en base (coupure sans redéploiement, journalisée), un budget mensuel, des quotas par personne (20 questions par heure, 40 recherches IA par jour). La consommation est enregistrée sans contenu ; la question n'est jamais conservée.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

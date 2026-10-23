@@ -13,7 +13,9 @@ import { fieldLabel } from "@/modules/publishing/domain/draft-fields";
 import { checkListing } from "@/modules/publishing/domain/rules";
 import { ListingModerationForm } from "@/modules/publishing/components/publish-forms";
 import { listListingPhotos, listPendingListings, listSuggestions } from "@/modules/publishing/server/queries";
+import { aiAvailability } from "@/server/ai";
 import { requireAccount } from "@/server/auth";
+import { ModerationHint } from "@/modules/admin/components/moderation-hint";
 
 export const metadata: Metadata = {
   title: "Annonces à modérer — administration",
@@ -38,6 +40,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
     );
   }
   const decision = (await searchParams).decision;
+  const aiHint = (await aiAvailability("moderation")).available;
   const notice = typeof decision === "string" ? DECISIONS[decision] : undefined;
   let items;
   try {
@@ -104,6 +107,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
                     Champs validés par l’auteur depuis l’assistant : {accepted.map((item) => `${fieldLabel(item.field, schema)} (${item.origin === "ia" ? "IA" : "règles"}, ${item.input_kind})`).join(", ")}.
                   </p>
                 )}
+                {aiHint && <ModerationHint type="annonce" id={listing.id} />}
                 <ListingModerationForm listingId={listing.id} />
               </li>
             );

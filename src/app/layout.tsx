@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { Suspense } from "react";
 import { SITE } from "@/config/site";
 import { AssistantLauncher } from "@/components/layout/assistant-launcher";
+import { askAction } from "@/modules/assistant/server/ask-action";
 import { BottomNav, BottomNavView } from "@/components/layout/bottom-nav";
 import { ServiceWorkerRegistration } from "@/components/layout/service-worker-registration";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -64,7 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Suspense fallback={<BottomNavView pathname={null} />}>
             <BottomNav />
           </Suspense>
-          <AssistantLauncher enabled={isFeatureEnabled("ai_assistant")} />
+          <AssistantLauncher enabled={isFeatureEnabled("ai_assistant")} ask={askAction} />
         </ToastProvider>
         <ServiceWorkerRegistration />
       </body>

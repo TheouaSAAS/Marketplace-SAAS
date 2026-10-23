@@ -32,6 +32,8 @@ export interface Interpretation {
   near: boolean;
   /** Critères reconnus, en clair, dans l'ordre de la phrase. */
   understood: string[];
+  /** « ia » : proposé par l'IA (drapeau ai_search) ; absent : règles fixes. */
+  source?: "ia";
 }
 
 export function normalizeWord(word: string): string {

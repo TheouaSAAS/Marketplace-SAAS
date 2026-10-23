@@ -185,3 +185,19 @@ export async function setCampaignStatusAction(_previous: FormState, formData: Fo
   revalidatePath(href("adminPromotions"));
   return { status: "success", message: "Décision enregistrée et journalisée." };
 }
+
+// -----------------------------------------------------------------------------
+// Intelligence artificielle
+// -----------------------------------------------------------------------------
+export async function setAiKillSwitchAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const parsed = z
+    .object({ etat: z.enum(["couper", "reactiver"]), raison: reason })
+    .safeParse({ etat: formData.get("etat"), raison: text(formData, "raison") });
+  if (!parsed.success) return { status: "error", fieldErrors: fieldErrorsFrom(parsed.error), values: formValues(formData) };
+  const supabase = await teamClient("admin");
+  if (!supabase) return DENIED;
+  const { error } = await supabase.rpc("set_ai_kill_switch", { p_disabled: parsed.data.etat === "couper", p_reason: parsed.data.raison });
+  if (error) return databaseError(error, "Décision non enregistrée", formData);
+  revalidatePath(href("adminAi"));
+  return { status: "success", message: parsed.data.etat === "couper" ? "IA coupée partout : le site fonctionne sans elle." : "IA réactivée (selon les fonctions activées)." };
+}

@@ -69,6 +69,8 @@ Niveau 18 : l'assistant de publication propose des champs tirés du seul documen
 
 L'IA ne crée aucune donnée locale. Elle ne répond qu'à partir de contenus `verified` (ou, si le contexte l'autorise explicitement, `pending_validation` signalés comme tels), cite ses sources internes et répond « je ne dispose pas d'information vérifiée » en l'absence de source.
 
+Niveau 23 : la base de connaissances ne contient que des contenus publiés et vérifiés (guide, lieux, quartiers, événements à venir), synchronisés par la base ; aucun contexte n'autorise aujourd'hui les contenus `pending_validation`. Les questions ne sont ni conservées ni journalisées ; le plan nouvel arrivant n'oriente que la recherche des passages (titres des étapes), ses réponses ne sont pas transmises. Aucune position n'est transmise à l'IA. La consommation (usage, modèle, volumes, coût) est le seul journal.
+
 ## Parcours « Nouveau à San Pedro ? » (niveau 6)
 
 Les conseils du plan sont des textes génériques d'orientation (aucune adresse, aucun prix, aucun horaire, aucun numéro). Les seules données locales affichées sont des contenus publiés en base, avec leur badge ; un bloc dont les contenus ne sont pas vérifiés porte un avertissement, et un bloc sans contenu le dit. Les textes des 17 blocs (`src/modules/newcomer/domain/plan.ts`) sont des choix produit, à relire par une personne connaissant San Pedro.

@@ -6,6 +6,8 @@ import { BookOpen, Compass, LifeBuoy, Search, Sparkles } from "lucide-react";
 import { href, type RouteKey } from "@/config/routes";
 import { Alert } from "@/components/ui/feedback";
 import { Modal } from "@/components/ui/modal";
+import { AssistantPanel } from "@/modules/assistant/components/assistant-panel";
+import type { AskAction } from "@/modules/assistant/domain/ask-state";
 
 const ALTERNATIVES: { label: string; description: string; route: RouteKey; icon: React.ReactNode }[] = [
   { label: "Nouveau à San Pedro ?", description: "Un parcours guidé selon votre situation.", route: "newcomer", icon: <Compass aria-hidden className="h-5 w-5" /> },
@@ -16,11 +18,11 @@ const ALTERNATIVES: { label: string; description: string; route: RouteKey; icon:
 
 /**
  * Accès à l'assistant « Demandez à San Pedro ». Bouton flottant discret
- * (au-dessus de la barre basse sur mobile). Tant que l'IA n'est pas
- * configurée, le panneau le dit clairement et propose les parcours existants :
- * aucune réponse n'est simulée.
+ * (au-dessus de la barre basse sur mobile). La question trouve toujours les
+ * passages vérifiés de la plateforme, avec leurs sources ; la réponse rédigée
+ * par l'IA n'apparaît que si elle est activée. Aucune réponse n'est simulée.
  */
-export function AssistantLauncher({ enabled }: { enabled: boolean }) {
+export function AssistantLauncher({ enabled, ask }: { enabled: boolean; ask: AskAction }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -45,12 +47,13 @@ export function AssistantLauncher({ enabled }: { enabled: boolean }) {
       >
         <div className="flex flex-col gap-4">
           {!enabled && (
-            <Alert tone="info" title="L’assistant n’est pas encore disponible">
-              Il sera activé lorsque les contenus vérifiés seront suffisants. Il ne répondra jamais par une information
-              inventée : sans source, il le dira.
+            <Alert tone="info" title="Réponses rédigées non activées">
+              Votre question trouve les passages vérifiés de la plateforme, avec leurs sources et leur date de vérification. Sans
+              source, l’assistant le dit : il ne répond jamais par une information inventée.
             </Alert>
           )}
-          <p className="text-sm font-semibold">En attendant, ces parcours répondent déjà à vos questions :</p>
+          <AssistantPanel ask={ask} />
+          <p className="text-sm font-semibold">Ces parcours répondent aussi à vos questions :</p>
           <ul className="flex flex-col gap-2">
             {ALTERNATIVES.map((item) => (
               <li key={item.route}>

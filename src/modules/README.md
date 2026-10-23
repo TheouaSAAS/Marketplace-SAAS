@@ -33,7 +33,8 @@ Le socle partagé reste hors des modules : `src/components/ui` (design system), 
 | `publishing` | 18 | parcours « Publier une annonce » : brouillon, champs par schéma, photos privées, assistant (règles, IA facultative) et suggestions tracées, contenus interdits, aperçu, soumission, modération |
 | `jobs` | 17 | offres et filtres, règles de formulation, pré-remplissage d’un texte collé, candidatures, profil candidat, publication et modération |
 | `newcomer` | 6 | parcours « Nouveau à San Pedro ? » |
-| `search` | 7 | recherche transversale |
+| `search` | 7, 23 | recherche transversale ; critères proposés par l’IA en dernier recours, revalidés |
+| `assistant` | 23 | « Demandez à San Pedro » : passages vérifiés, réponse citée, refus honnête, neutralisation des consignes |
 | `messaging` | 8 | conversations |
 | `notifications` | 24 | centre de notifications, e-mails |
 | `moderation` | 22 | files, audit, qualité |
