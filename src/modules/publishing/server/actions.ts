@@ -138,7 +138,8 @@ export async function reopenAsDraftAction(formData: FormData): Promise<void> {
 /** Supprime un brouillon et ses photos privées. */
 export async function deleteDraftAction(formData: FormData): Promise<void> {
   const id = z.uuid().safeParse(formData.get("annonce"));
-  if (!id.success) redirect(href("myListings"));
+  // Suppression définitive : confirmation explicite exigée.
+  if (!id.success || formData.get("confirmer") !== "1") redirect(href("myListings"));
   const { supabase } = await session();
   const { data: photos } = await supabase.from("images").select("storage_path, bucket").eq("listing_id", id.data);
   const { error } = await supabase.from("listings").delete().eq("id", id.data).eq("status", "draft");

@@ -118,7 +118,7 @@ test.describe("Recherche", () => {
     await expect(page).toHaveURL(/\/connexion\?suivant=%2Frecherche%3Fq%3Dexemple%26type%3Dlieux/);
   });
 
-  test("avec un compte : enregistrer, retrouver dans le profil, supprimer", async ({ page }, testInfo) => {
+  test("avec un compte : enregistrer, retrouver dans le tableau de bord, supprimer", async ({ page }, testInfo) => {
     test.skip(!email || !password, "Supabase non configuré");
     // Compte de test partagé entre projets : un seul projet manipule ses recherches.
     test.skip(testInfo.project.name !== "desktop", "Compte de test partagé entre projets");
@@ -135,9 +135,9 @@ test.describe("Recherche", () => {
     await page.getByRole("button", { name: "Enregistrer cette recherche" }).click();
     await page.getByLabel("Nom de la recherche").fill("Lieux d'exemple E2E");
     await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
-    await expect(page.getByText("Recherche enregistrée. Retrouvez-la dans votre profil.")).toBeVisible({ timeout: LOGIN_TIMEOUT });
+    await expect(page.getByText("Recherche enregistrée. Retrouvez-la dans votre tableau de bord (Favoris et échanges).")).toBeVisible({ timeout: LOGIN_TIMEOUT });
 
-    await page.goto("/profil");
+    await page.goto("/tableau-de-bord/activite");
     const saved = page.getByRole("link", { name: "Lieux d'exemple E2E" });
     await expect(saved).toHaveAttribute("href", "/recherche?q=exemple&type=lieux");
     await page.getByRole("button", { name: "Supprimer la recherche « Lieux d'exemple E2E »" }).click();

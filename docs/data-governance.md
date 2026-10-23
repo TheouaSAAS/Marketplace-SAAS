@@ -53,6 +53,10 @@ Les offres sont déclarées par leurs auteurs et modérées ; elles ne sont pas 
 
 Une page professionnelle est déclarative et modérée ; elle n'est « vérifiée » qu'après contrôle de l'équipe locale avec une source enregistrée. Les avis sont des opinions d'utilisateurs, relues avant publication, jamais créées ni modifiées par la plateforme. L'aide IA à la rédaction n'ajoute aucune information absente de la page.
 
+## Tableau de bord (niveau 20)
+
+Chaque lecture du tableau de bord passe par la session : la base ne renvoie que les données de la personne. Les statistiques sont des estimations expliquées. Les choix de confidentialité (nom, ancienneté, nombre d'annonces, indexation) s'appliquent sur le site public ; les consentements gardent leur historique (une ligne par choix, jamais modifiée).
+
 ## IA
 
 Niveau 18 : l'assistant de publication propose des champs tirés du seul document de l'auteur (texte, photo, PDF), jamais d'informations extérieures ; rien n'est publié sans validation explicite, et une photo ou un PDF n'est jamais tenu pour une source fiable (confiance plafonnée, rappel de vérification). Les PDF ne sont pas conservés ; la consommation de l'IA est enregistrée sans aucun contenu.

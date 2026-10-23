@@ -13,7 +13,7 @@ import { ReportForm } from "./report-form";
 
 const MONTH_YEAR = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric", timeZone: "Africa/Abidjan" });
 
-/** Profil public de l'annonceur : nom affiché, ancienneté, statut professionnel. */
+/** Profil public de l'annonceur : nom affiché, ancienneté, statut professionnel (selon ses choix de confidentialité). */
 export function SellerCard({ seller, contactName }: { seller: ListingSeller; contactName: string | null }) {
   return (
     <div className="flex items-start gap-3">
@@ -23,10 +23,12 @@ export function SellerCard({ seller, contactName }: { seller: ListingSeller; con
         <div className="flex flex-wrap gap-1.5">
           <Badge tone={seller.is_professional ? "brand" : "neutral"}>{seller.is_professional ? "Professionnel" : "Particulier"}</Badge>
         </div>
-        <p className="text-sm text-ink-muted">Membre depuis {MONTH_YEAR.format(new Date(seller.member_since))}</p>
-        <p className="text-sm text-ink-muted">
-          {seller.active_listings} annonce{seller.active_listings > 1 ? "s" : ""} en ligne
-        </p>
+        {seller.member_since && <p className="text-sm text-ink-muted">Membre depuis {MONTH_YEAR.format(new Date(seller.member_since))}</p>}
+        {seller.active_listings !== null && (
+          <p className="text-sm text-ink-muted">
+            {seller.active_listings} annonce{seller.active_listings > 1 ? "s" : ""} en ligne
+          </p>
+        )}
         {contactName && <p className="text-sm text-ink-muted">Contact indiqué : {contactName}</p>}
       </div>
     </div>

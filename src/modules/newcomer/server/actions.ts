@@ -47,6 +47,6 @@ export async function deleteNewcomerPlanAction(_previous: FormState, formData: F
     return { status: "error", message: "La suppression a échoué. Réessayez." };
   }
   const back = formData.get("retour");
-  if (back === "profil") return { status: "success", message: "Votre parcours a été supprimé." };
+  if (back === "profil" || back === "tableau-de-bord") return { status: "success", message: "Votre parcours a été supprimé." };
   redirect(href("newcomer", { query: { supprime: "1" } }));
 }

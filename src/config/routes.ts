@@ -47,7 +47,7 @@ export const ROUTES = {
   publish: { path: "/publier", label: "Publier une annonce", level: 18, status: "live" },
   publishEditor: { path: "/publier/[id]", label: "Rédiger une annonce", level: 18, status: "live", private: true },
   publishPreview: { path: "/publier/[id]/apercu", label: "Aperçu de l’annonce", level: 18, status: "live", private: true },
-  myListings: { path: "/mes-annonces", label: "Mes annonces", level: 18, status: "live", private: true },
+  myListings: { path: "/tableau-de-bord/annonces", label: "Mes annonces", level: 20, status: "live", private: true },
   adminListings: { path: "/admin/annonces", label: "Annonces à modérer", level: 18, status: "live", private: true },
 
   // Services & professionnels
@@ -94,6 +94,10 @@ export const ROUTES = {
   resetPassword: { path: "/mot-de-passe/nouveau", label: "Nouveau mot de passe", level: 3, status: "live", private: true },
   authConfirm: { path: "/auth/confirmation", label: "Confirmation", level: 3, status: "live", private: true },
   profile: { path: "/profil", label: "Mon profil", level: 3, status: "live", private: true },
+  dashboard: { path: "/tableau-de-bord", label: "Tableau de bord", level: 20, status: "live", private: true },
+  dashboardActivity: { path: "/tableau-de-bord/activite", label: "Favoris, recherches et échanges", level: 20, status: "live", private: true },
+  dashboardNotifications: { path: "/tableau-de-bord/notifications", label: "Notifications", level: 20, status: "live", private: true },
+  dashboardPrivacy: { path: "/tableau-de-bord/confidentialite", label: "Confidentialité et données", level: 20, status: "live", private: true },
   profileExport: { path: "/profil/export", label: "Export de mes données", level: 3, status: "live", private: true },
   favorites: { path: "/favoris", label: "Mes favoris", level: 8, status: "live", private: true },
   messages: { path: "/messages", label: "Mes messages", level: 8, status: "live", private: true },

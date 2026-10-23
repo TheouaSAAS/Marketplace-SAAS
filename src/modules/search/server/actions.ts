@@ -43,7 +43,7 @@ export async function saveSearchAction(_previous: FormState, formData: FormData)
     log.error("Enregistrement de la recherche impossible", { code: error.code });
     return { status: "error", message: "La recherche n’a pas pu être enregistrée. Réessayez." };
   }
-  return { status: "success", message: "Recherche enregistrée. Retrouvez-la dans votre profil." };
+  return { status: "success", message: "Recherche enregistrée. Retrouvez-la dans votre tableau de bord (Favoris et échanges)." };
 }
 
 export async function deleteSavedSearchAction(_previous: FormState, formData: FormData): Promise<FormState> {

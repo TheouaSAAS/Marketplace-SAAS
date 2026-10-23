@@ -13,7 +13,8 @@ import { Skeleton } from "@/components/ui/spinner";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { listNeighborhoods } from "@/modules/neighborhoods/server/queries";
 import { ListingEditor } from "@/modules/publishing/components/listing-editor";
-import { deleteDraftAction, reopenAsDraftAction } from "@/modules/publishing/server/actions";
+import { DeleteDraftForm } from "@/modules/dashboard/components/dashboard-forms";
+import { reopenAsDraftAction } from "@/modules/publishing/server/actions";
 import { aiAvailability } from "@/modules/publishing/server/ai";
 import { getEditableListing, listListingPhotos, listSuggestions, publishableCategories } from "@/modules/publishing/server/queries";
 import { requireAccount } from "@/server/auth";
@@ -114,12 +115,9 @@ async function Editor({ params }: { params: Promise<{ id: string }> }) {
         ai={editor.ai}
         map={{ enabled: isFeatureEnabled("map"), tileUrl: publicEnv.NEXT_PUBLIC_MAP_TILE_URL, attribution: publicEnv.NEXT_PUBLIC_MAP_ATTRIBUTION, center: LAUNCH_CITY.center }}
       />
-      <form action={deleteDraftAction} className="self-start">
-        <input type="hidden" name="annonce" value={id} />
-        <button type="submit" className="text-sm font-semibold text-danger underline">
-          Supprimer ce brouillon et ses photos
-        </button>
-      </form>
+      <div className="self-start">
+        <DeleteDraftForm id={id} />
+      </div>
     </div>
   );
 }

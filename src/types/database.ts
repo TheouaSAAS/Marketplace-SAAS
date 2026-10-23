@@ -3548,6 +3548,10 @@ export type Database = {
           account_intent: string
           locale: string
           notification_channels: Json
+          search_indexing: boolean
+          show_listing_count: boolean
+          show_member_since: boolean
+          show_public_name: boolean
           updated_at: string
           user_id: string
         }
@@ -3555,6 +3559,10 @@ export type Database = {
           account_intent?: string
           locale?: string
           notification_channels?: Json
+          search_indexing?: boolean
+          show_listing_count?: boolean
+          show_member_since?: boolean
+          show_public_name?: boolean
           updated_at?: string
           user_id: string
         }
@@ -3562,6 +3570,10 @@ export type Database = {
           account_intent?: string
           locale?: string
           notification_channels?: Json
+          search_indexing?: boolean
+          show_listing_count?: boolean
+          show_member_since?: boolean
+          show_public_name?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -3905,6 +3917,16 @@ export type Database = {
           verified_at: string
         }[]
       }
+      member_allows_indexing: { Args: { p_user: string }; Returns: boolean }
+      member_privacy: {
+        Args: { p_user: string }
+        Returns: {
+          search_indexing: boolean
+          show_listing_count: boolean
+          show_member_since: boolean
+          show_public_name: boolean
+        }[]
+      }
       my_candidate_contact: {
         Args: never
         Returns: {
@@ -3927,6 +3949,27 @@ export type Database = {
           place_name: string
           place_slug: string
           unread: number
+        }[]
+      }
+      my_listing_history: {
+        Args: { p_listing: string }
+        Returns: {
+          action: Database["public"]["Enums"]["revision_action"]
+          availability_after: string
+          availability_before: string
+          changed_at: string
+          status_after: string
+          status_before: string
+        }[]
+      }
+      my_listing_stats: {
+        Args: never
+        Returns: {
+          contact_reveals: number
+          conversations: number
+          favorites: number
+          listing_id: string
+          views: number
         }[]
       }
       neighborhood_boundary_geojson: {

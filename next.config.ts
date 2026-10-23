@@ -38,6 +38,10 @@ const nextConfig: NextConfig = {
       ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/**" }]
       : [],
   },
+  // Ancienne adresse de « Mes annonces » (niveau 18), désormais dans le tableau de bord (la requête est conservée).
+  async redirects() {
+    return [{ source: "/mes-annonces", destination: "/tableau-de-bord/annonces", permanent: true }];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

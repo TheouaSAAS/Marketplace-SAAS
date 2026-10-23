@@ -25,7 +25,7 @@ export function SavePlanForm({ query }: { query: string }) {
 }
 
 /** Suppression définitive du parcours enregistré, après confirmation du navigateur. */
-export function DeletePlanForm({ returnTo }: { returnTo?: "profil" }) {
+export function DeletePlanForm({ returnTo }: { returnTo?: "profil" | "tableau-de-bord" }) {
   const [state, action] = useActionState(deleteNewcomerPlanAction, INITIAL_FORM_STATE);
   if (state.status === "success") return <FormStatus state={state} />;
   return (

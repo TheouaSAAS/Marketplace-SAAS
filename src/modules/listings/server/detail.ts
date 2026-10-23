@@ -164,10 +164,11 @@ const sellerSchema = z.array(
   z.object({
     display_name: z.string(),
     avatar_url: z.string().nullable(),
-    member_since: z.string(),
+    // Masqués (null) si l'annonceur l'a choisi dans ses préférences de confidentialité.
+    member_since: z.string().nullable(),
     is_professional: z.boolean(),
     organization_name: z.string().nullable(),
-    active_listings: z.number(),
+    active_listings: z.number().nullable(),
   }),
 );
 
@@ -317,4 +318,17 @@ export async function isFavoriteListing(listingId: string, userId: string): Prom
   if (!supabase) return false;
   const { data } = await supabase.from("favorites").select("id").eq("user_id", userId).eq("listing_id", listingId).maybeSingle();
   return data !== null;
+}
+
+/** L'annonceur accepte-t-il que ses annonces soient indexées par les moteurs de recherche ? (oui par défaut) */
+export async function ownerAllowsIndexing(ownerId: string): Promise<boolean> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(LISTINGS_CACHE_TAG);
+
+  const supabase = createPublicSupabaseClient();
+  if (!supabase) return true;
+  const { data, error } = await supabase.rpc("member_allows_indexing", { p_user: ownerId });
+  if (error) throw new Error(`Lecture des préférences de l’annonceur impossible : ${error.message}`);
+  return data !== false;
 }

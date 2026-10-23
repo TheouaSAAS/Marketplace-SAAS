@@ -121,7 +121,7 @@ test.describe("Parcours « Nouveau à San Pedro ? »", () => {
     await page.getByRole("button", { name: "Enregistrer dans mon compte" }).click();
     await expect(page.getByText(/Parcours enregistré dans votre compte/)).toBeVisible({ timeout: LOGIN_TIMEOUT });
 
-    await page.goto("/profil");
+    await page.goto("/tableau-de-bord/activite");
     const section = page.getByText("Mon parcours « Nouveau à San Pedro ? »").locator("..");
     await expect(page.getByRole("link", { name: "Voir mon plan" })).toBeVisible();
     page.once("dialog", (dialog) => dialog.accept());

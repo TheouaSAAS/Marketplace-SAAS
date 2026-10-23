@@ -275,5 +275,17 @@ Une page est relue avant publication, et après chaque modification de contenu. 
 ## D91 — IA de rédaction et offres sans paiement
 L'aide à la rédaction (présentation, FAQ) n'utilise que les informations déjà saisies, refuse d'inventer prix, années, certifications ou garanties, et son texte n'est enregistré qu'après relecture. Les offres du référentiel sont affichées ; aucune somme n'est demandée tant qu'aucun prestataire de paiement n'est configuré, et aucune mise en avant ne s'achète.
 
+## D92 — Un tableau de bord, un compte allégé
+Le tableau de bord rassemble ce que la personne pilote (annonces, activité, notifications, confidentialité et données) ; `/profil` garde l'identité, le type de compte et les outils d'équipe. Navigation en onglets défilants sur mobile, listes en cartes plutôt qu'en tableaux. « Mes annonces » change d'adresse ; l'ancienne est redirigée avec ses paramètres.
+
+## D93 — États compréhensibles, actions sensibles confirmées et historisées
+Chaque état d'annonce est expliqué et ne propose que les actions que la base autorise. Archiver ou supprimer un brouillon exige une case de confirmation (vérifiée aussi côté serveur) ; la suppression du compte exige de saisir « SUPPRIMER ». L'historique des statuts et de la disponibilité vient du journal des révisions, sans saisie manuelle.
+
+## D94 — Confidentialité appliquée par la base
+Nom public, ancienneté, nombre d'annonces et indexation par les moteurs se règlent par la personne et s'appliquent dans les fonctions publiques (vendeur, commentaires, avis) et les métadonnées des annonces ; les préférences elles-mêmes ne sont lisibles que par leur titulaire. Couper une catégorie de notifications empêche leur création en base ; les décisions de modération, revendications et vérifications restent toujours envoyées.
+
+## D95 — Statistiques sobres, limites dites
+Vues (visiteurs distincts par jour, estimation), favoris, coordonnées vues et conversations : chaque chiffre a sa définition et ses limites à côté. Aucune comparaison ni classement entre annonceurs.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

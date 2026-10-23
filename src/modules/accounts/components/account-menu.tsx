@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, Heart, LogOut, MessagesSquare, UserRound } from "lucide-react";
+import { FileText, Heart, LayoutDashboard, LogOut, MessagesSquare, UserRound } from "lucide-react";
 import { href } from "@/config/routes";
 import { Avatar } from "@/components/ui/avatar";
 import { Popover } from "@/components/ui/popover";
@@ -24,6 +24,11 @@ export function AccountMenu({ name, avatarUrl }: { name: string; avatarUrl: stri
     >
       {(close) => (
         <ul className="flex flex-col">
+          <li>
+            <Link href={href("dashboard")} onClick={close} className={ITEM}>
+              <LayoutDashboard aria-hidden className="h-4 w-4" /> Tableau de bord
+            </Link>
+          </li>
           <li>
             <Link href={href("profile")} onClick={close} className={ITEM}>
               <UserRound aria-hidden className="h-4 w-4" /> Mon profil

@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
-import { Download } from "lucide-react";
 import { href, ROUTES } from "@/config/routes";
 import { isAdmin, isCurator, isStaff, ROLE_LABELS } from "@/domain/roles";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ButtonLink, buttonClasses } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
-import { DeletePlanForm } from "@/modules/newcomer/components/plan-actions";
-import { answersToSearchParams } from "@/modules/newcomer/domain/answers";
-import { getSavedNewcomerAnswers } from "@/modules/newcomer/server/queries";
-import { DeleteSavedSearchForm } from "@/modules/search/components/saved-search-forms";
-import { listSavedSearches } from "@/modules/search/server/saved";
 import { CLAIM_STATUSES } from "@/modules/shops/domain/claims";
 import { listMyClaims } from "@/modules/shops/server/claims";
 import { listRecentNotifications } from "@/modules/accounts/server/notifications";
@@ -20,15 +14,11 @@ import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Alert } from "@/components/ui/feedback";
 import { FormSkeleton } from "@/modules/accounts/components/form-skeleton";
-import { NewPasswordForm } from "@/modules/accounts/components/password-forms";
 import {
   AccountTypeForm,
-  DeleteAccountSection,
-  MarketingConsentForm,
   ProfileForm,
   SignOutButton,
 } from "@/modules/accounts/components/profile-forms";
-import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { requireAccount } from "@/server/auth";
 
 export const metadata: Metadata = {
@@ -50,17 +40,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "searchParams">) {
   const params = await searchParams;
   const account = await requireAccount(href("profile"));
-  const supabase = await createSessionSupabaseClient();
-  const { data: marketing } = (await supabase
-    ?.from("consents")
-    .select("granted")
-    .eq("user_id", account.id)
-    .eq("kind", "marketing_email")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle()) ?? { data: null };
-
-  const [newcomer, savedSearches, claims, notifications] = await Promise.all([getSavedNewcomerAnswers(), listSavedSearches(), listMyClaims(account.id).catch(() => []), listRecentNotifications().catch(() => [])]);
+  const [claims, notifications] = await Promise.all([listMyClaims(account.id).catch(() => []), listRecentNotifications().catch(() => [])]);
   const name = account.displayName ?? account.email ?? "Mon compte";
   const isProfessional = account.role === "professional";
 
@@ -93,6 +73,16 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
           <div className="hidden sm:block">
             <SignOutButton />
           </div>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardBody className="gap-3">
+          <CardTitle className="text-lg">Mon tableau de bord</CardTitle>
+          <p className="text-sm text-ink-muted">
+            Mes annonces et leurs statistiques, favoris, recherches, messages, signalements, notifications, confidentialité, sécurité et données.
+          </p>
+          <ButtonLink href={href("dashboard")}>Ouvrir mon tableau de bord</ButtonLink>
         </CardBody>
       </Card>
 
@@ -180,15 +170,6 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
         )}
       </Section>
 
-      <Section title="Sécurité">
-        <p className="text-sm text-ink-muted">Changer votre mot de passe. Par sécurité, une connexion récente peut être exigée.</p>
-        <NewPasswordForm submitLabel="Changer le mot de passe" />
-      </Section>
-
-      <Section title="Communications">
-        <MarketingConsentForm granted={Boolean(marketing?.granted)} />
-      </Section>
-
       {notifications.length > 0 && (
         <Section title="Notifications récentes">
           <ul className="flex flex-col gap-2 text-sm">
@@ -233,66 +214,6 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
           </ul>
         </Section>
       )}
-
-      <Section title="Mon parcours « Nouveau à San Pedro ? »">
-        {newcomer ? (
-          <div className="flex flex-col gap-3">
-            <p className="text-sm text-ink-muted">Enregistré le {formatDate(newcomer.updatedAt)}.</p>
-            <div className="flex flex-wrap items-center gap-3">
-              <ButtonLink href={`${href("newcomerPlan")}?${answersToSearchParams(newcomer.answers).toString()}`} variant="secondary">
-                Voir mon plan
-              </ButtonLink>
-              <DeletePlanForm returnTo="profil" />
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-start gap-3">
-            <p className="text-sm text-ink-muted">Aucun parcours enregistré.</p>
-            <ButtonLink href={href("newcomer")} variant="secondary">
-              Commencer le parcours
-            </ButtonLink>
-          </div>
-        )}
-      </Section>
-
-      <Section title="Mes recherches enregistrées">
-        {savedSearches.length > 0 ? (
-          <ul className="flex flex-col divide-y divide-border">
-            {savedSearches.map((saved) => (
-              <li key={saved.id} className="flex items-center justify-between gap-3 py-2">
-                <div className="min-w-0">
-                  <Link href={`${href("search")}?${saved.query}`} className="block truncate font-semibold text-brand-700 hover:underline">
-                    {saved.name}
-                  </Link>
-                  <p className="text-xs text-ink-muted">Enregistrée le {formatDate(saved.createdAt)}</p>
-                </div>
-                <DeleteSavedSearchForm id={saved.id} name={saved.name} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-ink-muted">
-            Aucune recherche enregistrée. Depuis la{" "}
-            <Link href={href("search")} className="font-semibold text-brand-700 underline">
-              recherche
-            </Link>
-            , utilisez « Enregistrer cette recherche ».
-          </p>
-        )}
-      </Section>
-
-      <Section title="Mes données">
-        <p className="text-sm text-ink-muted">
-          Téléchargez l’ensemble des données liées à votre compte (format JSON), ou supprimez définitivement votre compte.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <a href={href("profileExport")} className={buttonClasses({ variant: "secondary" })} download>
-            <Download aria-hidden className="h-4 w-4" />
-            Exporter mes données
-          </a>
-          <DeleteAccountSection />
-        </div>
-      </Section>
 
       <div className="sm:hidden">
         <SignOutButton />

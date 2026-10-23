@@ -172,9 +172,15 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - Avis : `account_can_review` (compte connecté seulement : 7 jours, adresse confirmée) appliqué par `enforce_review_rules`, 5 avis par jour ; `business_reviews`, `business_rating` (publics, sans donnée personnelle hors nom public), `received_business_reviews` (équipe de la page) ; `notify_review_decision`.
 - `ai_usage.feature` : `publication` ou `profil_pro`.
 
+## Tableau de bord (niveau 20, migration `20261102000100_dashboard.sql`)
+
+- `user_preferences` : `show_public_name`, `show_member_since`, `show_listing_count`, `search_indexing` (vrais par défaut). `member_privacy` (interne) les lit ; `listing_seller`, `listing_comment_thread` et `business_reviews` affichent « Membre », masquent l’ancienneté ou le nombre d’annonces selon ces choix ; `member_allows_indexing` (public) fait passer les annonces du membre en `noindex`.
+- `filter_muted_notification` (avant insertion) : ne crée pas une notification d’une catégorie coupée (`notification_channels -> type ->> 'site' = 'false'`) parmi avis, candidature, équipe, événement, rappel ; les autres types sont toujours créés.
+- `my_listing_stats()` : vues, favoris, coordonnées vues, conversations de mes annonces ; `my_listing_history(annonce)` : changements de statut et de disponibilité tirés de `content_revisions` (auteur seulement).
+
 ## Règles en base (déclencheurs)
 
-`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
+`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `filter_muted_notification` (catégories coupées), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
 
 Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_service_request()`, jamais `is_service_context()` (voir décision D20).
 

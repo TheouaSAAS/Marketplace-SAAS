@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container";
 import { Skeleton } from "@/components/ui/spinner";
 import { ListingUnavailable } from "@/modules/listings/components/listing-unavailable";
 import { ListingView } from "@/modules/listings/components/listing-view";
-import { getPublicListing } from "@/modules/listings/server/detail";
+import { getPublicListing, ownerAllowsIndexing } from "@/modules/listings/server/detail";
 import { loadListingPage } from "@/modules/listings/server/page-data";
 import { listingUrl } from "@/modules/listings/server/seo";
 
@@ -23,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: url },
     // Un exemple de démonstration n'est jamais indexé.
-    robots: listing.verification_status === "placeholder" ? { index: false, follow: true } : undefined,
+    // Démonstration, ou annonceur qui refuse l'indexation (préférence de confidentialité).
+    robots: listing.verification_status === "placeholder" || !(await ownerAllowsIndexing(listing.owner_id)) ? { index: false, follow: true } : undefined,
     openGraph: { title: listing.title, description, url, type: "website", locale: SITE.locale, siteName: SITE.name },
   };
 }

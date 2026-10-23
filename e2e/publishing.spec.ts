@@ -105,8 +105,8 @@ test.describe("Publication d'une annonce", () => {
       await expect(author.getByText("Aperçu — non publié")).toBeVisible({ timeout: NETWORK });
       await expect(author.getByRole("heading", { name: "Champs issus de l’assistant (4)" })).toBeVisible();
       await author.getByRole("button", { name: "Soumettre à la modération" }).click();
-      await expect(author).toHaveURL(/\/mes-annonces\?soumise=1$/, { timeout: NETWORK });
-      await expect(author.getByRole("listitem").filter({ hasText: title }).getByText("En attente")).toBeVisible();
+      await expect(author).toHaveURL(/\/tableau-de-bord\/annonces\?soumise=1$/, { timeout: NETWORK });
+      await expect(author.getByRole("listitem").filter({ hasText: title }).getByText("En attente", { exact: true })).toBeVisible();
 
       // Modération : publication, photos rendues publiques.
       const moderator = await asUser(browser, "E2E_ADMIN");

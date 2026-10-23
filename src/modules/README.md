@@ -28,6 +28,7 @@ Le socle partagé reste hors des modules : `src/components/ui` (design system), 
 | `neighborhoods` | 14 | fiches neutres, onglets de ressources rattachées, périmètres (brouillon, validation, historique), administration |
 | `map` | 15 | couches, filtres dans l’adresse, regroupement des marqueurs, carte et liste synchronisées, fiche rapide |
 | `events` | 16 | agenda (liste, calendrier, carte), fiche, report et annulation, proposition et modération, fichier d’agenda |
+| `dashboard` | 20 | tableau de bord : états d’annonce et actions, statistiques et historique, activité, notifications et préférences, confidentialité |
 | `businesses` | 10, 19 | pages professionnelles : annuaire, page publique, badges et complétude, gestion, équipe et invitations, vérification, avis, aide IA à la rédaction |
 | `publishing` | 18 | parcours « Publier une annonce » : brouillon, champs par schéma, photos privées, assistant (règles, IA facultative) et suggestions tracées, contenus interdits, aperçu, soumission, modération |
 | `jobs` | 17 | offres et filtres, règles de formulation, pré-remplissage d’un texte collé, candidatures, profil candidat, publication et modération |
