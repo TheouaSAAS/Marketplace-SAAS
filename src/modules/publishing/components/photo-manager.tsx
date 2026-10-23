@@ -6,8 +6,8 @@ import { getBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { Alert } from "@/components/ui/feedback";
 import { Button } from "@/components/ui/button";
 import { assessPhoto, PHOTO_MAX_COUNT, PHOTO_TYPES, isPhotoType } from "../domain/photos";
-import { registerPhotoAction, removePhotoAction, updatePhotoAltAction } from "../server/actions";
-import type { DraftPhoto } from "../server/queries";
+import { registerPhotoAction, removePhotoAction, updatePhotoAltAction } from "../server/photo-actions";
+import type { DraftPhoto, PhotoTargetKind } from "../server/photo-store";
 
 interface PhotoItem extends DraftPhoto {
   warnings: string[];
@@ -31,6 +31,7 @@ function duplicateWarnings(photo: { ownDuplicates: number; otherDuplicates: numb
  * deviennent publiques qu'à la publication par l'équipe de modération.
  */
 export function PhotoManager({
+  target = "annonce",
   listingId,
   userId,
   initial,
@@ -38,12 +39,14 @@ export function PhotoManager({
   onAnalyze,
   onCountChange,
 }: {
+  /** Annonce ou page professionnelle. */
+  target?: PhotoTargetKind;
   listingId: string;
   userId: string;
   initial: DraftPhoto[];
   aiAvailable: boolean;
-  onAnalyze: (photoId: string) => void;
-  onCountChange: (count: number) => void;
+  onAnalyze?: (photoId: string) => void;
+  onCountChange?: (count: number) => void;
 }) {
   const [photos, setPhotos] = useState<PhotoItem[]>(() => initial.map((photo) => ({ ...photo, warnings: duplicateWarnings(photo) })));
   const [messages, setMessages] = useState<string[]>([]);
@@ -52,7 +55,7 @@ export function PhotoManager({
 
   const update = (next: PhotoItem[]) => {
     setPhotos(next);
-    onCountChange(next.length);
+    onCountChange?.(next.length);
   };
 
   function add(files: FileList | null) {
@@ -91,13 +94,13 @@ export function PhotoManager({
           problems.push(`${file.name} : déjà ajoutée à cette annonce.`);
           continue;
         }
-        const path = `${userId}/annonces/${listingId}/${crypto.randomUUID()}.${PHOTO_TYPES[file.type]}`;
+        const path = `${userId}/${target === "pro" ? "pros" : "annonces"}/${listingId}/${crypto.randomUUID()}.${PHOTO_TYPES[file.type]}`;
         const upload = await supabase.storage.from("private-media").upload(path, file, { contentType: file.type, upsert: false });
         if (upload.error) {
           problems.push(`${file.name} : envoi impossible.`);
           continue;
         }
-        const result = await registerPhotoAction({ id: listingId, path, type: file.type, bytes: file.size, width, height, hash });
+        const result = await registerPhotoAction({ target, id: listingId, path, type: file.type, bytes: file.size, width, height, hash });
         if (!result.ok) {
           problems.push(`${file.name} : ${result.message}`);
           continue;
@@ -171,7 +174,7 @@ export function PhotoManager({
                 />
               </label>
               <div className="flex flex-wrap gap-2">
-                {aiAvailable && (
+                {aiAvailable && onAnalyze && (
                   <Button type="button" size="sm" variant="secondary" onClick={() => onAnalyze(photo.id)} icon={<ScanSearch aria-hidden className="h-4 w-4" />}>
                     Analyser
                   </Button>

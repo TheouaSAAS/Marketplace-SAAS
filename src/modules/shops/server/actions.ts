@@ -83,7 +83,8 @@ export async function contactPlaceAction(_previous: FormState, formData: FormDat
 }
 
 const claimSchema = z.object({
-  lieu: z.uuid(),
+  lieu: z.uuid().optional(),
+  page: z.uuid().optional(),
   role: z.enum(Object.keys(CLAIMANT_ROLES) as [keyof typeof CLAIMANT_ROLES, ...(keyof typeof CLAIMANT_ROLES)[]], { error: "Indiquez votre lien avec ce commerce." }),
   message: z.string().trim().min(10, "Présentez-vous en quelques mots (10 caractères au moins).").max(2000, "2 000 caractères au maximum."),
   preuve: z.string().trim().min(3, "Indiquez un élément vérifiable.").max(500, "500 caractères au maximum."),
@@ -94,18 +95,21 @@ const claimSchema = z.object({
 export async function claimPlaceAction(_previous: FormState, formData: FormData): Promise<FormState> {
   const back = safeRedirectPath(formData.get("retour"), href("shops"));
   const parsed = claimSchema.safeParse({
-    lieu: formData.get("lieu"),
+    lieu: formData.get("lieu") || undefined,
+    page: formData.get("page") || undefined,
     role: formData.get("role"),
     message: formData.get("message"),
     preuve: formData.get("preuve"),
     telephone: formData.get("telephone"),
   });
   if (!parsed.success) return { status: "error", message: "Certaines informations sont à compléter.", fieldErrors: fieldErrorsFrom(parsed.error), values: formValues(formData) };
+  if (!parsed.data.lieu && !parsed.data.page) return { status: "error", message: "Rien à revendiquer.", values: formValues(formData) };
   const session = await signedIn(back);
   if (!session) return { status: "error", message: "Revendication momentanément indisponible.", values: formValues(formData) };
 
   const { error } = await session.supabase.from("place_claims").insert({
-    place_id: parsed.data.lieu,
+    place_id: parsed.data.lieu ?? null,
+    business_id: parsed.data.lieu ? null : (parsed.data.page ?? null),
     claimant_id: session.user.id,
     claimant_role: parsed.data.role,
     message: parsed.data.message,
@@ -119,5 +123,5 @@ export async function claimPlaceAction(_previous: FormState, formData: FormData)
     return { status: "error", message: "La demande n’a pas pu être envoyée. Réessayez.", values: formValues(formData) };
   }
   revalidatePath(back);
-  return { status: "success", message: "Demande envoyée. L’équipe locale vérifie votre lien avec ce commerce, puis vous notifie sa décision." };
+  return { status: "success", message: "Demande envoyée. L’équipe locale vérifie votre lien avec cet établissement, puis vous notifie sa décision." };
 }

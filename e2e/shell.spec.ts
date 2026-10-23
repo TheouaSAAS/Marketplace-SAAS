@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 
 const SECTIONS: [string, string][] = [
   ["/annonces", "Annonces et opportunités"],
-  ["/professionnels", "Professionnels et entreprises"],
   ["/offres", "Offres pour les professionnels"],
 ];
 

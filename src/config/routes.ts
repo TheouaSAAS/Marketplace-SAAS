@@ -53,7 +53,12 @@ export const ROUTES = {
   // Services & professionnels
   services: { path: "/services", label: "Services de proximité", level: 10, status: "live" },
   shops: { path: "/commerces", label: "Commerces", level: 11, status: "live" },
-  directory: { path: "/professionnels", label: "Professionnels et entreprises", level: 19, status: "preview" },
+  directory: { path: "/professionnels", label: "Professionnels et entreprises", level: 19, status: "live" },
+  proPages: { path: "/mes-pages-pro", label: "Mes pages professionnelles", level: 19, status: "live", private: true },
+  proPageEditor: { path: "/mes-pages-pro/[id]", label: "Gérer ma page professionnelle", level: 19, status: "live", private: true },
+  proInvitation: { path: "/mes-pages-pro/invitation/[jeton]", label: "Rejoindre une équipe", level: 19, status: "live", private: true },
+  adminPros: { path: "/admin/professionnels", label: "Pages professionnelles à modérer", level: 19, status: "live", private: true },
+  adminReviews: { path: "/admin/avis", label: "Avis à modérer", level: 19, status: "live", private: true },
   professionalDetail: { path: "/professionnels/[slug]", label: "Fiche d’un professionnel", level: 10, status: "live" },
   quoteRequests: { path: "/devis", label: "Mes demandes de devis", level: 10, status: "live", private: true },
   pricing: { path: "/offres", label: "Offres et visibilité", level: 21, status: "preview" },
@@ -79,7 +84,7 @@ export const ROUTES = {
   myEvents: { path: "/evenements/mes-evenements", label: "Mes événements", level: 16, status: "live", private: true },
   adminEvents: { path: "/admin/evenements", label: "Événements à modérer", level: 16, status: "live", private: true },
   placeDetail: { path: "/lieux/[slug]", label: "Vitrine d’un lieu", level: 11, status: "live" },
-  placeClaims: { path: "/admin/revendications", label: "Revendications de vitrines", level: 11, status: "live", private: true },
+  placeClaims: { path: "/admin/revendications", label: "Revendications de vitrines et de pages pro", level: 11, status: "live", private: true },
   city: { path: "/villes/[slug]", label: "Page de ville", level: 25, status: "planned" },
 
   // Compte

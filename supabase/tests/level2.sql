@@ -37,6 +37,9 @@ update public.profiles set role = 'local_editor' where id = '00000000-0000-4000-
 update public.profiles set role = 'moderator' where id = '00000000-0000-4000-8000-000000000015';
 update public.profiles set role = 'admin' where id = '00000000-0000-4000-8000-000000000016';
 update public.profiles set role = 'superadmin' where id = '00000000-0000-4000-8000-000000000017';
+-- Règle des avis (niveau 19) : comptes de plus de 7 jours, adresse confirmée.
+update auth.users set email_confirmed_at = now() where id::text like '00000000-0000-4000-8000-0000000000%';
+update public.profiles set created_at = now() - interval '30 days' where id::text like '00000000-0000-4000-8000-0000000000%';
 
 create temp table ctx as
 select

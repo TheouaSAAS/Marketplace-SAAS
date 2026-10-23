@@ -5,6 +5,7 @@ import { eventBadge } from "@/domain/event-timing";
 import { displayedVerification, type FreshnessKind, type VerificationStatus } from "@/domain/verification";
 import { formatDate, formatDateTime, formatPrice } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import { ProBadgeList } from "@/modules/businesses/components/pro-badges";
 import type { BusinessCardData } from "@/modules/businesses/server/queries";
 import type { EventCardData } from "@/modules/events/server/queries";
 import type { GuideCardData } from "@/modules/guide/server/queries";
@@ -167,6 +168,13 @@ export function BusinessCard({ business, now, index, context, href }: CardProps 
     <CardShell index={index} context={context} visual={<CategoryVisual icon={business.category?.icon} fallback={BriefcaseBusiness} tone="lagoon" />}>
       <div className="flex flex-wrap gap-1.5">
         <PublicVerification status={business.verification_status} verifiedAt={business.verified_at} now={now} />
+        <ProBadgeList
+          badges={[
+            ...(business.verificationPending && business.verification_status !== "verified" ? (["pending"] as const) : []),
+            ...(business.complete ? (["complete"] as const) : []),
+            ...(business.sponsored ? (["sponsored"] as const) : []),
+          ]}
+        />
       </div>
       <CardTitle title={business.name} href={href} />
       {business.description && <p className="line-clamp-2 text-sm text-ink-muted">{business.description}</p>}

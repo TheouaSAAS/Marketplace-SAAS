@@ -7,11 +7,13 @@ import { href } from "@/config/routes";
 import type { FormState } from "@/lib/form-state";
 import { logger } from "@/lib/logger";
 import { createSessionSupabaseClient } from "@/lib/supabase/server";
+import { BUSINESSES_CACHE_TAG } from "@/modules/businesses/server/queries";
 import { PLACES_CACHE_TAG } from "@/modules/places/server/queries";
 
 const reviewSchema = z.object({
   demande: z.uuid(),
   decision: z.enum(["valider", "refuser"]),
+  cible: z.enum(["lieu", "pro"]).default("lieu"),
   motif: z.string().trim().max(1000, "1 000 caractères au maximum.").optional(),
 });
 
@@ -20,6 +22,7 @@ export async function reviewClaimAction(_previous: FormState, formData: FormData
   const parsed = reviewSchema.safeParse({
     demande: formData.get("demande"),
     decision: formData.get("decision"),
+    cible: formData.get("cible") || undefined,
     motif: formData.get("motif") || undefined,
   });
   if (!parsed.success) return { status: "error", message: "Décision invalide." };
@@ -27,13 +30,15 @@ export async function reviewClaimAction(_previous: FormState, formData: FormData
   if (!supabase) return { status: "error", message: "Service momentanément indisponible." };
 
   const approve = parsed.data.decision === "valider";
-  const { error } = await supabase.rpc("review_place_claim", { p_claim: parsed.data.demande, p_approve: approve, p_note: parsed.data.motif });
+  const fn = parsed.data.cible === "pro" ? "review_business_claim" : "review_place_claim";
+  const { error } = await supabase.rpc(fn, { p_claim: parsed.data.demande, p_approve: approve, p_note: parsed.data.motif });
   if (error) {
     if (["23514", "42501"].includes(error.code)) return { status: "error", message: error.message };
     logger.error("Décision de revendication non enregistrée", { module: "commerces", code: error.code });
     return { status: "error", message: "La décision n’a pas pu être enregistrée. Réessayez." };
   }
   updateTag(PLACES_CACHE_TAG);
+  updateTag(BUSINESSES_CACHE_TAG);
   // La liste se met à jour (demande traitée retirée) ; la décision est confirmée par l'adresse.
   redirect(href("placeClaims", { query: { decision: approve ? "validee" : "refusee" } }));
 }

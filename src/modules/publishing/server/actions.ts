@@ -7,7 +7,6 @@ import { href } from "@/config/routes";
 import { isStaff } from "@/domain/roles";
 import type { FormState } from "@/lib/form-state";
 import { logger } from "@/lib/logger";
-import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { slugify } from "@/modules/admin/domain/categories";
 import { LISTINGS_CACHE_TAG } from "@/modules/listings/server/queries";
@@ -16,9 +15,10 @@ import { getCurrentAccount, getSessionUser } from "@/server/auth";
 import { consumeRateLimit } from "@/server/rate-limit";
 import { extractFromText, type Suggestion } from "../domain/assistant";
 import { cleanAttributes, draftSchema, submissionProblems, type ListingDraft } from "../domain/fields";
-import { isPhotoType, isSha256, PHOTO_MAX_BYTES, PHOTO_TYPES } from "../domain/photos";
+import { isPhotoType, PHOTO_MAX_BYTES } from "../domain/photos";
 import { checkListing } from "../domain/rules";
 import { aiAvailability, extractWithAi, type AiInput } from "./ai";
+import { promotePhotos } from "./photo-store";
 import { publishableCategories, type StoredSuggestion } from "./queries";
 
 const SHOWN_CODES = ["23514", "42501", "CP429"];
@@ -264,64 +264,6 @@ export async function decideSuggestionAction(input: { id: string; decision: "acc
 }
 
 // -----------------------------------------------------------------------------
-// Photos (fichier déposé par le navigateur dans le stockage privé)
-// -----------------------------------------------------------------------------
-const photoSchema = z.object({
-  id: z.uuid(),
-  path: z.string().max(300),
-  type: z.string(),
-  bytes: z.number().int().positive().max(PHOTO_MAX_BYTES),
-  width: z.number().int().positive().max(20000),
-  height: z.number().int().positive().max(20000),
-  hash: z.string(),
-  alt: z.string().trim().max(200).optional(),
-});
-
-export type RegisterPhotoResult = { ok: true; photoId: string; ownDuplicates: number; otherDuplicates: number } | { ok: false; message: string };
-
-export async function registerPhotoAction(input: z.input<typeof photoSchema>): Promise<RegisterPhotoResult> {
-  const parsed = photoSchema.safeParse(input);
-  if (!parsed.success || !isPhotoType(parsed.data.type) || !isSha256(parsed.data.hash)) return { ok: false, message: "Photo invalide." };
-  const { user, supabase } = await session();
-  const { id, path, type, bytes, width, height, hash, alt } = parsed.data;
-  const expected = new RegExp(`^${user.id}/annonces/${id}/[0-9a-f-]{36}\\.${PHOTO_TYPES[type]}$`);
-  if (!expected.test(path)) return { ok: false, message: "Emplacement de la photo invalide." };
-  const { count } = await supabase.from("images").select("id", { count: "exact", head: true }).eq("listing_id", id);
-  const { data, error } = await supabase
-    .from("images")
-    .insert({ owner_id: user.id, listing_id: id, storage_path: path, bucket: "private-media", width, height, byte_size: bytes, content_hash: hash, alt_text: alt || null, sort_order: count ?? 0 })
-    .select("id")
-    .single();
-  if (error || !data) {
-    await supabase.storage.from("private-media").remove([path]);
-    return error ? failure(error, "La photo n’a pas pu être ajoutée") : { ok: false, message: "La photo n’a pas pu être ajoutée." };
-  }
-  const { data: duplicates } = await supabase.rpc("listing_image_duplicates", { p_listing: id });
-  const mine = duplicates?.find((item) => item.image_id === data.id);
-  return { ok: true, photoId: data.id, ownDuplicates: mine?.own_matches ?? 0, otherDuplicates: mine?.other_matches ?? 0 };
-}
-
-export async function removePhotoAction(input: { photoId: string }): Promise<{ ok: boolean; message?: string }> {
-  const id = z.uuid().safeParse(input.photoId);
-  if (!id.success) return { ok: false, message: "Photo introuvable." };
-  const { supabase } = await session();
-  const { data } = await supabase.from("images").select("storage_path, bucket").eq("id", id.data).maybeSingle();
-  if (!data) return { ok: false, message: "Photo introuvable." };
-  const { error } = await supabase.from("images").delete().eq("id", id.data);
-  if (error) return failure(error, "La photo n’a pas pu être retirée");
-  await supabase.storage.from(data.bucket).remove([data.storage_path]);
-  return { ok: true };
-}
-
-export async function updatePhotoAltAction(input: { photoId: string; alt: string }): Promise<{ ok: boolean }> {
-  const parsed = z.object({ photoId: z.uuid(), alt: z.string().trim().max(200) }).safeParse(input);
-  if (!parsed.success) return { ok: false };
-  const { supabase } = await session();
-  const { error } = await supabase.from("images").update({ alt_text: parsed.data.alt || null }).eq("id", parsed.data.photoId);
-  return { ok: !error };
-}
-
-// -----------------------------------------------------------------------------
 // Soumission, retrait, modération
 // -----------------------------------------------------------------------------
 export interface SubmitState extends FormState {
@@ -371,7 +313,7 @@ export async function moderateListingAction(_previous: FormState, formData: Form
   if (!listing || listing.status !== "pending") return { status: "error", message: "Cette annonce n’est plus en attente." };
 
   if (parsed.data.decision === "publier") {
-    const promoted = await promotePhotos(listing.id);
+    const promoted = await promotePhotos({ kind: "annonce", id: listing.id });
     if (!promoted) return { status: "error", message: "Les photos n’ont pas pu être publiées. Réessayez." };
   }
   const { error } = await supabase
@@ -386,23 +328,4 @@ export async function moderateListingAction(_previous: FormState, formData: Form
   updateTag(LISTINGS_CACHE_TAG);
   revalidatePath(href("adminListings"));
   redirect(href("adminListings", { query: { decision: parsed.data.decision === "publier" ? "publiee" : "refusee" } }));
-}
-
-/** Copie les photos privées d'une annonce dans le stockage public (même chemin) et met à jour leur fiche. */
-async function promotePhotos(listingId: string): Promise<boolean> {
-  const admin = createAdminSupabaseClient();
-  if (!admin) return false;
-  const { data: photos, error } = await admin.from("images").select("id, storage_path").eq("listing_id", listingId).eq("bucket", "private-media");
-  if (error) return false;
-  for (const photo of photos ?? []) {
-    const copy = await admin.storage.from("private-media").copy(photo.storage_path, photo.storage_path, { destinationBucket: "media" });
-    if (copy.error && !/exists/i.test(copy.error.message)) {
-      logger.error("Photo non copiée", { module: "publication", error: copy.error.message });
-      return false;
-    }
-    const { error: update } = await admin.from("images").update({ bucket: "media" }).eq("id", photo.id);
-    if (update) return false;
-    await admin.storage.from("private-media").remove([photo.storage_path]);
-  }
-  return true;
 }

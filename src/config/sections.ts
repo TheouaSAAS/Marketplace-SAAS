@@ -31,17 +31,6 @@ export const SECTION_PREVIEWS = {
     categories: ["immobilier", "emploi-stages", "annonces-biens", "vehicules", "opportunites-commerciales", "formation"],
     related: ["realEstate", "jobs", "publish", "newcomer"],
   },
-  directory: {
-    title: "Professionnels et entreprises",
-    intro: "L’annuaire des professionnels de San Pedro : commerces, artisans, agences, opérateurs.",
-    upcoming: [
-      "Pages professionnelles : présentation, services, zone, contacts, annonces",
-      "Badges clairs : profil complété, vérifié, sponsorisé — jamais confondus",
-      "Avis modérés et réponses des professionnels",
-    ],
-    parent: "services",
-    related: ["services", "shops", "pricing", "signup"],
-  },
   pricing: {
     title: "Offres pour les professionnels",
     intro: "La publication et la vitrine de base sont gratuites. Des options de visibilité seront proposées aux professionnels.",

@@ -3,6 +3,7 @@ import { SITE } from "@/config/site";
 import { VERIFICATION_VALIDITY_DAYS } from "@/domain/verification";
 import { SponsoredBadge, StatusBadge } from "@/components/ui/badge";
 import { FreshnessNote, VerificationBadge } from "@/components/ui/verification";
+import { PRO_BADGES } from "@/modules/businesses/domain/pro";
 import { InfoPage } from "@/components/layout/info-page";
 
 export const metadata: Metadata = {
@@ -53,6 +54,23 @@ export default function VerificationPolicyPage() {
           Chaque annonce est relue avant publication <StatusBadge status="published" />, et de nouveau après chaque
           modification. Cette relecture vérifie le respect des règles, pas l’existence du bien : le contenu reste sous la
           responsabilité de l’annonceur.
+        </p>
+      </section>
+
+      <section id="badges">
+        <h2>Les badges des professionnels</h2>
+        <p>Quatre badges, jamais confondus : seul « Vérifié » engage l’équipe locale.</p>
+        <dl className="flex flex-col gap-2">
+          {Object.values(PRO_BADGES).map((badge) => (
+            <div key={badge.label}>
+              <dt className="font-semibold">{badge.label}</dt>
+              <dd className="ml-0">{badge.definition}</dd>
+            </div>
+          ))}
+        </dl>
+        <p>
+          Les avis sont relus avant publication : un seul par personne, jamais sur sa propre activité, depuis un compte d’au moins 7 jours dont l’adresse
+          e-mail est confirmée. La note moyenne n’apparaît qu’à partir de 3 avis.
         </p>
       </section>
 

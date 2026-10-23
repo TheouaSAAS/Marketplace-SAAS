@@ -7,12 +7,13 @@ import { FormStatus } from "@/modules/accounts/components/form-parts";
 import { reviewClaimAction } from "../server/claim-review-action";
 
 /** Valider ou refuser (motif obligatoire pour un refus, transmis au demandeur). */
-export function ClaimReviewForm({ claimId }: { claimId: string }) {
+export function ClaimReviewForm({ claimId, kind = "lieu" }: { claimId: string; kind?: "lieu" | "pro" }) {
   const [state, action] = useActionState(reviewClaimAction, INITIAL_FORM_STATE);
   if (state.status === "success") return <FormStatus state={state} />;
   return (
     <form action={action} className="flex flex-col gap-3">
       <input type="hidden" name="demande" value={claimId} />
+      <input type="hidden" name="cible" value={kind} />
       <FormStatus state={state} />
       <Field label="Motif (obligatoire en cas de refus, transmis au demandeur)">
         {(props) => <Textarea {...props} name="motif" rows={2} maxLength={1000} />}

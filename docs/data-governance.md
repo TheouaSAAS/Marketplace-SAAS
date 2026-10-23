@@ -49,6 +49,10 @@ Corriger, vérifier (avec source), dater, publier, archiver, fusionner des doubl
 
 Les offres sont déclarées par leurs auteurs et modérées ; elles ne sont pas « vérifiées » tant que l'employeur ne l'est pas. Aucune offre n'est importée automatiquement d'un site tiers. Les candidatures et profils candidats sont des données personnelles privées par défaut (D80) ; les coordonnées d'un candidat ne sont révélées qu'avec son accord.
 
+## Professionnels (niveau 19)
+
+Une page professionnelle est déclarative et modérée ; elle n'est « vérifiée » qu'après contrôle de l'équipe locale avec une source enregistrée. Les avis sont des opinions d'utilisateurs, relues avant publication, jamais créées ni modifiées par la plateforme. L'aide IA à la rédaction n'ajoute aucune information absente de la page.
+
 ## IA
 
 Niveau 18 : l'assistant de publication propose des champs tirés du seul document de l'auteur (texte, photo, PDF), jamais d'informations extérieures ; rien n'est publié sans validation explicite, et une photo ou un PDF n'est jamais tenu pour une source fiable (confiance plafonnée, rappel de vérification). Les PDF ne sont pas conservés ; la consommation de l'IA est enregistrée sans aucun contenu.

@@ -130,11 +130,42 @@ describe("BusinessCard et GuideCard", () => {
       availability_declared_at: null,
       category: { name: "Artisans et dépannage", slug: "artisans-depannage", icon: "wrench" },
       neighborhood: { name: "Bardot" },
+      complete: false,
+      sponsored: false,
+      verificationPending: false,
     };
     render(<BusinessCard business={business} now={now} context="Professionnel · fiche mise à jour le 1 oct." />);
     expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("Électricité du port");
     expect(screen.getByText("Professionnel · fiche mise à jour le 1 oct.")).toBeInTheDocument();
     expect(screen.getByText("Artisans et dépannage · Bardot")).toBeInTheDocument();
+    expect(screen.queryByText("Profil complété")).not.toBeInTheDocument();
+  });
+
+  it("distingue profil complété, vérification demandée et sponsoring", () => {
+    const business: BusinessCardData = {
+      id: "00000000-0000-4000-8000-000000000005",
+      slug: "plomberie-du-port",
+      name: "Plomberie du port",
+      description: null,
+      verification_status: "pending_validation",
+      verified_at: null,
+      updated_at: "2026-10-01T00:00:00Z",
+      services: [],
+      service_area: null,
+      accepts_quotes: false,
+      availability_note: null,
+      availability_declared_at: null,
+      category: null,
+      neighborhood: null,
+      complete: true,
+      sponsored: true,
+      verificationPending: true,
+    };
+    render(<BusinessCard business={business} now={now} />);
+    expect(screen.getByText("Profil complété")).toHaveAttribute("title", expect.stringContaining("pas vérifiées"));
+    expect(screen.getByText("En cours de validation")).toBeInTheDocument();
+    expect(screen.getByText("Sponsorisé")).toBeInTheDocument();
+    expect(screen.queryByText("Vérifié")).not.toBeInTheDocument();
   });
 
   it("affiche un article du guide avec sa rubrique", () => {

@@ -4,6 +4,12 @@ import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { listCategories, type Category } from "@/server/repositories/categories";
 import type { CategoryChoice } from "../domain/assistant";
 import { draftSchema, type ListingDraft } from "../domain/fields";
+import { listPhotos, type DraftPhoto } from "./photo-store";
+
+export type { DraftPhoto };
+
+/** Photos d'une annonce (auteur, équipe ou modération). */
+export const listListingPhotos = (listingId: string) => listPhotos({ kind: "annonce", id: listingId });
 
 /** Schémas publiés ailleurs : l'emploi et les opportunités ont leur propre parcours (niveau 17). */
 export const JOB_SCHEMAS = ["emploi", "opportunite", "appel_offres"];
@@ -120,54 +126,6 @@ export async function getEditableListing(id: string): Promise<EditableListing | 
     showEmail: row.show_email,
   });
   return { row, draft };
-}
-
-const photoSchema = z.object({
-  id: z.uuid(),
-  storage_path: z.string(),
-  bucket: z.enum(["media", "private-media"]),
-  alt_text: z.string().nullable(),
-  width: z.number().nullable(),
-  height: z.number().nullable(),
-  content_hash: z.string().nullable(),
-});
-
-export interface DraftPhoto {
-  id: string;
-  url: string | null;
-  alt: string;
-  width: number | null;
-  height: number | null;
-  hash: string | null;
-  /** Mêmes octets dans une autre annonce de l'auteur / d'un autre compte. */
-  ownDuplicates: number;
-  otherDuplicates: number;
-}
-
-/** Photos d'une annonce (auteur ou équipe), avec adresses signées pour celles encore privées. */
-export async function listListingPhotos(listingId: string): Promise<DraftPhoto[]> {
-  const supabase = await createSessionSupabaseClient();
-  if (!supabase) return [];
-  const [{ data, error }, duplicates] = await Promise.all([
-    supabase.from("images").select("id, storage_path, bucket, alt_text, width, height, content_hash").eq("listing_id", listingId).order("sort_order").order("created_at"),
-    supabase.rpc("listing_image_duplicates", { p_listing: listingId }),
-  ]);
-  if (error) throw new Error(`Lecture des photos impossible : ${error.message}`);
-  const photos = z.array(photoSchema).parse(data);
-  const privatePaths = photos.filter((photo) => photo.bucket === "private-media").map((photo) => photo.storage_path);
-  const signed = privatePaths.length ? ((await supabase.storage.from("private-media").createSignedUrls(privatePaths, 3600)).data ?? []) : [];
-  const signedByPath = new Map(signed.map((item) => [item.path, item.signedUrl]));
-  const duplicateById = new Map((duplicates.data ?? []).map((item) => [item.image_id, item]));
-  return photos.map((photo) => ({
-    id: photo.id,
-    url: photo.bucket === "private-media" ? (signedByPath.get(photo.storage_path) ?? null) : supabase.storage.from("media").getPublicUrl(photo.storage_path).data.publicUrl,
-    alt: photo.alt_text ?? "",
-    width: photo.width,
-    height: photo.height,
-    hash: photo.content_hash,
-    ownDuplicates: duplicateById.get(photo.id)?.own_matches ?? 0,
-    otherDuplicates: duplicateById.get(photo.id)?.other_matches ?? 0,
-  }));
 }
 
 const suggestionSchema = z.object({

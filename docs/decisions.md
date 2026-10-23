@@ -260,5 +260,20 @@ L'assistant IA n'est actif que si le drapeau `ai_publishing`, le fournisseur (`A
 ## D86 — Contenus interdits bloqués avant la modération
 Armes, drogues, médicaments, espèces protégées, faux documents et contrefaçons, données personnelles, demandes d'argent avant visite et promesses de gain bloquent la soumission par des règles expliquées, et sont signalés au modérateur s'ils passent. La modération humaine reste la garantie finale.
 
+## D87 — Quatre badges, jamais confondus
+« Vérifié » vient seulement de l'équipe locale, avec une source enregistrée et une date ; « En cours de validation » dit qu'une demande attend ; « Profil complété » dit que sept rubriques sont remplies (déclaratif) ; « Sponsorisé » signale une campagne active et ne change ni l'ordre de l'annuaire, ni la vérification, ni les avis. Chaque badge porte sa définition et renvoie à `/verification#badges`.
+
+## D88 — Équipe par invitation à usage unique
+Aucun annuaire de comptes n'est exposé : un administrateur de l'équipe crée un lien (rôle choisi, 7 jours), affiché une seule fois ; la base n'en garde que l'empreinte. La personne voit l'équipe et le rôle avant d'accepter. Rôles : propriétaire, administrateur (gère l'équipe), éditeur (modifie la page, répond aux avis), lecteur (consulte). Une équipe garde toujours un propriétaire.
+
+## D89 — Avis : modérés et protégés contre la manipulation
+Un avis vient d'un compte d'au moins 7 jours à l'adresse confirmée, un seul par page, jamais d'un membre de l'équipe, cinq par jour au plus ; il est relu avant publication. La moyenne n'apparaît qu'à partir de 3 avis publiés. Le professionnel répond publiquement sans pouvoir modifier la note ; un avis se signale comme tout contenu.
+
+## D90 — Page professionnelle modérée, disponibilité libre
+Une page est relue avant publication, et après chaque modification de contenu. La disponibilité et l'ouverture aux devis se mettent à jour sans relecture : elles sont affichées comme déclarées, avec leur date. Une page créée par l'équipe se revendique par le circuit des vitrines (élément vérifiable, décision motivée).
+
+## D91 — IA de rédaction et offres sans paiement
+L'aide à la rédaction (présentation, FAQ) n'utilise que les informations déjà saisies, refuse d'inventer prix, années, certifications ou garanties, et son texte n'est enregistré qu'après relecture. Les offres du référentiel sont affichées ; aucune somme n'est demandée tant qu'aucun prestataire de paiement n'est configuré, et aucune mise en avant ne s'achète.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

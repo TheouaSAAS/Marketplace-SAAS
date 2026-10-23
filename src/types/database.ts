@@ -107,7 +107,10 @@ export type Database = {
           created_at: string
           description: string | null
           email: string | null
+          faq: Json
           id: string
+          is_claimed: boolean
+          links: Json
           location: unknown
           location_precision: Database["public"]["Enums"]["location_precision"]
           location_public: unknown
@@ -146,7 +149,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           email?: string | null
+          faq?: Json
           id?: string
+          is_claimed?: boolean
+          links?: Json
           location?: unknown
           location_precision?: Database["public"]["Enums"]["location_precision"]
           location_public?: unknown
@@ -185,7 +191,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           email?: string | null
+          faq?: Json
           id?: string
+          is_claimed?: boolean
+          links?: Json
           location?: unknown
           location_precision?: Database["public"]["Enums"]["location_precision"]
           location_public?: unknown
@@ -259,6 +268,64 @@ export type Database = {
           {
             foreignKeyName: "business_profiles_verified_by_fkey"
             columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_verification_requests: {
+        Row: {
+          business_id: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          evidence: string
+          id: string
+          requested_by: string
+          status: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          evidence: string
+          id?: string
+          requested_by?: string
+          status?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          evidence?: string
+          id?: string
+          requested_by?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_verification_requests_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_verification_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_verification_requests_requested_by_fkey"
+            columns: ["requested_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -2218,6 +2285,67 @@ export type Database = {
           },
         ]
       }
+      organization_invitations: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          organization_id: string
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["organization_role"]
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          organization_id: string
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["organization_role"]
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          organization_id?: string
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["organization_role"]
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_invitations_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_invitations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_invitations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_members: {
         Row: {
           created_at: string
@@ -2393,6 +2521,7 @@ export type Database = {
       }
       place_claims: {
         Row: {
+          business_id: string | null
           claimant_id: string
           claimant_role: string
           created_at: string
@@ -2401,12 +2530,13 @@ export type Database = {
           id: string
           message: string
           phone: string
-          place_id: string
+          place_id: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           status: string
         }
         Insert: {
+          business_id?: string | null
           claimant_id: string
           claimant_role: string
           created_at?: string
@@ -2415,12 +2545,13 @@ export type Database = {
           id?: string
           message: string
           phone: string
-          place_id: string
+          place_id?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
         }
         Update: {
+          business_id?: string | null
           claimant_id?: string
           claimant_role?: string
           created_at?: string
@@ -2429,12 +2560,19 @@ export type Database = {
           id?: string
           message?: string
           phone?: string
-          place_id?: string
+          place_id?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "place_claims_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "place_claims_claimant_id_fkey"
             columns: ["claimant_id"]
@@ -3442,6 +3580,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_organization_invitation: {
+        Args: { p_token: string }
+        Returns: string
+      }
+      account_can_review: { Args: { p_user: string }; Returns: boolean }
       ai_month_cost: { Args: never; Returns: number }
       archive_past_events: { Args: never; Returns: number }
       attr_bool: {
@@ -3459,6 +3602,14 @@ export type Database = {
           longitude: number
         }[]
       }
+      business_public_badges: {
+        Args: { p_ids: string[] }
+        Returns: {
+          business_id: string
+          sponsored: boolean
+          verification_pending: boolean
+        }[]
+      }
       business_public_point: {
         Args: { p_business: string }
         Returns: {
@@ -3467,10 +3618,30 @@ export type Database = {
           location_precision: Database["public"]["Enums"]["public_location_precision"]
         }[]
       }
+      business_rating: {
+        Args: { p_business: string }
+        Returns: {
+          average: number
+          review_count: number
+        }[]
+      }
+      business_reviews: {
+        Args: { p_business: string; p_limit?: number; p_offset?: number }
+        Returns: {
+          author_name: string
+          body: string
+          created_at: string
+          id: string
+          rating: number
+          response_at: string
+          response_body: string
+        }[]
+      }
       can_manage_content: {
         Args: { p_organization: string; p_owner: string }
         Returns: boolean
       }
+      can_manage_private_media: { Args: { p_path: string }; Returns: boolean }
       category_content_counts: {
         Args: { p_city: string; p_slugs: string[] }
         Returns: {
@@ -3525,9 +3696,25 @@ export type Database = {
           place_slug: string
         }[]
       }
+      create_organization_invitation: {
+        Args: {
+          p_organization: string
+          p_role: Database["public"]["Enums"]["organization_role"]
+        }
+        Returns: string
+      }
       current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
+      }
+      decide_business_verification: {
+        Args: {
+          p_approve: boolean
+          p_note?: string
+          p_request: string
+          p_source_title: string
+        }
+        Returns: undefined
       }
       demo_content_public: { Args: never; Returns: boolean }
       event_point: {
@@ -3780,9 +3967,27 @@ export type Database = {
           total: number
         }[]
       }
+      organization_invitation_preview: {
+        Args: { p_token: string }
+        Returns: {
+          organization_name: string
+          role: Database["public"]["Enums"]["organization_role"]
+          valid: boolean
+        }[]
+      }
       organization_role_rank: {
         Args: { p_role: Database["public"]["Enums"]["organization_role"] }
         Returns: number
+      }
+      organization_team: {
+        Args: { p_organization: string }
+        Returns: {
+          display_name: string
+          joined_at: string
+          member_id: string
+          role: Database["public"]["Enums"]["organization_role"]
+          user_id: string
+        }[]
       }
       place_engagement: {
         Args: { p_place: string }
@@ -3825,6 +4030,19 @@ export type Database = {
           status: Database["public"]["Enums"]["application_status"]
         }[]
       }
+      received_business_reviews: {
+        Args: { p_business: string }
+        Returns: {
+          author_name: string
+          body: string
+          created_at: string
+          id: string
+          rating: number
+          response_at: string
+          response_body: string
+          status: Database["public"]["Enums"]["review_status"]
+        }[]
+      }
       record_listing_view: {
         Args: { p_listing: string; p_viewer_hash: string }
         Returns: boolean
@@ -3849,12 +4067,20 @@ export type Database = {
         Args: { p_channel: string; p_listing: string }
         Returns: string
       }
+      review_business_claim: {
+        Args: { p_approve: boolean; p_claim: string; p_note?: string }
+        Returns: undefined
+      }
       review_neighborhood_boundary: {
         Args: { p_approve: boolean; p_boundary: string; p_note?: string }
         Returns: undefined
       }
       review_place_claim: {
         Args: { p_approve: boolean; p_claim: string; p_note?: string }
+        Returns: undefined
+      }
+      revoke_organization_invitation: {
+        Args: { p_invitation: string }
         Returns: undefined
       }
       safe_date: { Args: { p_value: string }; Returns: string }

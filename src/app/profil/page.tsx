@@ -98,7 +98,7 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
 
       <Section title="Mes publications">
         <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-          {(["myListings", "myEvents", "receivedApplications", "myApplications"] as const).map((key) => (
+          {(["myListings", "proPages", "myEvents", "receivedApplications", "myApplications"] as const).map((key) => (
             <li key={key}>
               <Link href={href(key)} className="font-semibold underline">
                 {ROUTES[key].label}
@@ -140,7 +140,7 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
         )}
         {isCurator(account.role) && (
           <ButtonLink href={href("placeClaims")} variant="secondary">
-            Examiner les revendications de vitrines
+            Examiner les revendications (vitrines, pages pro)
           </ButtonLink>
         )}
         {isCurator(account.role) && (
@@ -151,6 +151,16 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
         {isStaff(account.role) && (
           <ButtonLink href={href("adminEvents")} variant="secondary">
             Modérer les événements
+          </ButtonLink>
+        )}
+        {(isStaff(account.role) || isCurator(account.role)) && (
+          <ButtonLink href={href("adminPros")} variant="secondary">
+            Modérer et vérifier les pages pro
+          </ButtonLink>
+        )}
+        {isStaff(account.role) && (
+          <ButtonLink href={href("adminReviews")} variant="secondary">
+            Modérer les avis
           </ButtonLink>
         )}
         {isStaff(account.role) && (
@@ -209,12 +219,12 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
       </Section>
 
       {claims.length > 0 && (
-        <Section title="Mes revendications de vitrines">
+        <Section title="Mes revendications">
           <ul className="flex flex-col gap-2 text-sm">
             {claims.map((claim) => (
               <li key={claim.id}>
-                <Link className="font-semibold underline" href={href("placeDetail", { params: { slug: claim.place.slug } })}>
-                  {claim.place.name}
+                <Link className="font-semibold underline" href={claim.target.href}>
+                  {claim.target.name}
                 </Link>{" "}
                 · {CLAIM_STATUSES[claim.status]}
                 {claim.decision_note && <span className="text-ink-muted"> · « {claim.decision_note} »</span>}

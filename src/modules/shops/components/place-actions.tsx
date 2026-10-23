@@ -87,16 +87,17 @@ export function PlaceMessageForm({ placeId, back }: { placeId: string; back: str
 }
 
 /** Revendication de la vitrine par son exploitant, examinée par l'équipe locale. */
-export function ClaimForm({ placeId, back }: { placeId: string; back: string }) {
+export function ClaimForm({ placeId, businessId, back }: { placeId?: string; businessId?: string; back: string }) {
   const [state, action] = useActionState(claimPlaceAction, INITIAL_FORM_STATE);
   if (state.status === "success") return <FormStatus state={state} />;
   const errors = state.fieldErrors ?? {};
   const values = state.values ?? {};
   return (
     <form action={action} className="flex flex-col gap-3">
-      <Hidden placeId={placeId} back={back} />
+      {placeId ? <input type="hidden" name="lieu" value={placeId} /> : <input type="hidden" name="page" value={businessId} />}
+      <input type="hidden" name="retour" value={back} />
       <FormStatus state={state} />
-      <Field label="Votre lien avec ce commerce" error={errors.role}>
+      <Field label="Votre lien avec cet établissement" error={errors.role}>
         {(props) => (
           <Select {...props} name="role" defaultValue={values.role ?? ""}>
             <option value="" disabled>

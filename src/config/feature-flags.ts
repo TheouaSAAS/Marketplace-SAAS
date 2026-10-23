@@ -70,7 +70,7 @@ export const FEATURES: Record<FeatureKey, FeatureDefinition> = {
   reviews: {
     label: "Avis",
     description: "Avis modérés sur les professionnels et lieux.",
-    defaultOn: false,
+    defaultOn: true,
     requires: ["database"],
   },
   map: {

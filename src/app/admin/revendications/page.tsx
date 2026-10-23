@@ -55,9 +55,10 @@ async function ClaimsContent({ searchParams }: Pick<PageProps<"/admin/revendicat
             <li key={claim.id} className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
               <div className="flex flex-col gap-0.5">
                 <h2 className="font-bold">
-                  <Link className="underline" href={href("placeDetail", { params: { slug: claim.place.slug } })}>
-                    {claim.place.name}
+                  <Link className="underline" href={claim.target.href}>
+                    {claim.target.name}
                   </Link>
+                  <span className="ml-2 text-xs font-normal text-ink-muted">{claim.target.kind === "pro" ? "Page professionnelle" : "Vitrine"}</span>
                 </h2>
                 <p className="text-xs text-ink-muted">Demande du {formatDateTime(claim.created_at)}</p>
               </div>
@@ -73,7 +74,7 @@ async function ClaimsContent({ searchParams }: Pick<PageProps<"/admin/revendicat
               </dl>
               <p className="whitespace-pre-line text-sm">{claim.message}</p>
               <p className="text-xs text-ink-muted">Vérifiez l’élément fourni (registre, appel, visite) avant de valider : le demandeur recevra les messages des clients.</p>
-              <ClaimReviewForm claimId={claim.id} />
+              <ClaimReviewForm claimId={claim.id} kind={claim.target.kind} />
             </li>
           ))}
         </ul>
@@ -85,8 +86,8 @@ async function ClaimsContent({ searchParams }: Pick<PageProps<"/admin/revendicat
 export default function PlaceClaimsPage({ searchParams }: PageProps<"/admin/revendications">) {
   return (
     <Container className="flex max-w-4xl flex-col gap-6 py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Revendications de vitrines" }]} />
-      <h1 className="text-3xl font-extrabold">Revendications de vitrines</h1>
+      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Revendications" }]} />
+      <h1 className="text-3xl font-extrabold">Revendications de vitrines et de pages professionnelles</h1>
       <Suspense fallback={<Skeleton className="h-64 w-full" />}>
         <ClaimsContent searchParams={searchParams} />
       </Suspense>

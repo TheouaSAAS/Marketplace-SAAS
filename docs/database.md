@@ -162,6 +162,16 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `ai_usage` : volumes et coût estimé de chaque appel à l’IA, écrits par le serveur seul (clé secrète) ; lecture administrateurs. `ai_month_cost()` (rôle de service) pour le budget mensuel.
 - `listing_editor_point(annonce)` : position privée pour l’auteur ou l’équipe (éditeur, contrôle de soumission).
 
+## Profils professionnels (niveau 19, migrations `20261101000100_pros.sql` à `…000700_team_viewers.sql`)
+
+- `business_profiles` : `faq` (10 questions au plus), `links` (6 liens), `is_claimed` (faux pour une page créée par l’équipe, revendicable) ; colonnes publiques réaccordées (`grant_public_columns`) ; cinq pages au plus par compte (`limit_business_profiles`). La disponibilité, sa date et l’ouverture aux devis changent sans relecture (`enforce_content_rules`). `notify_business_moderation` : décision notifiée.
+- Lecture : un membre de l’équipe, même « Lecteur », voit la page non publiée ; modifier reste réservé aux éditeurs et plus. Photos de page privées d’office (12 au plus) ; `can_manage_private_media` ouvre le stockage privé aux membres habilités (lecture, suppression).
+- Revendication : `place_claims` accepte une page (`business_id`) ; `review_business_claim` transfère la page au demandeur (équipe locale, journal d’administration, notification).
+- Équipe : `organization_invitations` (rôle hors propriétaire, empreinte SHA-256 du lien, 7 jours, révocable) ; `create_organization_invitation` (administrateurs, renvoie le lien une fois), `organization_invitation_preview`, `accept_organization_invitation`, `revoke_organization_invitation`, `organization_team` (noms publics des membres).
+- Vérification : `business_verification_requests` (élément vérifiable, une demande en attente par page) ; `decide_business_verification` (équipe locale, source obligatoire créée dans `sources`, journal, notification). `business_public_badges(ids)` : sponsorisé (campagne active) et vérification en attente.
+- Avis : `account_can_review` (compte connecté seulement : 7 jours, adresse confirmée) appliqué par `enforce_review_rules`, 5 avis par jour ; `business_reviews`, `business_rating` (publics, sans donnée personnelle hors nom public), `received_business_reviews` (équipe de la page) ; `notify_review_decision`.
+- `ai_usage.feature` : `publication` ou `profil_pro`.
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.

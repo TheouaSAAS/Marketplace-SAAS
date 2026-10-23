@@ -33,7 +33,7 @@ test.describe("Services de proximité", () => {
     test.skip(response?.status() !== 200, "Démonstration désactivée");
     await expect(page.getByText("Exemple de démonstration")).toBeVisible();
     await expect(page.getByText(/Rien n’est garanti en temps réel/)).toBeVisible();
-    await expect(page.getByText(/Horaires non affichés tant qu’ils n’ont pas été vérifiés/)).toBeVisible();
+    await expect(page.getByText(/Horaires non renseignés|à confirmer avant de vous déplacer/)).toBeVisible();
 
     await fillQuote(page);
     await page.getByRole("button", { name: "Envoyer la demande de devis" }).click();

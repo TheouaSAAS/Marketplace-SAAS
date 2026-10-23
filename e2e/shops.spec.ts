@@ -91,7 +91,7 @@ test.describe("Commerces", () => {
       await owner.getByText("Vous êtes l’exploitant ? Revendiquer cette vitrine").click();
       // Une demande déjà en attente (nouvelle tentative du test) n'est pas renvoyée.
       if ((await owner.getByText("Demande en cours d’examen").count()) === 0) {
-        await owner.getByLabel("Votre lien avec ce commerce").selectOption("gerant");
+        await owner.getByLabel("Votre lien avec cet établissement").selectOption("gerant");
         await owner.getByLabel("Présentez-vous").fill("Test automatique : je gère cette quincaillerie, à ignorer.");
         await owner.getByLabel("Élément vérifiable").fill("RCCM de test");
         await owner.getByLabel("Téléphone (pour l’équipe seulement)").fill("0700000000");
@@ -101,7 +101,7 @@ test.describe("Commerces", () => {
       await expect(owner.getByText("Demande en cours d’examen")).toBeVisible({ timeout: NETWORK });
 
       const admin = await asUser(browser, "E2E_ADMIN");
-      await admin.getByRole("link", { name: "Examiner les revendications de vitrines" }).click();
+      await admin.getByRole("link", { name: "Examiner les revendications (vitrines, pages pro)" }).click();
       const claim = admin.getByRole("listitem").filter({ hasText: "Test automatique : je gère cette quincaillerie" });
       await expect(claim).toBeVisible({ timeout: NETWORK });
       await claim.getByRole("button", { name: "Valider" }).click();
