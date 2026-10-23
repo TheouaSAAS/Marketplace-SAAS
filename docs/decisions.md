@@ -236,5 +236,14 @@ Un report ou une annulation ne renvoie pas l'événement en modération (sinon i
 ## D78 — Proposition modérée, rappels sans données personnelles
 Tout membre peut proposer un événement ; il est publié après décision de l'équipe de modération (refus motivé), l'organisateur est notifié. Les rappels passent par les favoris (notification la veille) ou par un fichier d'agenda `.ics` que la personne importe et règle elle-même. Les dernières notifications s'affichent dans le profil en attendant le centre de notifications (niveau 24).
 
+## D79 — Offres : modérées, datées, sans adresse inventée
+Toute offre est relue avant publication (refus motivé, auteur notifié). La date limite fixe l'expiration ; une offre close, expirée ou dont la date est passée n'accepte aucune candidature, règle garantie en base. Une offre n'exige pas de position : la fiche n'affiche pas de « zone approximative » fictive. Clôturer une offre (disponibilité) ne la renvoie pas en modération ; modifier son texte, si.
+
+## D80 — Candidatures et profils candidats privés par défaut
+Une candidature n'est visible que du candidat et de l'employeur ; seul son statut change, le candidat peut la retirer, l'employeur décide et le candidat est notifié. Aucun tri ni décision automatique sur un candidat. Le profil candidat est privé par défaut ; le candidat choisit sa visibilité (employeurs ou public) et le partage de ses coordonnées, révélées une à une par fonction en base, jamais lisibles directement.
+
+## D81 — Règles de formulation et import sans IA
+Les formulations discriminatoires (âge, sexe, origine, religion, situation familiale, apparence, santé), les demandes d'argent au candidat et les gains irréalistes sont bloqués à la publication par des règles explicables, et signalés au modérateur. Une offre vue sur LinkedIn se publie en collant son texte : un pré-remplissage déterministe propose titre, contrat, date limite et contact, que l'auteur vérifie ; rien n'est récupéré automatiquement sur LinkedIn (conditions d'utilisation) et l'aide IA viendra aux niveaux 18 et 26, sans publication ni décision automatique. Une candidature externe n'accepte qu'un lien https, affiché avec le nom du site.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

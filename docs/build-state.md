@@ -2,7 +2,7 @@
 
 > Cahier détaillé de chaque niveau : `docs/plan-28-niveaux.md`.
 > À lire au début de chaque session, puis vérifier l'état réel du code (`git log`, `npm run check`, `npm run db:verify`).
-> Dernière mise à jour : **2026-10-22** — niveau 16 terminé.
+> Dernière mise à jour : **2026-10-23** — niveau 17 terminé.
 
 ## Niveaux
 
@@ -25,8 +25,9 @@
 | 14 | Quartiers | ✅ terminé — `/quartiers` (liste alphabétique, statut, périmètre validé ou non, nombre de contenus rattachés, rappel de neutralité), `/quartiers/[slug]` (noms alternatifs, description neutre ou « à confirmer », avertissements fiche non vérifiée et sans périmètre, onglets à découvrir, logement, services, commerces, tourisme et carte avec les seuls contenus rattachés et liens vers les domaines filtrés, source et contrôle) ; administration `/admin/quartiers` (fiche historisée avec note, responsable, brouillons de périmètre GeoJSON contrôlés et prévisualisés, validation ou refus motivé, ancien périmètre conservé, retrait motivé, journal) ; filtre quartier ajouté au tourisme. Reportés : tracé du périmètre sur la carte (15), critères administrés de description (aucun qualificatif affiché d’ici là) |
 | 15 | Carte interactive | ✅ terminé — `/carte` : fond configurable (OpenStreetMap sans clé par défaut, Leaflet chargé à la demande), couches immobilier, services, commerces, tourisme, événements et emploi (points du guide annoncés indisponibles : aucune position), marqueurs regroupés selon le zoom, carte et liste synchronisées avec fiche rapide (statut, précision, lien vers la fiche, itinéraire OpenStreetMap vers un point exact seulement), filtres couches et quartier dans l’adresse, « Rechercher dans cette zone » (une requête par demande, 300 éléments au plus), position facultative du niveau 7 ; seules les positions publiques (annonces « quartier seulement » ou « masquées » absentes, approximatives en pointillés) ; repli liste sans carte. Lien depuis l’onglet Carte des quartiers. Reportés : tracé des périmètres à main levée (administration, 22), couche emploi alimentée avec les offres (17) |
 | 16 | Événements | ✅ terminé — `/evenements` : liste groupée par jour (à venir seulement, du plus proche au plus lointain), calendrier mensuel (jours passés grisés), lien vers la carte, filtres aujourd’hui, week-end, semaine, mois, gratuit ou payant, catégorie, quartier ; fiche `/evenements/[slug]` : date et heure, bandeaux « Annulé » (motif) et « Reporté » (date initiale et nouvelle), « Terminé », lieu avec carte et itinéraire, organisateur, contacts publics, billetterie, prix, source et vérification, favoris, fichier d’agenda `.ics`, partage, signalement, messagerie avec l’organisateur ; proposition `/evenements/proposer` soumise à modération (`/admin/evenements`, refus motivé, organisateur notifié) ; « Mes événements » avec report et annulation (restent publiés, motif, favoris prévenus) ; archivage 30 jours après la fin, rappel la veille pour les favoris ; nouvelles catégories formation, communauté, tourisme, autres ; dernières notifications dans le profil. Reportés : centre de notifications et rappels par e-mail (24), photos (18) |
-| 17 | Emploi et opportunités | ⏭️ prochain |
-| 18–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
+| 17 | Emploi et opportunités | ✅ terminé — `/emploi` : offres d’emploi, stages, missions et freelance, demandes d’emploi, formations, appels à prestataires, opportunités ; recherche et filtres contrat, domaine, expérience, date de publication, quartier, télétravail, type d’organisation (dans l’adresse), pagination ; fiche d’offre (fiche d’annonce) avec employeur, date limite, modalités, panneau « Candidater » (candidature interne privée ou lien externe https affiché avec le nom du site), alerte anti-frais, vérification, signalement ; date limite → expiration automatique ; offre close ou expirée : aucune candidature (règle en base) ; publication `/emploi/publier` avec pré-remplissage à partir d’un texte collé (ex. annonce LinkedIn copiée, sans IA ni récupération automatique) et règles contre les formulations discriminatoires, trompeuses ou frauduleuses ; modération `/admin/offres` (refus motivé, auteur notifié) ; espace employeur `/emploi/candidatures` (offres, clôture, décisions notifiées au candidat, aucun tri automatique) ; « Mes candidatures » (suivi, retrait) ; profil candidat privé par défaut (visibilité et partage des coordonnées au choix) et `/emploi/candidats`. Reportés : aide IA à la structuration (18, 26), CV en pièce jointe (18) |
+| 18 | Publication d’annonce avec IA | ⏭️ prochain |
+| 19–28 | Domaines, dashboards, admin, IA, sécurité, tests, déploiement | à faire |
 
 ## Pages et routes
 
@@ -51,6 +52,8 @@
 | `/devis` | Demandes de devis envoyées (statut) et reçues (coordonnées transmises avec accord, statut modifiable) | live (privée) |
 | `/evenements`, `/evenements/[slug]`, `/evenements/[slug]/agenda.ics` | Agenda (liste, calendrier), fiche d’un événement, fichier d’agenda | live |
 | `/evenements/proposer`, `/evenements/mes-evenements`, `/admin/evenements` | Proposition, suivi et report ou annulation par l’organisateur, modération | live (privées) |
+| `/emploi` | Emploi et opportunités : recherche, types, filtres dans l’adresse, pagination | live |
+| `/emploi/publier`, `/emploi/candidatures`, `/emploi/mes-candidatures`, `/emploi/profil-candidat`, `/emploi/candidats`, `/admin/offres` | Publication modérée, espace employeur, suivi des candidatures, profil candidat, profils visibles, modération | live (privées) |
 | `/carte` | Carte interactive : couches, quartier, zone, liste synchronisée, fiche rapide | live |
 | `/quartiers`, `/quartiers/[slug]` | Quartiers : liste neutre, fiche à onglets (contenus rattachés, carte du périmètre validé) | live |
 | `/admin/quartiers`, `/admin/quartiers/[slug]` | Fiches et périmètres des quartiers (équipe locale) | live (privées) |
@@ -78,6 +81,7 @@
 - **Comptes** (`src/modules/accounts`) : schémas Zod, actions serveur, formulaires ; `src/server/auth.ts` (identité vérifiée), `src/server/rate-limit.ts` (anti-abus en base).
 - **Recherche** (`src/modules/search`) : paramètres et adresse canonique, interprétation du langage courant, périodes, position, fonctions SQL `search_*`, chargeurs de cartes par identifiants, recherches enregistrées, statistiques anonymes.
 - **Parcours nouvel arrivant** (`src/modules/newcomer`) : modèle de réponses et passage par l'adresse, règles du plan (17 blocs, 8 au plus), questionnaire client, actions d'enregistrement et de suppression.
+- **Emploi** (`src/modules/jobs`) : attributs et filtres (listes fermées), règles de formulation (discrimination, frais, gains irréalistes), pré-remplissage à partir d’un texte collé, candidatures, profil candidat, publication et modération.
 - **Événements** (`src/modules/events`) : filtres et adresse canonique, calendrier (fonction pure), fichier d’agenda iCalendar, proposition, programme (report, annulation), modération.
 - **Carte** (`src/modules/map`) : couches, adresse canonique (couches, quartier, zone), regroupement des marqueurs (fonction pure), carte et liste synchronisées.
 - **Quartiers** (`src/modules/neighborhoods`) : onglets, avertissements, carte de périmètre (Leaflet GeoJSON), administration des fiches et périmètres.
@@ -97,7 +101,7 @@
 | `npm test` | ✅ 351 tests (domaine, événements : filtres, calendrier, agenda .ics, carte : adresse, zone, regroupement, itinéraire, quartiers : onglets, neutralité, guide : Markdown restreint, liens sûrs, sommaire, statut, ressources, tourisme : itinéraire déterministe, filtres, attributs, commerces : horaires, ouverture, attributs, adresse canonique, référentiel : mots-clés, adresses, arbre, services : besoin → métier, filtres, détails et statuts des devis, immobilier : filtres, langage courant, fraîcheur, règles du plan nouvel arrivant, recherche : adresse, langage courant, périodes, fiche annonce : attributs, similaires, données structurées, catégories, configuration, composants, proxy, délai réseau, SQL statique, alignement des types) |
 | `npm run db:verify` (base réelle, transactions annulées) | ✅ 268/268 |
 | `npm run build` | ✅ |
-| `npm run smoke` | ✅ 43 pages (dont le sitemap avec `/decouvrir`, `/tourisme`, `/commerces`, `/guide`, `/quartiers`, `/carte`, `/evenements`) + scan du bundle navigateur ; adapté à l’absence de base (CI) |
+| `npm run smoke` | ✅ 43 pages (dont le sitemap avec `/decouvrir`, `/tourisme`, `/commerces`, `/guide`, `/quartiers`, `/carte`, `/evenements`, `/emploi`) + scan du bundle navigateur ; adapté à l’absence de base (CI) |
 | `npm run e2e` (Edge, mobile + ordinateur, 2 navigateurs à la fois, 3 comptes de test — dont un administrateur — créés/supprimés automatiquement) | ✅ 181 réussis, 38 ignorés par conception (un test des commerces cassé par le nouvel aperçu des notifications du profil, corrigé et repassé) ; sans base (CI simulée en local, 2026-10-22) : 92 réussis, 128 ignorés |
 | CI GitHub Actions (`TheouaSAAS/Marketplace-SAAS`, sans base) | ✅ verte à chaque push depuis le niveau 8 ; dernier push : 2026-10-22 |
 
@@ -120,4 +124,4 @@ Voir `docs/data-governance.md` (centre de la ville, quartiers, démonstration).
 
 ## Prochaine étape
 
-Niveau 17 — emploi et opportunités : voir `docs/plan-28-niveaux.md`. Réutilisables : catégories `emploi-stages`, `opportunites-commerciales`, `appels-offres` (attributs `emploi`, `opportunite`, `appel_offres`), table `job_applications` (niveau 2, candidatures privées), couche « emploi » de la carte, fiche d’annonce (niveau 8), messagerie, modération.
+Niveau 18 — publication d’annonce avec IA : voir `docs/plan-28-niveaux.md`. Réutilisables : `/publier` et formulaires par schéma d’attributs (niveau 8), pré-remplissage déterministe d’une offre (`parseOfferText`, niveau 17), règles de formulation (`checkOffer`), modération et notification de décision (`notify_listing_moderation`), médias (bucket `media`).

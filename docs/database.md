@@ -144,9 +144,19 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - Tâches planifiées : `archive_past_events` (toutes les heures, archivé 30 jours après la fin), `send_event_reminders` (toutes les 15 minutes, rappel unique dans les 24 h avant le début pour les événements en favori, `event_reminders`).
 - `start_event_conversation` (messagerie avec l’organisateur) ; `my_conversations` et `conversation_header` renvoient `event_title`, `event_slug`. `event_point` : position publique (carte, itinéraire).
 
+## Emploi et opportunités (niveau 17, migrations `20261030000100_jobs.sql` à `…000300_listing_availability.sql`)
+
+- Catégorie `missions-freelance` ajoutée ; une offre (schémas `emploi`, `opportunite`, `appel_offres`, `formation`) n’exige pas de position (`require_listing_location` remplace la contrainte `listings_location_required`) : aucune adresse inventée.
+- `apply_listing_deadline` (`listings_zz_deadline`) : la date limite (`attributes.date_limite`) fixe l’expiration au lendemain ; une date passée est refusée.
+- `validate_job_application` : candidature interne seulement, sur une offre publiée, ouverte, non expirée et dont la date limite n’est pas passée. `protect_job_application` : seul le statut change ; le candidat ne peut que retirer ; l’employeur décide (vue, retenue, non retenue) et le candidat est notifié. `notify_job_application` notifie l’employeur. `received_applications()` : candidatures reçues avec le nom du candidat.
+- `candidate_profiles` : visibilité `private` (défaut), `employers` (comptes professionnels, `is_employer()`) ou `public` ; coordonnées jamais lisibles directement (droits de colonnes) : `my_candidate_contact()` pour soi, `reveal_candidate_contact(uuid)` pour un employeur qui voit le profil et seulement si le candidat partage.
+- `search_jobs` (SECURITY INVOKER) : ville, types, texte, contrat, domaine, expérience, ancienneté, quartier, télétravail, type d’organisation ; offres ouvertes seulement.
+- `notify_listing_moderation` : l’auteur d’une annonce (dont une offre) est notifié de la publication ou du refus motivé.
+- `enforce_content_rules` ignore désormais `availability_status` : clôturer une offre ou marquer un bien indisponible ne renvoie pas en modération.
+
 ## Règles en base (déclencheurs)
 
-`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre d'emploi publiée et ouverte), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
+`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
 
 Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_service_request()`, jamais `is_service_context()` (voir décision D20).
 

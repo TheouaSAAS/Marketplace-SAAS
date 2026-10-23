@@ -158,6 +158,17 @@ begin
   select array_agg(id) into v_ids from public.search_jobs(v_city, v_jobs, 'zqj', p_domain => 'logistique');
   perform pg_temp.record('filtre par domaine', v_ids = array[v_external], v_ids::text);
   perform pg_temp.back();
+
+  -- Clôture par l'employeur : l'offre reste publiée (pas de remise en modération).
+  perform pg_temp.act_as(v_employer);
+  update public.listings set availability_status = 'unavailable' where id = v_external;
+  perform pg_temp.back();
+  perform pg_temp.record('clôturer une offre ne la renvoie pas en modération',
+    (select status = 'published' and availability_status = 'unavailable' from public.listings where id = v_external));
+  perform pg_temp.act_as(v_employer);
+  update public.listings set title = title || ' (modifiée)' where id = v_open;
+  perform pg_temp.back();
+  perform pg_temp.record('modifier le texte d''une offre la renvoie en modération', (select status from public.listings where id = v_open) = 'pending');
 end $$;
 
 select test, ok, detail from results order by n;

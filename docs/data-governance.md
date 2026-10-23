@@ -45,6 +45,10 @@ Pour chaque donnée locale : source (type, référence, URL ou personne), date d
 
 Corriger, vérifier (avec source), dater, publier, archiver, fusionner des doublons, consulter l'historique ; tableau de bord qualité : contenus expirés, sans source, à revalider, signalés.
 
+## Emploi (niveau 17)
+
+Les offres sont déclarées par leurs auteurs et modérées ; elles ne sont pas « vérifiées » tant que l'employeur ne l'est pas. Aucune offre n'est importée automatiquement d'un site tiers. Les candidatures et profils candidats sont des données personnelles privées par défaut (D80) ; les coordonnées d'un candidat ne sont révélées qu'avec son accord.
+
 ## IA
 
 L'IA ne crée aucune donnée locale. Elle ne répond qu'à partir de contenus `verified` (ou, si le contexte l'autorise explicitement, `pending_validation` signalés comme tels), cite ses sources internes et répond « je ne dispose pas d'information vérifiée » en l'absence de source.

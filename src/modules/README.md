@@ -28,7 +28,7 @@ Le socle partagé reste hors des modules : `src/components/ui` (design system), 
 | `neighborhoods` | 14 | fiches neutres, onglets de ressources rattachées, périmètres (brouillon, validation, historique), administration |
 | `map` | 15 | couches, filtres dans l’adresse, regroupement des marqueurs, carte et liste synchronisées, fiche rapide |
 | `events` | 16 | agenda (liste, calendrier, carte), fiche, report et annulation, proposition et modération, fichier d’agenda |
-| `jobs` | 17 | emploi et opportunités |
+| `jobs` | 17 | offres et filtres, règles de formulation, pré-remplissage d’un texte collé, candidatures, profil candidat, publication et modération |
 | `newcomer` | 6 | parcours « Nouveau à San Pedro ? » |
 | `search` | 7 | recherche transversale |
 | `messaging` | 8 | conversations |

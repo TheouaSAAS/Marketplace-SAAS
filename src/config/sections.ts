@@ -31,18 +31,6 @@ export const SECTION_PREVIEWS = {
     categories: ["immobilier", "emploi-stages", "annonces-biens", "vehicules", "opportunites-commerciales", "formation"],
     related: ["realEstate", "jobs", "publish", "newcomer"],
   },
-  jobs: {
-    title: "Emploi et opportunités",
-    intro: "Offres d’emploi, stages, missions, formations et appels à prestataires à San Pedro.",
-    upcoming: [
-      "Filtres : contrat, domaine, expérience, date limite",
-      "Candidature interne avec données privées par défaut",
-      "Offres closes ou expirées signalées et fermées aux candidatures",
-    ],
-    parent: "listings",
-    categories: ["emploi-stages", "opportunites-commerciales", "formation", "appels-offres"],
-    related: ["listings", "directory"],
-  },
   publish: {
     title: "Publier une annonce",
     intro: "Publiez gratuitement une annonce, vérifiée par l’équipe de modération avant sa mise en ligne.",

@@ -1,3 +1,4 @@
+import { APPLY_MODES, CONTRACTS, DOMAINS, EXPERIENCE, ORGANIZATIONS, REMOTE } from "@/modules/jobs/domain/attributes";
 import { EQUIPMENTS } from "@/modules/real-estate/domain/modes";
 
 /**
@@ -48,16 +49,14 @@ export const ATTRIBUTE_SCHEMAS: Record<string, Record<string, AttributeDefinitio
     equipements: { label: "Équipements déclarés", type: { kind: "list", options: EQUIPMENTS } },
   },
   emploi: {
-    contrat: {
-      label: "Contrat",
-      type: {
-        kind: "choice",
-        options: { cdi: "CDI", cdd: "CDD", stage: "Stage", interim: "Intérim", freelance: "Indépendant", temps_partiel: "Temps partiel" },
-      },
-    },
+    contrat: { label: "Contrat", type: { kind: "choice", options: CONTRACTS } },
+    domaine: { label: "Domaine", type: { kind: "choice", options: DOMAINS } },
     secteur: { label: "Secteur", type: { kind: "text" } },
-    experience: { label: "Expérience demandée", type: { kind: "text" } },
+    experience: { label: "Expérience demandée", type: { kind: "choice", options: EXPERIENCE } },
+    teletravail: { label: "Lieu de travail", type: { kind: "choice", options: REMOTE } },
+    organisation: { label: "Type d’organisation", type: { kind: "choice", options: ORGANIZATIONS } },
     date_limite: { label: "Date limite de candidature", type: { kind: "date" } },
+    candidature: { label: "Candidature", type: { kind: "choice", options: APPLY_MODES } },
   },
   vehicule: {
     marque: { label: "Marque", type: { kind: "text" } },

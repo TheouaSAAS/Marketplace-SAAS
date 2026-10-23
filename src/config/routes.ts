@@ -37,7 +37,13 @@ export const ROUTES = {
   realEstateMode: { path: "/immobilier/[mode]", label: "Recherche immobilière", level: 9, status: "live" },
   realEstateCompare: { path: "/immobilier/comparer", label: "Comparer des biens", level: 9, status: "live", private: true },
   realEstateAdvice: { path: "/immobilier/conseils", label: "Conseils pour se loger", level: 9, status: "live" },
-  jobs: { path: "/emploi", label: "Emploi et opportunités", level: 17, status: "preview" },
+  jobs: { path: "/emploi", label: "Emploi et opportunités", level: 17, status: "live" },
+  publishJob: { path: "/emploi/publier", label: "Publier une offre", level: 17, status: "live", private: true },
+  myApplications: { path: "/emploi/mes-candidatures", label: "Mes candidatures", level: 17, status: "live", private: true },
+  receivedApplications: { path: "/emploi/candidatures", label: "Mes offres et candidatures reçues", level: 17, status: "live", private: true },
+  candidateProfile: { path: "/emploi/profil-candidat", label: "Mon profil candidat", level: 17, status: "live", private: true },
+  candidates: { path: "/emploi/candidats", label: "Profils candidats", level: 17, status: "live", private: true },
+  adminJobs: { path: "/admin/offres", label: "Offres à modérer", level: 17, status: "live", private: true },
   publish: { path: "/publier", label: "Publier une annonce", level: 18, status: "preview" },
 
   // Services & professionnels

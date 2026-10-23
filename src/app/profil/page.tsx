@@ -138,6 +138,11 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
             Modérer les événements
           </ButtonLink>
         )}
+        {isStaff(account.role) && (
+          <ButtonLink href={href("adminJobs")} variant="secondary">
+            Modérer les offres d’emploi
+          </ButtonLink>
+        )}
         {isCurator(account.role) && (
           <ButtonLink href={href("adminNeighborhoods")} variant="secondary">
             Gérer les quartiers et leurs périmètres

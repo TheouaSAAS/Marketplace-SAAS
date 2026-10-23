@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Package } from "lucide-react";
 import { href } from "@/config/routes";
 import { Alert } from "@/components/ui/feedback";
@@ -8,6 +9,7 @@ import { displayAttributes } from "../domain/attributes";
 import { listingState, STATE_NOTICES, type ContactChannel } from "../domain/presentation";
 import type { LoadedListing } from "../server/page-data";
 import { listingCategoryHref, listingJsonLd, listingUrl } from "../server/seo";
+import { JobApplyPanel } from "@/modules/jobs/components/apply-panel";
 import { RealEstateNotice } from "@/modules/real-estate/components/real-estate-notice";
 import { ListingAside } from "./listing-aside";
 import { ListingHeader } from "./listing-header";
@@ -15,6 +17,8 @@ import { ListingJsonLd } from "./listing-json-ld";
 import { ListingLocation } from "./listing-location";
 import { CommentsSection, OwnerListings, SimilarListings } from "./listing-sections";
 import { ListingAttributes, ListingDescription } from "./listing-text";
+
+const POSITIONLESS = ["emploi", "opportunite", "appel_offres", "formation"];
 
 export function ListingView({ data }: { data: LoadedListing }) {
   const { listing, isPublic, userId, seller, point, engagement, comments, favorite, similar, others } = data;
@@ -61,14 +65,30 @@ export function ListingView({ data }: { data: LoadedListing }) {
             <p className="mt-1 text-xs text-ink-subtle">Pas encore de photo : l’ajout de photos arrive avec la publication d’annonces.</p>
           </div>
           <ListingDescription text={listing.description} />
+          {listing.category?.attribute_schema === "emploi" && (
+            <Suspense fallback={null}>
+              <JobApplyPanel
+                listingId={listing.id}
+                attributes={listing.attributes as Record<string, unknown>}
+                active={isPublic && state === "active"}
+                isOwner={isOwner}
+                userId={userId}
+                back={back}
+                now={now}
+              />
+            </Suspense>
+          )}
           <ListingAttributes items={displayAttributes(listing.category?.attribute_schema, listing.attributes)} />
-          <ListingLocation
-            precision={listing.public_location_precision}
-            point={point}
-            neighborhood={listing.neighborhood?.name ?? null}
-            city={listing.city?.name ?? ""}
-            mapEnabled={isFeatureEnabled("map")}
-          />
+          {/* Offres, opportunités et formations peuvent n'avoir aucune position : rien n'est affiché plutôt qu'une zone fictive. */}
+          {(point || !POSITIONLESS.includes(listing.category?.attribute_schema ?? "")) && (
+            <ListingLocation
+              precision={listing.public_location_precision}
+              point={point}
+              neighborhood={listing.neighborhood?.name ?? null}
+              city={listing.city?.name ?? ""}
+              mapEnabled={isFeatureEnabled("map")}
+            />
+          )}
         </div>
         <ListingAside
           listingId={listing.id}

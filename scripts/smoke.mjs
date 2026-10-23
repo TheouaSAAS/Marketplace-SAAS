@@ -38,9 +38,9 @@ const PAGES = [
   {
     path: "/sitemap.xml",
     status: 200,
-    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces", "/guide", "/quartiers", "/carte", "/evenements"],
+    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces", "/guide", "/quartiers", "/carte", "/evenements", "/emploi"],
     // Ni pages privées, ni rubriques en préparation (contenu encore mince).
-    excludes: ["/design-system", "/admin", "/interne", "/emploi", "/annonces", "/profil", "/hors-ligne", "/tourisme/itineraire?"],
+    excludes: ["/design-system", "/admin", "/interne", "/publier", "/annonces", "/profil", "/hors-ligne", "/tourisme/itineraire?"],
   },
   { path: "/annonces", status: 200, includes: ["En préparation", "noindex"] },
   { path: "/immobilier", status: 200, includes: ["Immobilier à San Pedro", "Logements à louer", "Locations de courte durée"], excludes: ["En préparation"] },

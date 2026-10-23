@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 
 const SECTIONS: [string, string][] = [
   ["/annonces", "Annonces et opportunités"],
-  ["/emploi", "Emploi et opportunités"],
   ["/professionnels", "Professionnels et entreprises"],
   ["/publier", "Publier une annonce"],
   ["/offres", "Offres pour les professionnels"],
@@ -23,10 +22,10 @@ test.describe("Shell — rubriques", () => {
 
   test("une rubrique présente ses catégories réelles et la catégorie choisie", async ({ page }) => {
     test.skip(!process.env.NEXT_PUBLIC_SUPABASE_URL, "Supabase non configuré");
-    await page.goto("/emploi");
-    await page.getByRole("link", { name: "Stages", exact: true }).click();
-    await expect(page).toHaveURL(/\/emploi\?categorie=stages$/);
-    await expect(page.getByText("Catégorie : Stages")).toBeVisible();
+    await page.goto("/annonces");
+    await page.getByRole("link", { name: "Voitures", exact: true }).click();
+    await expect(page).toHaveURL(/\/annonces\?categorie=voitures$/);
+    await expect(page.getByText("Catégorie : Voitures")).toBeVisible();
   });
 
   test("les pages d'aide et de confiance sont complètes et indexables", async ({ page }) => {
