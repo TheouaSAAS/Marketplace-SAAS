@@ -86,6 +86,7 @@ test.describe("Événements", () => {
       await expect(mine.getByText("En attente")).toBeVisible();
 
       const moderator = await asUser(browser, "E2E_ADMIN");
+      await moderator.goto("/admin");
       await moderator.getByRole("link", { name: "Modérer les événements" }).click();
       const pending = moderator.getByRole("listitem").filter({ hasText: title });
       await pending.getByRole("button", { name: "Publier" }).click();

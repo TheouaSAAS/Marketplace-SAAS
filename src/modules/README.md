@@ -22,7 +22,7 @@ Le socle partagé reste hors des modules : `src/components/ui` (design system), 
 | `real-estate` | 9 | spécialisation immobilière des annonces |
 | `services` | 10 | métiers, prestataires, demandes de devis |
 | `shops` | 11 | vitrines de commerces, horaires sourcés, revendications, sponsorisés |
-| `admin` | 10, 22 | référentiel des catégories (puis administration complète) |
+| `admin` | 10, 22 | référentiel des catégories et back-office : outils par rôle, signalements, comptes, journal, qualité, doublons, sources, mises en avant |
 | `tourism` | 12 | entrées « Découvrir », exploration filtrable, itinéraires déterministes, infos pratiques |
 | `guide` | 13 | rubriques, articles (Markdown restreint, sommaire, statut, versions), suggestions, rédaction, ressources liées, préparation de l’assistant |
 | `neighborhoods` | 14 | fiches neutres, onglets de ressources rattachées, périmètres (brouillon, validation, historique), administration |

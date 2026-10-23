@@ -185,9 +185,20 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `validate_listing_business` : rattacher une annonce à une page exige de la gérer.
 - `pro_listings`, `pro_events` (membres, tous statuts, avec statistiques par annonce), `pro_stats` (agrégats uniquement), `pro_moderation_history` (changements de statut de la page et de ses annonces, motif des refus).
 
+## Back-office (niveau 22, migrations `20261104000100_back_office.sql` à `…000300_admin_set_account_defaults.sql`)
+
+- `audit_account_change` (déclencheurs `profiles_audit`, `organizations_audit`) : tout changement de rôle ou de suspension est inscrit au journal `admin_audit_log` (auteur, raison transmise par `app.change_reason`, avant, après), quel que soit le chemin.
+- Historique (`record_revision`) étendu à `reviews`, `listing_comments`, `sponsored_campaigns`, `place_claims`, `business_verification_requests` et aux décisions sur `reports`.
+- Comptes : `admin_accounts` (recherche, adresse e-mail lue dans `auth.users`), `admin_set_account` (droits de l’appelant : `protect_profile_privileges` s’applique ; raison obligatoire ; jamais son propre compte), `admin_organizations`, `admin_set_organization` — administrateurs seulement.
+- Signalements : `admin_reports` (contenu visé, compte responsable, nombre de signalements ouverts), `handle_report` (examen, sans suite, traité, suspension : contenu refusé avec motif ou masqué, auteur notifié en catégorie `moderation`, signalements du même contenu clos, journal) — équipe de modération.
+- Tableau de bord : `admin_overview` (volumes), `quality_items` (expirées, sans source, à revalider, signalées), paramètre `verification.revalidate_months` (12) lu par `revalidation_threshold()`.
+- Journal : `admin_audit_entries` (administrateurs), `admin_revisions` (équipe), avec le nom de l’auteur.
+- Doublons : colonne `places.merged_into`, index trigramme sur le nom, `place_duplicates` et `merge_places` (éditeurs locaux ; doublon archivé, jamais supprimé).
+- Mises en avant : `admin_set_campaign_status` (pause, arrêt, refus ; activation impossible sans paiement).
+
 ## Règles en base (déclencheurs)
 
-`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `filter_muted_notification` (catégories coupées), `protect_contact_request` (statut seul), `validate_listing_business` (annonce au nom d’une page), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), versionnement du guide, `set_contact_request_recipient`.
+`enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `filter_muted_notification` (catégories coupées), `protect_contact_request` (statut seul), `validate_listing_business` (annonce au nom d’une page), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), `audit_account_change` (journal des rôles et suspensions), versionnement du guide, `set_contact_request_recipient`.
 
 Dans une fonction `SECURITY DEFINER`, tester le contexte système avec `is_service_request()`, jamais `is_service_context()` (voir décision D20).
 

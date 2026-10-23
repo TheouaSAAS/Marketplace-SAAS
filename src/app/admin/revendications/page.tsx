@@ -86,7 +86,7 @@ async function ClaimsContent({ searchParams }: Pick<PageProps<"/admin/revendicat
 export default function PlaceClaimsPage({ searchParams }: PageProps<"/admin/revendications">) {
   return (
     <Container className="flex max-w-4xl flex-col gap-6 py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Revendications" }]} />
+      <Breadcrumbs items={[{ label: "Administration", href: href("admin") }, { label: "Revendications" }]} />
       <h1 className="text-3xl font-extrabold">Revendications de vitrines et de pages professionnelles</h1>
       <Suspense fallback={<Skeleton className="h-64 w-full" />}>
         <ClaimsContent searchParams={searchParams} />

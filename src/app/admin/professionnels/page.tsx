@@ -142,7 +142,7 @@ async function Queues({ searchParams }: { searchParams: Promise<Raw> }) {
 export default function AdminProsPage({ searchParams }: PageProps<"/admin/professionnels">) {
   return (
     <Container className="flex max-w-4xl flex-col gap-6 py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Pages professionnelles" }]} />
+      <Breadcrumbs items={[{ label: "Administration", href: href("admin") }, { label: "Pages professionnelles" }]} />
       <h1 className="text-3xl font-extrabold">Pages professionnelles : modération et vérification</h1>
       <Suspense fallback={<Skeleton className="h-64 w-full" />}>
         <Queues searchParams={searchParams} />

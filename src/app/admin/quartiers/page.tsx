@@ -61,7 +61,7 @@ async function NeighborhoodsAdmin() {
 export default function AdminNeighborhoodsPage() {
   return (
     <Container className="flex max-w-4xl flex-col gap-6 py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Quartiers" }]} />
+      <Breadcrumbs items={[{ label: "Administration", href: href("admin") }, { label: "Quartiers" }]} />
       <h1 className="text-3xl font-extrabold">Quartiers : fiches et périmètres</h1>
       <p className="max-w-2xl text-sm text-ink-muted">
         Chaque modification est historisée avec sa note ; un périmètre n’est publié qu’après validation d’un brouillon, et l’ancien reste consultable.

@@ -70,6 +70,7 @@ test.describe("Guide pratique", () => {
     const slug = `e2e-${randomBytes(4).toString("hex")}`;
     try {
       const editor = await asUser(browser, "E2E_ADMIN");
+      await editor.goto("/admin");
       await editor.getByRole("link", { name: "Rédiger le guide pratique" }).click();
       await editor.getByRole("link", { name: "Nouvel article" }).click();
       await editor.getByLabel("Rubrique", { exact: true }).filter({ visible: true }).selectOption({ label: "S’installer" });

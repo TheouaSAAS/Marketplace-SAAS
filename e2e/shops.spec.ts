@@ -101,6 +101,7 @@ test.describe("Commerces", () => {
       await expect(owner.getByText("Demande en cours d’examen")).toBeVisible({ timeout: NETWORK });
 
       const admin = await asUser(browser, "E2E_ADMIN");
+      await admin.goto("/admin");
       await admin.getByRole("link", { name: "Examiner les revendications (vitrines, pages pro)" }).click();
       const claim = admin.getByRole("listitem").filter({ hasText: "Test automatique : je gère cette quincaillerie" });
       await expect(claim).toBeVisible({ timeout: NETWORK });

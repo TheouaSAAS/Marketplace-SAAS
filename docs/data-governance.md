@@ -45,6 +45,8 @@ Pour chaque donnée locale : source (type, référence, URL ou personne), date d
 
 Corriger, vérifier (avec source), dater, publier, archiver, fusionner des doublons, consulter l'historique ; tableau de bord qualité : contenus expirés, sans source, à revalider, signalés.
 
+Livré : `/admin` et ses outils (voir `docs/build-state.md`). Une donnée vérifiée est « à revalider » après 12 mois (paramètre `verification.revalidate_months`). Le journal et l'historique contiennent l'état complet des contenus, coordonnées comprises : ils ne sont lisibles que par l'équipe (historique) et les administrateurs (journal des actions sensibles). L'adresse e-mail d'un compte n'est visible que des administrateurs, dans la recherche de comptes. Les signalements n'affichent jamais l'identité de leur auteur.
+
 ## Emploi (niveau 17)
 
 Les offres sont déclarées par leurs auteurs et modérées ; elles ne sont pas « vérifiées » tant que l'employeur ne l'est pas. Aucune offre n'est importée automatiquement d'un site tiers. Les candidatures et profils candidats sont des données personnelles privées par défaut (D80) ; les coordonnées d'un candidat ne sont révélées qu'avec son accord.

@@ -93,7 +93,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
 export default function AdminJobsPage({ searchParams }: PageProps<"/admin/offres">) {
   return (
     <Container className="flex max-w-4xl flex-col gap-6 py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Offres à modérer" }]} />
+      <Breadcrumbs items={[{ label: "Administration", href: href("admin") }, { label: "Offres à modérer" }]} />
       <h1 className="text-3xl font-extrabold">Offres à modérer</h1>
       <Suspense fallback={<Skeleton className="h-64 w-full" />}>
         <Queue searchParams={searchParams} />

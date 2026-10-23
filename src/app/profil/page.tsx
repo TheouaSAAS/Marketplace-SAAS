@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { href, ROUTES } from "@/config/routes";
-import { isAdmin, isCurator, isStaff, ROLE_LABELS } from "@/domain/roles";
+import { ROLE_LABELS } from "@/domain/roles";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
+import { sectionsFor } from "@/modules/admin/domain/back-office";
 import { CLAIM_STATUSES } from "@/modules/shops/domain/claims";
 import { listMyClaims } from "@/modules/shops/server/claims";
 import { listRecentNotifications } from "@/modules/accounts/server/notifications";
@@ -123,50 +124,8 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
         {!["user", "professional"].includes(account.role) && (
           <p className="text-sm text-ink-muted">Compte d’équipe : le type est géré par l’administration.</p>
         )}
-        {isAdmin(account.role) && (
-          <ButtonLink href={href("adminCategories")} variant="secondary">
-            Gérer les catégories et métiers
-          </ButtonLink>
-        )}
-        {isCurator(account.role) && (
-          <ButtonLink href={href("placeClaims")} variant="secondary">
-            Examiner les revendications (vitrines, pages pro)
-          </ButtonLink>
-        )}
-        {isCurator(account.role) && (
-          <ButtonLink href={href("adminGuide")} variant="secondary">
-            Rédiger le guide pratique
-          </ButtonLink>
-        )}
-        {isStaff(account.role) && (
-          <ButtonLink href={href("adminEvents")} variant="secondary">
-            Modérer les événements
-          </ButtonLink>
-        )}
-        {(isStaff(account.role) || isCurator(account.role)) && (
-          <ButtonLink href={href("adminPros")} variant="secondary">
-            Modérer et vérifier les pages pro
-          </ButtonLink>
-        )}
-        {isStaff(account.role) && (
-          <ButtonLink href={href("adminReviews")} variant="secondary">
-            Modérer les avis
-          </ButtonLink>
-        )}
-        {isStaff(account.role) && (
-          <ButtonLink href={href("adminListings")} variant="secondary">
-            Modérer les annonces
-          </ButtonLink>
-        )}
-        {isStaff(account.role) && (
-          <ButtonLink href={href("adminJobs")} variant="secondary">
-            Modérer les offres d’emploi
-          </ButtonLink>
-        )}
-        {isCurator(account.role) && (
-          <ButtonLink href={href("adminNeighborhoods")} variant="secondary">
-            Gérer les quartiers et leurs périmètres
-          </ButtonLink>
+        {sectionsFor(account.role).length > 0 && (
+          <ButtonLink href={href("admin")}>Ouvrir l’administration</ButtonLink>
         )}
       </Section>
 

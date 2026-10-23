@@ -64,6 +64,7 @@ test.describe("Quartiers", () => {
       await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(process.env.E2E_ADMIN_PASSWORD!);
       await page.getByRole("button", { name: "Se connecter" }).click();
       await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
+      await page.goto("/admin");
       await page.getByRole("link", { name: "Gérer les quartiers et leurs périmètres" }).click();
       await page.getByRole("link", { name: "Zone industrielle" }).click();
 

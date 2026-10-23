@@ -93,7 +93,7 @@ async function CategoriesContent() {
 export default function AdminCategoriesPage() {
   return (
     <Container className="flex max-w-4xl flex-col gap-6 py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Catégories" }]} />
+      <Breadcrumbs items={[{ label: "Administration", href: href("admin") }, { label: "Catégories" }]} />
       <h1 className="text-3xl font-extrabold">Catégories</h1>
       <Suspense fallback={<Skeleton className="h-96 w-full" />}>
         <CategoriesContent />

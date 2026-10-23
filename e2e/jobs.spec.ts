@@ -82,6 +82,7 @@ test.describe("Emploi et opportunités", () => {
       await expect(mine.getByText("En attente")).toBeVisible();
 
       const moderator = await asUser(browser, "E2E_ADMIN");
+      await moderator.goto("/admin");
       await moderator.getByRole("link", { name: "Modérer les offres d’emploi" }).click();
       await moderator.getByRole("listitem").filter({ hasText: title }).getByRole("button", { name: "Publier" }).click();
       await expect(moderator.getByText("Offre publiée : son auteur est notifié.")).toBeVisible({ timeout: NETWORK });

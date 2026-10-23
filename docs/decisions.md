@@ -299,5 +299,20 @@ Depuis l'espace, une annonce ou une offre se publie au nom de la page : elle est
 ## D99 — Offres présentées, rien à payer
 `/offres` et l'espace affichent les offres du référentiel, avec la mention explicite qu'aucun paiement n'est ouvert ni demandé tant que le drapeau `payments` (prestataire configuré) est inactif. Rien ne s'achète, la page reste gratuite et complète.
 
+## D100 — Un back-office par rôle, des droits garantis par la base
+`/admin` n'affiche que les outils du rôle. Modérateur : files de contenus et signalements, sans comptes, référentiel, doublons ni journal des actions sensibles. Éditeur local : données locales (qualité, doublons, sources, guide, quartiers, revendications), sans signalements. Administrateur : tout, sauf attribuer un rôle d'administration (superadministrateur). Chaque fonction SQL revérifie le rôle ; l'interface ne fait que masquer.
+
+## D101 — Suspendre, c'est refuser avec motif
+Pas de nouveau statut : un contenu suspendu après signalement passe en « refusé » avec le motif (annonce, lieu, événement, page) ou est masqué (commentaire, avis). Il disparaît aussitôt, son auteur reçoit le motif par une notification non désactivable et peut corriger puis resoumettre ; le cycle de publication reste le même. Un article du guide se retire depuis la rédaction ; un message privé conduit à sanctionner le compte.
+
+## D102 — Journal obligatoire et alimenté par la base
+Les changements de rôle et de suspension sont journalisés par un déclencheur, même hors du back-office. Toute décision sensible (sanction, signalement, fusion, campagne) exige une raison d'au moins 5 caractères et enregistre l'auteur, la date, l'avant et l'après. L'historique des contenus montre les champs modifiés, sans les champs techniques.
+
+## D103 — Fusionner sans supprimer
+Une fusion de lieux archive le doublon, le relie à la fiche conservée (`merged_into`) et y rattache favoris, « j'aime », avis (sauf auteur déjà présent) et événements ; ses signalements ouverts sont clos. Rien n'est supprimé, tout reste dans l'historique.
+
+## D104 — L'IA ne décide pas dans le back-office
+Les champs proposés par l'IA restent signalés dans la file des annonces et comptés au tableau de bord ; aucune décision n'est automatique. L'assistant d'administration (suggestions) est livré avec la couche IA (niveau 23).
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

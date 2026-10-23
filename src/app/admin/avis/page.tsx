@@ -80,7 +80,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
 export default function AdminReviewsPage({ searchParams }: PageProps<"/admin/avis">) {
   return (
     <Container className="flex max-w-4xl flex-col gap-6 py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Avis à modérer" }]} />
+      <Breadcrumbs items={[{ label: "Administration", href: href("admin") }, { label: "Avis à modérer" }]} />
       <h1 className="text-3xl font-extrabold">Avis à modérer</h1>
       <Suspense fallback={<Skeleton className="h-64 w-full" />}>
         <Queue searchParams={searchParams} />

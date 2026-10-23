@@ -109,7 +109,14 @@ export const ROUTES = {
   proStats: { path: "/espace-pro/[id]/statistiques", label: "Statistiques", level: 21, status: "live", private: true },
   proModeration: { path: "/espace-pro/[id]/verification", label: "Vérification et modération", level: 21, status: "live", private: true },
   proOffers: { path: "/espace-pro/[id]/offres", label: "Visibilité et offres", level: 21, status: "live", private: true },
-  admin: { path: "/admin", label: "Administration", level: 22, status: "planned", private: true },
+  admin: { path: "/admin", label: "Administration", level: 22, status: "live", private: true },
+  adminReports: { path: "/admin/signalements", label: "Signalements", level: 22, status: "live", private: true },
+  adminAccounts: { path: "/admin/comptes", label: "Comptes et organisations", level: 22, status: "live", private: true },
+  adminAudit: { path: "/admin/journal", label: "Journal et historique", level: 22, status: "live", private: true },
+  adminQuality: { path: "/admin/qualite", label: "Qualité des données", level: 22, status: "live", private: true },
+  adminDuplicates: { path: "/admin/doublons", label: "Doublons de lieux", level: 22, status: "live", private: true },
+  adminSources: { path: "/admin/sources", label: "Sources", level: 22, status: "live", private: true },
+  adminPromotions: { path: "/admin/mises-en-avant", label: "Mises en avant et abonnements", level: 22, status: "live", private: true },
   adminCategories: { path: "/admin/categories", label: "Catégories", level: 10, status: "live", private: true },
 
   // Aide, confiance et informations

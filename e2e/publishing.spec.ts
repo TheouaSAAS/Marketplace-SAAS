@@ -110,6 +110,7 @@ test.describe("Publication d'une annonce", () => {
 
       // Modération : publication, photos rendues publiques.
       const moderator = await asUser(browser, "E2E_ADMIN");
+      await moderator.goto("/admin");
       await moderator.getByRole("link", { name: "Modérer les annonces" }).click();
       const pending = moderator.getByRole("listitem").filter({ hasText: title }).first();
       await expect(pending.getByText(/Champs validés par l’auteur depuis l’assistant/)).toBeVisible();

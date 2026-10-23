@@ -65,6 +65,6 @@ describe("statuts", () => {
     expect(hasPage("home")).toBe(true);
     expect(isLive("listings")).toBe(false);
     expect(hasPage("listings")).toBe(true);
-    expect(hasPage("admin")).toBe(false);
+    expect(hasPage("city")).toBe(false);
   });
 });

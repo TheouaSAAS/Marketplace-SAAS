@@ -33,6 +33,7 @@ test.describe("Administration du référentiel", () => {
     await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(password!);
     await page.getByRole("button", { name: "Se connecter" }).click();
     await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
+    await page.goto("/admin");
     await page.getByRole("link", { name: "Gérer les catégories et métiers" }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catégories");
 

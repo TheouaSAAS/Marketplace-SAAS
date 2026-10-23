@@ -119,6 +119,7 @@ test.describe("Pages professionnelles", () => {
       await pro.getByRole("button", { name: "Soumettre à la modération" }).click();
       await expect(pro).toHaveURL(/\/mes-pages-pro\?soumise=1$/, { timeout: NETWORK });
       const moderator = await asUser(browser, "E2E_ADMIN");
+      await moderator.goto("/admin");
       await moderator.getByRole("link", { name: "Modérer et vérifier les pages pro" }).click();
       await moderator.getByRole("listitem").filter({ hasText: name }).first().getByRole("button", { name: "Publier" }).click();
       await expect(moderator.getByText("Page publiée : ses photos sont en ligne et le professionnel est notifié.")).toBeVisible({ timeout: NETWORK });

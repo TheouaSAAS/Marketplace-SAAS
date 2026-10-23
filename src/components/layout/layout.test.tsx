@@ -27,7 +27,7 @@ describe("NavItemLink", () => {
   });
 
   it("n'offre jamais de lien vers une page absente", () => {
-    render(<NavItemLink link={{ label: "Administration", route: "admin" }} />);
+    render(<NavItemLink link={{ label: "Pages de ville", route: "city" }} />);
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(screen.getByText("Bientôt")).toBeInTheDocument();
   });

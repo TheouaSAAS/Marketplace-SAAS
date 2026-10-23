@@ -2701,6 +2701,7 @@ export type Database = {
           location: unknown
           location_precision: Database["public"]["Enums"]["location_precision"]
           manager_id: string | null
+          merged_into: string | null
           name: string
           neighborhood_id: string | null
           opening_hours: Json | null
@@ -2747,6 +2748,7 @@ export type Database = {
           location?: unknown
           location_precision?: Database["public"]["Enums"]["location_precision"]
           manager_id?: string | null
+          merged_into?: string | null
           name: string
           neighborhood_id?: string | null
           opening_hours?: Json | null
@@ -2793,6 +2795,7 @@ export type Database = {
           location?: unknown
           location_precision?: Database["public"]["Enums"]["location_precision"]
           manager_id?: string | null
+          merged_into?: string | null
           name?: string
           neighborhood_id?: string | null
           opening_hours?: Json | null
@@ -2854,6 +2857,13 @@ export type Database = {
             columns: ["manager_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "places_merged_into_fkey"
+            columns: ["merged_into"]
+            isOneToOne: false
+            referencedRelation: "places"
             referencedColumns: ["id"]
           },
           {
@@ -3649,6 +3659,110 @@ export type Database = {
         Returns: string
       }
       account_can_review: { Args: { p_user: string }; Returns: boolean }
+      admin_accounts: {
+        Args: {
+          p_query?: string
+          p_role?: Database["public"]["Enums"]["user_role"]
+          p_suspended?: boolean
+        }
+        Returns: {
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          is_suspended: boolean
+          last_sign_in_at: string
+          listings: number
+          organizations: number
+          reports_against: number
+          role: Database["public"]["Enums"]["user_role"]
+        }[]
+      }
+      admin_audit_entries: {
+        Args: { p_action?: string; p_limit?: number }
+        Returns: {
+          action: string
+          actor_id: string
+          actor_name: string
+          created_at: string
+          details: Json
+          entity_id: string
+          entity_type: string
+          id: number
+        }[]
+      }
+      admin_organizations: {
+        Args: { p_query?: string }
+        Returns: {
+          created_at: string
+          id: string
+          is_suspended: boolean
+          kind: Database["public"]["Enums"]["organization_kind"]
+          listings: number
+          members: number
+          name: string
+          pages: number
+          slug: string
+        }[]
+      }
+      admin_overview: { Args: never; Returns: Json }
+      admin_reports: {
+        Args: { p_open?: boolean }
+        Returns: {
+          created_at: string
+          details: string
+          handled_at: string
+          id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          resolution_note: string
+          status: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_owner: string
+          target_parent_slug: string
+          target_parent_type: string
+          target_reports: number
+          target_slug: string
+          target_status: string
+          target_title: string
+          target_type: string
+        }[]
+      }
+      admin_revisions: {
+        Args: { p_entity_id?: string; p_entity_type?: string; p_limit?: number }
+        Returns: {
+          action: Database["public"]["Enums"]["revision_action"]
+          after: Json
+          author_name: string
+          before: Json
+          changed_at: string
+          changed_by: string
+          entity_id: string
+          entity_type: string
+          id: number
+          reason: string
+        }[]
+      }
+      admin_set_account: {
+        Args: {
+          p_reason?: string
+          p_role?: Database["public"]["Enums"]["user_role"]
+          p_suspended?: boolean
+          p_user: string
+        }
+        Returns: undefined
+      }
+      admin_set_campaign_status: {
+        Args: {
+          p_campaign: string
+          p_reason: string
+          p_status: Database["public"]["Enums"]["campaign_status"]
+        }
+        Returns: undefined
+      }
+      admin_set_organization: {
+        Args: { p_organization: string; p_reason: string; p_suspended: boolean }
+        Returns: undefined
+      }
       ai_month_cost: { Args: never; Returns: number }
       archive_past_events: { Args: never; Returns: number }
       attr_bool: {
@@ -3813,6 +3927,10 @@ export type Database = {
           created_at: string
           version: number
         }[]
+      }
+      handle_report: {
+        Args: { p_decision: string; p_note?: string; p_report: string }
+        Returns: undefined
       }
       immutable_unaccent: { Args: { input: string }; Returns: string }
       is_admin: { Args: never; Returns: boolean }
@@ -3981,6 +4099,10 @@ export type Database = {
           show_public_name: boolean
         }[]
       }
+      merge_places: {
+        Args: { p_duplicate: string; p_keep: string; p_reason: string }
+        Returns: Json
+      }
       my_candidate_contact: {
         Args: never
         Returns: {
@@ -4086,6 +4208,22 @@ export type Database = {
           user_id: string
         }[]
       }
+      place_duplicates: {
+        Args: never
+        Returns: {
+          a_id: string
+          a_name: string
+          a_slug: string
+          a_status: string
+          b_id: string
+          b_name: string
+          b_slug: string
+          b_status: string
+          distance_m: number
+          same_phone: boolean
+          similarity: number
+        }[]
+      }
       place_engagement: {
         Args: { p_place: string }
         Returns: {
@@ -4171,6 +4309,19 @@ export type Database = {
         Returns: string
       }
       purge_rate_limits: { Args: never; Returns: number }
+      quality_items: {
+        Args: { p_kind: string }
+        Returns: {
+          detail: string
+          entity_id: string
+          entity_type: string
+          since: string
+          slug: string
+          status: string
+          title: string
+          verification_status: string
+        }[]
+      }
       received_applications: {
         Args: never
         Returns: {
@@ -4215,6 +4366,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      revalidation_threshold: { Args: never; Returns: string }
       reveal_candidate_contact: {
         Args: { p_user: string }
         Returns: {

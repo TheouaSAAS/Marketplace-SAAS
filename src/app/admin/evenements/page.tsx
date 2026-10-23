@@ -71,7 +71,7 @@ async function ModerationQueue({ searchParams }: { searchParams: Promise<Raw> })
 export default function AdminEventsPage({ searchParams }: PageProps<"/admin/evenements">) {
   return (
     <Container className="flex max-w-4xl flex-col gap-6 py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "Mon profil", href: href("profile") }, { label: "Événements à modérer" }]} />
+      <Breadcrumbs items={[{ label: "Administration", href: href("admin") }, { label: "Événements à modérer" }]} />
       <h1 className="text-3xl font-extrabold">Événements à modérer</h1>
       <Suspense fallback={<Skeleton className="h-64 w-full" />}>
         <ModerationQueue searchParams={searchParams} />
