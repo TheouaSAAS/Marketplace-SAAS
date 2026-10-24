@@ -4,6 +4,8 @@ import { isAuthRetryableFetchError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { href } from "@/config/routes";
 import { SITE } from "@/config/site";
+import { checkBotTrap, TOO_FAST_MESSAGE } from "@/lib/bot-trap";
+import { getServerEnv } from "@/lib/env.server";
 import { formValues, invalidForm, type FormState } from "@/lib/form-state";
 import { logger } from "@/lib/logger";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
@@ -48,7 +50,21 @@ async function sessionClientOrNull() {
   return createSessionSupabaseClient();
 }
 
+const SIGNUP_SENT = "Si cette adresse peut être utilisée, vous allez recevoir un e-mail de confirmation. Ouvrez le lien qu’il contient pour activer votre compte.";
+const RESET_SENT = "Si un compte est associé à cette adresse, vous allez recevoir un e-mail pour choisir un nouveau mot de passe.";
+
+/** Défi anti-robot : un robot reçoit la même réponse qu'un humain (rien ne lui est révélé), rien n'est envoyé. */
+function botVerdict(formData: FormData) {
+  return checkBotTrap(formData, Date.now(), getServerEnv().BOT_TRAP_MIN_MS);
+}
+
 export async function signUpAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const trap = botVerdict(formData);
+  if (trap === "robot") {
+    log.warn("Inscription d'un robot écartée", { motif: "champ_piege" });
+    return { status: "success", message: SIGNUP_SENT };
+  }
+  if (trap === "trop_rapide") return { status: "error", message: TOO_FAST_MESSAGE, values: formValues(formData) };
   const parsed = signUpSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return invalidForm(parsed.error, formData);
   const supabase = await sessionClientOrNull();
@@ -81,11 +97,7 @@ export async function signUpAction(_previous: FormState, formData: FormData): Pr
     // Les autres erreurs (adresse déjà utilisée…) ne sont pas révélées.
     log.warn("Inscription refusée", { code: error.code, status: error.status });
   }
-  return {
-    status: "success",
-    message:
-      "Si cette adresse peut être utilisée, vous allez recevoir un e-mail de confirmation. Ouvrez le lien qu’il contient pour activer votre compte.",
-  };
+  return { status: "success", message: SIGNUP_SENT };
 }
 
 export async function signInAction(_previous: FormState, formData: FormData): Promise<FormState> {
@@ -119,6 +131,9 @@ export async function signOutAction(): Promise<void> {
 }
 
 export async function requestPasswordResetAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const trap = botVerdict(formData);
+  if (trap === "robot") return { status: "success", message: RESET_SENT };
+  if (trap === "trop_rapide") return { status: "error", message: TOO_FAST_MESSAGE, values: formValues(formData) };
   const parsed = emailOnlySchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return invalidForm(parsed.error, formData);
   const supabase = await sessionClientOrNull();
@@ -130,10 +145,7 @@ export async function requestPasswordResetAction(_previous: FormState, formData:
   });
   if (error && isAuthRetryableFetchError(error)) return UNAVAILABLE;
   if (error) log.warn("Réinitialisation refusée", { code: error.code, status: error.status });
-  return {
-    status: "success",
-    message: "Si un compte est associé à cette adresse, vous allez recevoir un e-mail pour choisir un nouveau mot de passe.",
-  };
+  return { status: "success", message: RESET_SENT };
 }
 
 export async function updatePasswordAction(_previous: FormState, formData: FormData): Promise<FormState> {

@@ -29,6 +29,8 @@ Le socle partagé reste hors des modules : `src/components/ui` (design system), 
 | `map` | 15 | couches, filtres dans l’adresse, regroupement des marqueurs, carte et liste synchronisées, fiche rapide |
 | `events` | 16 | agenda (liste, calendrier, carte), fiche, report et annulation, proposition et modération, fichier d’agenda |
 | `dashboard` | 20, 24 | tableau de bord : états d’annonce et actions (dont confirmation), statistiques et historique, activité, notifications et préférences par canal, confidentialité |
+| `appeals` | 26 | recours contre les décisions de modération (dépôt, file de l’équipe, décision) |
+| `trust` | 26 | charte de confiance (engagements, acceptation datée) et accord de transaction imprimable |
 | `notifications` | 24 | e-mails de notification, jetons de désabonnement, tâche d’envoi, alertes de recherches enregistrées |
 | `businesses` | 10, 19, 21 | pages professionnelles et espace professionnel (statistiques, demandes, vérification, offres) : annuaire, page publique, badges et complétude, gestion, équipe et invitations, vérification, avis, aide IA à la rédaction |
 | `publishing` | 18 | parcours « Publier une annonce » : brouillon, champs par schéma, photos privées, assistant (règles, IA facultative) et suggestions tracées, contenus interdits, aperçu, soumission, modération |

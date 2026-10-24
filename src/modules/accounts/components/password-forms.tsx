@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { INITIAL_FORM_STATE } from "@/lib/form-state";
 import { Field, Input } from "@/components/ui/form-controls";
+import { BotTrap } from "@/components/ui/bot-trap";
 import { requestPasswordResetAction, updatePasswordAction } from "../server/actions";
 import { FormStatus, PasswordField, SubmitButton } from "./form-parts";
 
@@ -10,6 +11,7 @@ export function ForgotPasswordForm() {
   const [state, action] = useActionState(requestPasswordResetAction, INITIAL_FORM_STATE);
   return (
     <form action={action} className="flex flex-col gap-4" noValidate>
+      <BotTrap />
       <FormStatus state={state} />
       {state.status !== "success" && (
         <>

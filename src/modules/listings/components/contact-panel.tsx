@@ -1,8 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { Mail, MessageCircle, Phone, Send, ShieldCheck } from "lucide-react";
+import { href } from "@/config/routes";
 import { INITIAL_FORM_STATE } from "@/lib/form-state";
+import { Checkbox } from "@/components/ui/choice-controls";
 import { Alert } from "@/components/ui/feedback";
 import { Field, Textarea } from "@/components/ui/form-controls";
 import { SubmitButton } from "@/modules/accounts/components/form-parts";
@@ -58,14 +61,19 @@ function RevealContact({ listingId, channel, back }: { listingId: string; channe
  */
 export function ContactPanel({
   listingId,
+  slug,
   back,
   channels,
   signedIn,
+  charterAccepted,
 }: {
   listingId: string;
+  slug: string;
   back: string;
   channels: ContactChannel[];
   signedIn: boolean;
+  /** Charte de confiance déjà acceptée par le visiteur (version en vigueur). */
+  charterAccepted: boolean;
 }) {
   const [state, action] = useActionState(contactSellerAction, INITIAL_FORM_STATE);
   return (
@@ -85,6 +93,22 @@ export function ContactPanel({
             />
           )}
         </Field>
+        {signedIn && !charterAccepted && (
+          <Checkbox
+            name="charte"
+            value="1"
+            required
+            label={
+              <span>
+                J’accepte la{" "}
+                <Link href={href("trustCharter")} className="underline" target="_blank">
+                  charte de confiance
+                </Link>{" "}
+                : aucun paiement avant d’avoir vu le bien ou rencontré la personne.
+              </span>
+            }
+          />
+        )}
         <SubmitButton>
           <Send aria-hidden className="h-4 w-4" />
           Envoyer par la messagerie
@@ -111,6 +135,14 @@ export function ContactPanel({
             <li key={tip}>{tip}</li>
           ))}
         </ul>
+        <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+          <Link href={href("trustCharter")} className="underline">
+            Charte de confiance
+          </Link>
+          <Link href={href("listingAgreement", { params: { slug } })} className="underline">
+            Accord de transaction à imprimer
+          </Link>
+        </p>
       </details>
     </div>
   );

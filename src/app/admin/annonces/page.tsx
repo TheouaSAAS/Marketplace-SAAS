@@ -16,6 +16,7 @@ import { listListingPhotos, listPendingListings, listSuggestions } from "@/modul
 import { aiAvailability } from "@/server/ai";
 import { requireAccount } from "@/server/auth";
 import { ModerationHint } from "@/modules/admin/components/moderation-hint";
+import { listFraudSignals } from "@/modules/admin/server/back-office";
 
 export const metadata: Metadata = {
   title: "Annonces à modérer — administration",
@@ -45,7 +46,14 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
   let items;
   try {
     const pending = await listPendingListings();
-    items = await Promise.all(pending.map(async (listing) => ({ listing, photos: await listListingPhotos(listing.id), suggestions: await listSuggestions(listing.id) })));
+    items = await Promise.all(
+      pending.map(async (listing) => ({
+        listing,
+        photos: await listListingPhotos(listing.id),
+        suggestions: await listSuggestions(listing.id),
+        signals: await listFraudSignals(listing.id).catch(() => []),
+      })),
+    );
   } catch (error) {
     logger.error("File de modération des annonces indisponible", { module: "publication", error });
     return <ErrorState title="File de modération momentanément indisponible" description="Réessayez dans quelques instants." />;
@@ -57,7 +65,7 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
         <EmptyState title="Aucune annonce en attente" description="Les nouvelles annonces apparaîtront ici." />
       ) : (
         <ul className="flex flex-col gap-4">
-          {items.map(({ listing, photos, suggestions }) => {
+          {items.map(({ listing, photos, suggestions, signals }) => {
             const schema = listing.category.attribute_schema;
             const hits = checkListing(`${listing.title}\n${listing.description}\n${JSON.stringify(listing.attributes)}`);
             const reused = photos.filter((photo) => photo.otherDuplicates > 0).length;
@@ -73,6 +81,11 @@ async function Queue({ searchParams }: { searchParams: Promise<Raw> }) {
                 {hits.length > 0 && (
                   <Alert tone="danger" title="Formulations à vérifier">
                     {hits.map((hit) => `${hit.rule} (« ${hit.excerpt} »)`).join(" · ")}
+                  </Alert>
+                )}
+                {signals.length > 0 && (
+                  <Alert tone={signals.reduce((total, signal) => total + signal.weight, 0) >= 5 ? "danger" : "warning"} title={`Indices de fraude (score ${signals.reduce((total, signal) => total + signal.weight, 0)}) : aide à la revue`}>
+                    {signals.map((signal) => signal.label).join(" · ")}
                   </Alert>
                 )}
                 {reused > 0 && (

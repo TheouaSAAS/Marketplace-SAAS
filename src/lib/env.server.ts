@@ -39,6 +39,8 @@ export const serverEnvSchema = z.object({
 
   /** Multiplicateur des limites anti-abus. TESTS AUTOMATISÉS UNIQUEMENT ; jamais en production. */
   RATE_LIMIT_SCALE: blankAsUndefined(z.coerce.number().int().min(1).max(1000).default(1)),
+  /** Délai minimal (ms) avant l'envoi d'un formulaire public (défi anti-robot). TESTS AUTOMATISÉS : 0. */
+  BOT_TRAP_MIN_MS: blankAsUndefined(z.coerce.number().int().min(0).max(60_000).default(2500)),
 
   /** Jeton d'accès à /interne/statut. Obligatoire en production pour consulter la page. */
   INTERNAL_STATUS_TOKEN: blankAsUndefined(z.string().min(24, "24 caractères minimum").optional()),

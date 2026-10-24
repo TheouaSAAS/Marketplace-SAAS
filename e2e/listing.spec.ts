@@ -83,6 +83,9 @@ test.describe("Fiche d'une annonce", () => {
     await expect(comment).toHaveCount(0, { timeout: NETWORK });
 
     await page.getByLabel("Votre message à l’annonceur").fill("Message de test automatique, à ignorer.");
+    // Charte de confiance : demandée une seule fois par compte (version en vigueur).
+    const charter = page.getByLabel(/J’accepte la charte de confiance/);
+    if (await charter.isVisible()) await charter.check();
     await page.getByRole("button", { name: "Envoyer par la messagerie" }).click();
     await expect(page).toHaveURL(/\/messages\/[0-9a-f-]{36}$/, { timeout: NETWORK });
     await expect(page.getByText("Message de test automatique, à ignorer.")).toBeVisible();

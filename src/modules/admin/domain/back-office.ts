@@ -44,6 +44,8 @@ export const ADMIN_SECTIONS: { title: string; tools: AdminTool[] }[] = [
     title: "Files de modération",
     tools: [
       { route: "adminReports", label: "Traiter les signalements", audience: "staff", description: "Examiner, classer sans suite ou suspendre aussitôt un contenu signalé.", counts: [{ key: "reports", label: "ouverts" }] },
+      { route: "adminFraud", label: "Examiner les signaux de fraude", audience: "staff", description: "Annonces au score de risque élevé : aide à la revue, jamais une sanction automatique." },
+      { route: "adminAppeals", label: "Trancher les recours", audience: "staff", description: "Contestations des suspensions et refus par leurs auteurs." },
       {
         route: "adminListings",
         label: "Modérer les annonces",
@@ -220,6 +222,8 @@ const AUDIT_ACTIONS: Record<string, string> = {
   "campagne.statut": "Statut d’une campagne modifié",
   "ia.arret": "IA coupée (interrupteur général)",
   "ia.reprise": "IA réactivée",
+  "recours.accepte": "Recours accepté",
+  "recours.refuse": "Recours refusé",
   "business.verify": "Page professionnelle vérifiée",
   "business.verify_reject": "Vérification de page refusée",
   "business_claim.approve": "Revendication de page acceptée",
@@ -246,6 +250,7 @@ export const AUDIT_FILTERS = [
   { value: "lieu.", label: "Fusions de lieux" },
   { value: "campagne.", label: "Campagnes" },
   { value: "ia.", label: "Intelligence artificielle" },
+  { value: "recours.", label: "Recours" },
 ] as const;
 
 /** Champs sans intérêt pour la relecture (techniques ou recalculés). */

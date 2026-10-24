@@ -67,6 +67,10 @@ Les statistiques sont des totaux sans donnée de visiteur ; les empreintes serva
 
 La file d'envoi ne garde que le statut, le nombre d'essais et un code d'erreur ; l'adresse e-mail est lue au moment de l'envoi, jamais copiée. Les e-mails ne reprennent ni le texte des messages ni les coordonnées des demandes. Les alertes et rappels sur des contenus non vérifiés le disent. Le désabonnement se fait sans connexion par un lien signé propre à la personne et à la catégorie.
 
+## Sécurité et anti-fraude (niveau 26)
+
+Les signaux de fraude se calculent à la demande à partir des données existantes et ne sont visibles que de l'équipe ; aucun profil de risque n'est conservé. Les blocages ne sont visibles que de leur auteur. Les recours conservent le message de l'auteur et la décision motivée. Les acceptations de la charte gardent seulement le rôle, la version et la date.
+
 ## IA
 
 Niveau 18 : l'assistant de publication propose des champs tirés du seul document de l'auteur (texte, photo, PDF), jamais d'informations extérieures ; rien n'est publié sans validation explicite, et une photo ou un PDF n'est jamais tenu pour une source fiable (confiance plafonnée, rappel de vérification). Les PDF ne sont pas conservés ; la consommation de l'IA est enregistrée sans aucun contenu.

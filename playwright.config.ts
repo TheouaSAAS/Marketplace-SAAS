@@ -49,6 +49,6 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
     // Limites anti-abus relevées pour que les connexions répétées des tests ne se bloquent pas.
-    env: { NEXT_TELEMETRY_DISABLED: "1", RATE_LIMIT_SCALE: "50" },
+    env: { NEXT_TELEMETRY_DISABLED: "1", RATE_LIMIT_SCALE: "50", BOT_TRAP_MIN_MS: "0" },
   },
 });

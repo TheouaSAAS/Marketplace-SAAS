@@ -32,6 +32,7 @@ const PAGES = [
   "/connexion",
   "/inscription",
   "/mot-de-passe-oublie",
+  "/charte-de-confiance",
 ];
 
 /** Fiches de démonstration (« Exemple / à valider localement ») : présentes seulement avec la base. */
@@ -42,6 +43,7 @@ const DETAIL_PAGES = [
   "/professionnels/exemple-electricien",
   "/guide/se-deplacer/exemple-se-deplacer",
   "/quartiers/bardot",
+  "/annonces/exemple-logement-location/accord",
 ];
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
@@ -66,7 +68,7 @@ for (const path of [...PAGES, ...DETAIL_PAGES]) {
 /** Interfaces connectées (lecture seule) : membre puis administrateur. */
 const PRIVATE_PAGES: { account: "E2E_USER" | "E2E_ADMIN"; paths: string[] }[] = [
   { account: "E2E_USER", paths: ["/profil", "/tableau-de-bord", "/tableau-de-bord/annonces", "/tableau-de-bord/activite", "/tableau-de-bord/notifications", "/tableau-de-bord/confidentialite", "/publier", "/messages", "/favoris"] },
-  { account: "E2E_ADMIN", paths: ["/admin", "/admin/signalements", "/admin/comptes", "/admin/journal", "/admin/qualite", "/admin/ia"] },
+  { account: "E2E_ADMIN", paths: ["/admin", "/admin/signalements", "/admin/comptes", "/admin/journal", "/admin/qualite", "/admin/ia", "/admin/fraude", "/admin/recours"] },
 ];
 
 for (const { account, paths } of PRIVATE_PAGES) {

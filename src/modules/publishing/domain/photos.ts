@@ -41,3 +41,16 @@ export function assessPhoto(photo: PhotoFacts): PhotoAssessment {
 }
 
 export const isSha256 = (value: unknown): value is string => typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+
+/**
+ * Type réel d'un fichier d'après ses premiers octets (signature), jamais
+ * d'après le type annoncé par le navigateur : un fichier renommé ou un
+ * contenu actif déguisé en image est refusé.
+ */
+export function sniffPhotoType(bytes: Uint8Array): PhotoType | null {
+  const starts = (...signature: number[]) => signature.every((value, index) => bytes[index] === value);
+  if (starts(0xff, 0xd8, 0xff)) return "image/jpeg";
+  if (starts(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) return "image/png";
+  if (starts(0x52, 0x49, 0x46, 0x46) && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) return "image/webp";
+  return null;
+}

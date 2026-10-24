@@ -21,6 +21,7 @@ import {
   SignOutButton,
 } from "@/modules/accounts/components/profile-forms";
 import { requireAccount } from "@/server/auth";
+import { AppealForm } from "@/modules/appeals/components/appeal-forms";
 
 export const metadata: Metadata = {
   title: "Mon profil",
@@ -54,7 +55,11 @@ async function ProfileContent({ searchParams }: Pick<PageProps<"/profil">, "sear
       )}
       {account.isSuspended && (
         <Alert tone="danger" title="Compte suspendu">
-          Vous ne pouvez plus publier ni écrire de messages. Contactez l’équipe pour en connaître la raison.
+          Vous ne pouvez plus publier ni écrire de messages. Si cette décision vous paraît injustifiée, contestez-la : un administrateur relira votre
+          demande.
+          <div className="mt-2">
+            <AppealForm type="account" id={account.id} back={href("profile")} />
+          </div>
         </Alert>
       )}
 

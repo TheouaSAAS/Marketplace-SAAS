@@ -85,3 +85,11 @@ export async function markConversationRead(conversationId: string, userId: strin
     .eq("conversation_id", conversationId)
     .eq("user_id", userId);
 }
+
+/** Ai-je bloqué ce membre ? (mes blocages seulement, règle d'accès en base) */
+export async function isBlocked(memberId: string): Promise<boolean> {
+  const supabase = await createSessionSupabaseClient();
+  if (!supabase) return false;
+  const { count } = await supabase.from("user_blocks").select("blocked_id", { count: "exact", head: true }).eq("blocked_id", memberId);
+  return (count ?? 0) > 0;
+}

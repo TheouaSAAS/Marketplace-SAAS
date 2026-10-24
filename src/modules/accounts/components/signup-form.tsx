@@ -7,6 +7,7 @@ import { href } from "@/config/routes";
 import { INITIAL_FORM_STATE } from "@/lib/form-state";
 import { Checkbox, Radio, RadioGroup } from "@/components/ui/choice-controls";
 import { Field, Input } from "@/components/ui/form-controls";
+import { BotTrap } from "@/components/ui/bot-trap";
 import { signUpAction } from "../server/actions";
 import { FormStatus, PasswordField, SubmitButton } from "./form-parts";
 
@@ -30,6 +31,7 @@ export function SignupForm() {
 
   return (
     <form action={action} className="flex flex-col gap-4" noValidate>
+      <BotTrap />
       <FormStatus state={state} />
       <Field label="Votre nom" hint="Affiché sur vos annonces et vos messages." error={state.fieldErrors?.displayName} required>
         {(props) => <Input {...props} name="displayName" autoComplete="name" defaultValue={state.values?.displayName} />}

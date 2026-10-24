@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
+import { href } from "@/config/routes";
+import { Checkbox } from "@/components/ui/choice-controls";
 import { INITIAL_FORM_STATE } from "@/lib/form-state";
 import { Field, Input } from "@/components/ui/form-controls";
 import { Alert } from "@/components/ui/feedback";
@@ -24,6 +27,20 @@ export function SubmitListingForm({ listingId }: { listingId: string }) {
           )}
         </Alert>
       )}
+      <Checkbox
+        name="charte"
+        value="1"
+        required
+        label={
+          <span>
+            Je m’engage à respecter la{" "}
+            <Link href={href("trustCharter")} className="underline" target="_blank">
+              charte de confiance
+            </Link>{" "}
+            : annonce réelle et exacte, aucun paiement demandé avant une visite ou une rencontre.
+          </span>
+        }
+      />
       <SubmitButton fullWidth={false}>Soumettre à la modération</SubmitButton>
       <p className="text-xs text-ink-muted">En soumettant, vous confirmez que l’annonce est exacte et vous appartient. L’équipe la relit avant publication et vous notifie sa décision.</p>
     </form>

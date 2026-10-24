@@ -22,7 +22,7 @@ import { ListingAttributes, ListingDescription } from "./listing-text";
 const POSITIONLESS = ["emploi", "opportunite", "appel_offres", "formation"];
 
 export function ListingView({ data }: { data: LoadedListing }) {
-  const { listing, isPublic, userId, seller, point, engagement, comments, favorite, similar, others, images } = data;
+  const { listing, isPublic, userId, seller, point, engagement, comments, favorite, similar, others, images, charterAccepted } = data;
   const now = new Date();
   const state = listingState(listing, now);
   const isOwner = userId === listing.owner_id;
@@ -97,6 +97,7 @@ export function ListingView({ data }: { data: LoadedListing }) {
         </div>
         <ListingAside
           listingId={listing.id}
+          slug={listing.slug}
           title={listing.title}
           url={listingUrl(listing.slug)}
           back={back}
@@ -104,6 +105,7 @@ export function ListingView({ data }: { data: LoadedListing }) {
           isOwner={isOwner}
           isPublic={isPublic}
           signedIn={userId !== null}
+          charterAccepted={charterAccepted}
           channels={channels}
           seller={seller}
           contactName={listing.contact_name}

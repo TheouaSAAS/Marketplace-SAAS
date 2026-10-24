@@ -88,6 +88,14 @@ export function describeServices(): ServiceCheck[] {
           : `Limites multipliées par ${env.RATE_LIMIT_SCALE} (RATE_LIMIT_SCALE) : réglage de test, à retirer.`,
     },
     {
+      name: "Défi anti-robot",
+      status: env.BOT_TRAP_MIN_MS >= 1000 ? "ok" : "error",
+      detail:
+        env.BOT_TRAP_MIN_MS >= 1000
+          ? `Champ piège et délai minimal de ${env.BOT_TRAP_MIN_MS} ms (inscription, mot de passe oublié).`
+          : `Délai minimal de ${env.BOT_TRAP_MIN_MS} ms (BOT_TRAP_MIN_MS) : réglage de test, à retirer.`,
+    },
+    {
       name: "Suivi des erreurs",
       status: env.ERROR_TRACKING_DSN ? "partial" : "not_configured",
       detail: env.ERROR_TRACKING_DSN

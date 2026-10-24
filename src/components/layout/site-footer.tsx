@@ -22,7 +22,7 @@ export function SiteFooter() {
   const { email, whatsapp } = SITE.contact;
 
   return (
-    <footer className="mt-auto border-t border-border bg-surface">
+    <footer className="mt-auto border-t print:hidden border-border bg-surface">
       <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
         <div className="flex flex-col gap-4">
           <Logo />

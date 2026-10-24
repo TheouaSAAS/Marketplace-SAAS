@@ -8,10 +8,11 @@ import { Container } from "@/components/ui/container";
 import { Alert } from "@/components/ui/feedback";
 import { Skeleton } from "@/components/ui/spinner";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { BlockForm } from "@/modules/messaging/components/block-form";
 import { MessageList } from "@/modules/messaging/components/message-list";
 import { SendForm } from "@/modules/messaging/components/send-form";
 import { ThreadRefresher } from "@/modules/messaging/components/thread-refresher";
-import { getConversation, markConversationRead } from "@/modules/messaging/server/queries";
+import { getConversation, isBlocked, markConversationRead } from "@/modules/messaging/server/queries";
 import { requireAccount } from "@/server/auth";
 
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ async function Conversation({ params }: Pick<Props, "params">) {
   if (!conversation) notFound();
   const { header, messages } = conversation;
   await markConversationRead(id, account.id);
+  const blocked = header.other_id ? await isBlocked(header.other_id) : false;
 
   return (
     <div className="flex flex-col gap-5">
@@ -65,11 +67,16 @@ async function Conversation({ params }: Pick<Props, "params">) {
         <Alert tone="warning">Cette annonce n’est plus disponible. Vous pouvez encore échanger avec l’annonceur.</Alert>
       )}
       <MessageList messages={messages} myId={account.id} otherName={header.other_name} />
-      <SendForm conversationId={id} />
+      {blocked ? (
+        <Alert tone="info">Vous avez bloqué ce membre : il ne peut plus vous écrire.</Alert>
+      ) : (
+        <SendForm conversationId={id} />
+      )}
       <ThreadRefresher />
       <p className="text-xs text-ink-muted">
-        Ne communiquez jamais un code reçu par SMS et ne payez rien d’avance. En cas d’abus, signalez l’annonce depuis sa page.
+        Ne communiquez jamais un code reçu par SMS et ne payez rien d’avance. En cas d’abus, signalez l’annonce depuis sa page ou bloquez ce membre.
       </p>
+      {header.other_id && <BlockForm memberId={header.other_id} conversationId={id} blocked={blocked} name={header.other_name} />}
     </div>
   );
 }

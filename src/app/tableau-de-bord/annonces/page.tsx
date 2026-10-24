@@ -17,6 +17,9 @@ import { ArchiveListingForm, AvailabilityForm, ConfirmListingForm, DeleteDraftFo
 import { getListingHistory, listDashboardListings, type DashboardListing } from "@/modules/dashboard/server/queries";
 import { reopenAsDraftAction } from "@/modules/publishing/server/actions";
 import { requireAccount } from "@/server/auth";
+import { AppealForm } from "@/modules/appeals/components/appeal-forms";
+import { APPEAL_STATUSES, latestAppeal, type MyAppeal } from "@/modules/appeals/domain/appeals";
+import { listMyAppeals } from "@/modules/appeals/server/queries";
 
 export const metadata: Metadata = { title: "Mes annonces" };
 
@@ -54,7 +57,7 @@ async function History({ id }: { id: string }) {
   );
 }
 
-function ListingItem({ listing }: { listing: DashboardListing }) {
+function ListingItem({ listing, appeal }: { listing: DashboardListing; appeal: MyAppeal | null }) {
   const actions = listingActions(listing.status);
   const unavailable = listing.availability_status === "unavailable";
   return (
@@ -68,6 +71,20 @@ function ListingItem({ listing }: { listing: DashboardListing }) {
       </div>
       <p className="font-bold">{listing.title || "Brouillon sans titre"}</p>
       {listing.status === "rejected" && listing.rejection_reason && <p className="text-sm text-danger">Motif du refus : {listing.rejection_reason}</p>}
+      {listing.status === "rejected" &&
+        (appeal?.status === "pending" ? (
+          <Badge tone="warning">{APPEAL_STATUSES.pending.label}</Badge>
+        ) : (
+          <>
+            {appeal && (
+              <p className="text-xs text-ink-muted">
+                {APPEAL_STATUSES[appeal.status].label}
+                {appeal.decisionNote ? ` : « ${appeal.decisionNote} »` : ""}
+              </p>
+            )}
+            <AppealForm type="listing" id={listing.id} back={href("myListings")} />
+          </>
+        ))}
       {listing.status === "published" && listing.expires_at && <p className="text-xs text-ink-muted">En ligne jusqu’au {formatDate(listing.expires_at)}</p>}
       {listing.status !== "draft" && (
         <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
@@ -133,8 +150,9 @@ async function Listings({ searchParams }: { searchParams: Promise<Raw> }) {
   const done = typeof raw.fait === "string" ? DONE[raw.fait] : undefined;
   const statut = typeof raw.statut === "string" && Object.hasOwn(LISTING_STATES, raw.statut) ? (raw.statut as ListingState) : null;
   let listings: DashboardListing[];
+  let appeals: MyAppeal[];
   try {
-    listings = await listDashboardListings(account.id);
+    [listings, appeals] = await Promise.all([listDashboardListings(account.id), listMyAppeals().catch(() => [])]);
   } catch (error) {
     logger.error("Mes annonces indisponibles", { module: "tableau-de-bord", error });
     return <ErrorState title="Vos annonces sont momentanément indisponibles" description="Réessayez dans quelques instants." />;
@@ -173,7 +191,7 @@ async function Listings({ searchParams }: { searchParams: Promise<Raw> }) {
       ) : (
         <ul className="flex flex-col gap-3">
           {shown.map((listing) => (
-            <ListingItem key={listing.id} listing={listing} />
+            <ListingItem key={listing.id} listing={listing} appeal={latestAppeal(appeals, "listing", listing.id)} />
           ))}
         </ul>
       )}

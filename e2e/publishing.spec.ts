@@ -104,6 +104,7 @@ test.describe("Publication d'une annonce", () => {
       await expect(author).toHaveURL(/\/apercu$/, { timeout: NETWORK });
       await expect(author.getByText("Aperçu — non publié")).toBeVisible({ timeout: NETWORK });
       await expect(author.getByRole("heading", { name: "Champs issus de l’assistant (4)" })).toBeVisible();
+      await author.getByLabel(/Je m’engage à respecter la charte de confiance/).check();
       await author.getByRole("button", { name: "Soumettre à la modération" }).click();
       await expect(author).toHaveURL(/\/tableau-de-bord\/annonces\?soumise=1$/, { timeout: NETWORK });
       await expect(author.getByRole("listitem").filter({ hasText: title }).getByText("En attente", { exact: true })).toBeVisible();

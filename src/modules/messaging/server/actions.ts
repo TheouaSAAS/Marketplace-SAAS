@@ -45,3 +45,27 @@ export async function sendMessageAction(_previous: FormState, formData: FormData
   revalidatePath(href("messageThread", { params: { id: parsed.data.conversation } }));
   return { status: "success" };
 }
+
+/**
+ * Bloquer un membre : il ne peut plus vous écrire (règle en base). Débloquer
+ * rétablit les échanges. Le membre bloqué n'en est pas averti.
+ */
+export async function setBlockAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const parsed = z
+    .object({ membre: z.uuid(), conversation: z.uuid(), bloquer: z.enum(["1", "0"]) })
+    .safeParse({ membre: formData.get("membre"), conversation: formData.get("conversation"), bloquer: formData.get("bloquer") });
+  const user = await getSessionUser();
+  if (!user) redirect(href("login", { query: { suivant: href("messages") } }));
+  const supabase = await createSessionSupabaseClient();
+  if (!parsed.success || !supabase || parsed.data.membre === user.id) return { status: "error", message: "Action impossible." };
+  const { error } =
+    parsed.data.bloquer === "1"
+      ? await supabase.from("user_blocks").upsert({ blocker_id: user.id, blocked_id: parsed.data.membre }, { onConflict: "blocker_id,blocked_id", ignoreDuplicates: true })
+      : await supabase.from("user_blocks").delete().eq("blocker_id", user.id).eq("blocked_id", parsed.data.membre);
+  if (error) {
+    logger.error("Blocage non enregistré", { module: "messagerie", code: error.code });
+    return { status: "error", message: "L’action n’a pas pu être enregistrée. Réessayez." };
+  }
+  revalidatePath(href("messageThread", { params: { id: parsed.data.conversation } }));
+  return { status: "success", message: parsed.data.bloquer === "1" ? "Membre bloqué : il ne peut plus vous écrire." : "Membre débloqué." };
+}

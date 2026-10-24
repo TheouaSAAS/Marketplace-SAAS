@@ -152,3 +152,16 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Impression (accord de transaction, documents) : seul le contenu de la page est imprimé. */
+@media print {
+  nav[aria-label="Navigation rapide"],
+  button[aria-label="Demandez à San Pedro"],
+  a[href="#contenu"] {
+    display: none !important;
+  }
+  body {
+    padding-bottom: 0 !important;
+    background: #fff;
+  }
+}

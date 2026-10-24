@@ -280,3 +280,13 @@ export async function getDeliveryStats(): Promise<DeliveryStats> {
   }
   return { counts, recentErrors: [...errors].map(([key, count]) => ({ error: key, count })).sort((a, b) => b.count - a.count).slice(0, 5) };
 }
+
+const signalSchema = z.array(z.object({ code: z.string(), label: z.string(), weight: z.number() }));
+export type FraudSignal = z.infer<typeof signalSchema>[number];
+
+/** Indices de fraude d'une annonce (équipe de modération) : aide à la revue, aucune décision. */
+export async function listFraudSignals(listingId: string): Promise<FraudSignal[]> {
+  const { data, error } = await (await client()).rpc("listing_fraud_signals", { p_listing: listingId });
+  if (error) fail("Signaux de fraude", error);
+  return signalSchema.parse(data);
+}

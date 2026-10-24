@@ -33,6 +33,7 @@ export const ROUTES = {
   // Annonces & opportunités
   listings: { path: "/annonces", label: "Annonces", level: 7, status: "preview" },
   listingDetail: { path: "/annonces/[slug]", label: "Détail d’une annonce", level: 8, status: "live" },
+  listingAgreement: { path: "/annonces/[slug]/accord", label: "Accord de transaction", level: 26, status: "live" },
   realEstate: { path: "/immobilier", label: "Immobilier", level: 9, status: "live" },
   realEstateMode: { path: "/immobilier/[mode]", label: "Recherche immobilière", level: 9, status: "live" },
   realEstateCompare: { path: "/immobilier/comparer", label: "Comparer des biens", level: 9, status: "live", private: true },
@@ -119,10 +120,13 @@ export const ROUTES = {
   adminSources: { path: "/admin/sources", label: "Sources", level: 22, status: "live", private: true },
   adminPromotions: { path: "/admin/mises-en-avant", label: "Mises en avant et abonnements", level: 22, status: "live", private: true },
   adminAi: { path: "/admin/ia", label: "Intelligence artificielle", level: 23, status: "live", private: true },
+  adminAppeals: { path: "/admin/recours", label: "Recours", level: 26, status: "live", private: true },
+  adminFraud: { path: "/admin/fraude", label: "Signaux de fraude", level: 26, status: "live", private: true },
   adminCategories: { path: "/admin/categories", label: "Catégories", level: 10, status: "live", private: true },
 
   // Aide, confiance et informations
   help: { path: "/aide", label: "Aide", level: 4, status: "live" },
+  trustCharter: { path: "/charte-de-confiance", label: "Charte de confiance", level: 26, status: "live" },
   verificationPolicy: { path: "/verification", label: "Comment nous vérifions les informations", level: 4, status: "live" },
   report: { path: "/signaler", label: "Signaler un contenu", level: 4, status: "live" },
   contact: { path: "/contact", label: "Contact", level: 4, status: "live" },

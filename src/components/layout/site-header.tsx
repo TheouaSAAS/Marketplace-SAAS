@@ -28,7 +28,7 @@ async function CurrentCitySelector() {
  */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">
+    <header className="sticky top-0 z-40 print:hidden border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">
       <Container className="flex h-16 items-center gap-2 sm:gap-3">
         <Link href="/" aria-label={`${SITE.name} — accueil`} className="shrink-0 rounded-control">
           <Logo />

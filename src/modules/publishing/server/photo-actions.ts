@@ -1,12 +1,13 @@
 "use server";
 
+import { createHash } from "node:crypto";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { href } from "@/config/routes";
 import { logger } from "@/lib/logger";
 import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/server/auth";
-import { isPhotoType, isSha256, PHOTO_MAX_BYTES, PHOTO_TYPES } from "../domain/photos";
+import { isPhotoType, isSha256, PHOTO_MAX_BYTES, PHOTO_TYPES, sniffPhotoType } from "../domain/photos";
 import { PHOTO_TARGETS } from "./photo-store";
 
 async function session() {
@@ -37,6 +38,25 @@ const photoSchema = z.object({
   alt: z.string().trim().max(200).optional(),
 });
 
+type Supabase = Awaited<ReturnType<typeof session>>["supabase"];
+
+/**
+ * Contrôle du fichier réellement déposé (et non de ce qu'annonce le
+ * navigateur) : taille, signature d'image, empreinte. Un fichier non conforme
+ * est supprimé du stockage.
+ */
+async function verifyStoredPhoto(supabase: Supabase, path: string, declared: { type: string; bytes: number; hash: string }): Promise<string | null> {
+  const { data, error } = await supabase.storage.from("private-media").download(path);
+  if (error || !data) return "La photo déposée est introuvable. Réessayez.";
+  if (data.size > PHOTO_MAX_BYTES) return "Photo trop lourde : 5 Mo au plus.";
+  const bytes = new Uint8Array(await data.arrayBuffer());
+  const real = sniffPhotoType(bytes);
+  if (!real) return "Ce fichier n’est pas une image JPEG, PNG ou WebP.";
+  if (real !== declared.type) return "Le type du fichier ne correspond pas à son contenu.";
+  if (createHash("sha256").update(bytes).digest("hex") !== declared.hash) return "Le fichier a changé pendant l’envoi. Réessayez.";
+  return null;
+}
+
 export type RegisterPhotoResult = { ok: true; photoId: string; ownDuplicates: number; otherDuplicates: number } | { ok: false; message: string };
 
 /** Enregistre une photo déposée par le navigateur dans le stockage privé ; la base la garde privée et limite leur nombre. */
@@ -48,6 +68,11 @@ export async function registerPhotoAction(input: z.input<typeof photoSchema>): P
   const { column, folder } = PHOTO_TARGETS[target];
   const expected = new RegExp(`^${user.id}/${folder}/${id}/[0-9a-f-]{36}\\.${PHOTO_TYPES[type]}$`);
   if (!expected.test(path)) return { ok: false, message: "Emplacement de la photo invalide." };
+  const rejected = await verifyStoredPhoto(supabase, path, { type, bytes, hash });
+  if (rejected) {
+    await supabase.storage.from("private-media").remove([path]);
+    return { ok: false, message: rejected };
+  }
   const { count } = await supabase.from("images").select("id", { count: "exact", head: true }).eq(column, id);
   const { data, error } = await supabase
     .from("images")

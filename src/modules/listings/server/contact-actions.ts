@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger";
 import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { safeRedirectPath } from "@/modules/accounts/domain/schemas";
 import { getSessionUser } from "@/server/auth";
+import { hasAcceptedCharter, recordCharterAcceptance } from "@/modules/trust/server/charter";
 
 /** Codes de refus de la base dont le message est destiné au public. */
 const READABLE = new Set(["CP429", "23514", "42501"]);
@@ -62,6 +63,11 @@ export async function contactSellerAction(_previous: FormState, formData: FormDa
   if (!user) redirect(href("login", { query: { suivant: back } }));
   const supabase = await createSessionSupabaseClient();
   if (!supabase) return { status: "error", message: "Messagerie momentanément indisponible." };
+  // Charte de confiance : acceptée une fois par version, avant le premier message.
+  if (!(await hasAcceptedCharter(user.id, "visiteur"))) {
+    if (formData.get("charte") !== "1") return { status: "error", message: "Acceptez la charte de confiance pour écrire à l’annonceur.", values: formValues(formData) };
+    await recordCharterAcceptance(user.id, "visiteur");
+  }
 
   const { data, error } = await supabase.rpc("start_listing_conversation", { p_listing: parsed.data.annonce, p_body: parsed.data.message });
   if (error) {

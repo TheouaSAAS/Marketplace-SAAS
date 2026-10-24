@@ -95,6 +95,60 @@ export type Database = {
           },
         ]
       }
+      appeals: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          id: string
+          message: string
+          status: string
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          id?: string
+          message: string
+          status?: string
+          target_id: string
+          target_type: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          id?: string
+          message?: string
+          status?: string
+          target_id?: string
+          target_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appeals_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appeals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_profiles: {
         Row: {
           accepts_quotes: boolean
@@ -502,6 +556,35 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      charter_acceptances: {
+        Row: {
+          accepted_at: string
+          role: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          role: string
+          user_id?: string
+          version: string
+        }
+        Update: {
+          accepted_at?: string
+          role?: string
+          user_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "charter_acceptances_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3621,6 +3704,39 @@ export type Database = {
           },
         ]
       }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_devices: {
         Row: {
           auth_secret: string | null
@@ -3738,6 +3854,22 @@ export type Database = {
           role: Database["public"]["Enums"]["user_role"]
         }[]
       }
+      admin_appeals: {
+        Args: { p_pending?: boolean }
+        Returns: {
+          author_name: string
+          created_at: string
+          decided_at: string
+          decision_note: string
+          id: string
+          message: string
+          status: string
+          target_id: string
+          target_type: string
+          title: string
+          user_id: string
+        }[]
+      }
       admin_audit_entries: {
         Args: { p_action?: string; p_limit?: number }
         Returns: {
@@ -3832,6 +3964,14 @@ export type Database = {
           feature: string
           input_tokens: number
           output_tokens: number
+        }[]
+      }
+      appeal_target_state: {
+        Args: { p_id: string; p_type: string }
+        Returns: {
+          contestable: boolean
+          owner_id: string
+          title: string
         }[]
       }
       archive_past_events: { Args: never; Returns: number }
@@ -3977,6 +4117,10 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      decide_appeal: {
+        Args: { p_accept: boolean; p_appeal: string; p_note: string }
+        Returns: undefined
+      }
       decide_business_verification: {
         Args: {
           p_approve: boolean
@@ -3997,6 +4141,27 @@ export type Database = {
       }
       expire_listings: { Args: never; Returns: number }
       export_my_data: { Args: never; Returns: Json }
+      fraud_review_queue: {
+        Args: never
+        Returns: {
+          created_at: string
+          listing_id: string
+          owner_id: string
+          score: number
+          signals: Json
+          slug: string
+          status: string
+          title: string
+        }[]
+      }
+      fraud_signals_for: {
+        Args: { p_listing: string }
+        Returns: {
+          code: string
+          label: string
+          weight: number
+        }[]
+      }
       grant_public_columns: {
         Args: { p_hidden: string[]; p_table: string }
         Returns: undefined
@@ -4091,6 +4256,14 @@ export type Database = {
           liked: boolean
           likes: number
           views: number
+        }[]
+      }
+      listing_fraud_signals: {
+        Args: { p_listing: string }
+        Returns: {
+          code: string
+          label: string
+          weight: number
         }[]
       }
       listing_image_duplicates: {
@@ -4785,6 +4958,10 @@ export type Database = {
       }
       start_place_conversation: {
         Args: { p_body: string; p_place: string }
+        Returns: string
+      }
+      submit_appeal: {
+        Args: { p_id: string; p_message: string; p_type: string }
         Returns: string
       }
       valid_opening_hours: { Args: { p_hours: Json }; Returns: boolean }

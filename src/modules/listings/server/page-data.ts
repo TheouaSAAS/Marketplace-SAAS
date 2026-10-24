@@ -1,4 +1,5 @@
 import "server-only";
+import { hasAcceptedCharter } from "@/modules/trust/server/charter";
 import { getSessionUser } from "@/server/auth";
 import {
   getListingComments,
@@ -59,6 +60,7 @@ export async function loadListingPage(slug: string) {
     listing,
     isPublic,
     userId: user?.id ?? null,
+    charterAccepted: user ? await hasAcceptedCharter(user.id, "visiteur") : false,
     seller,
     point,
     engagement,

@@ -353,5 +353,20 @@ Le budget porte sur le poids compressé des ressources du site au chargement ini
 ## D117 — Audit d'accessibilité automatique et bloquant
 axe-core contrôle les règles WCAG 2.2 A et AA sur les pages publiques et connectées principales, sur mobile et ordinateur ; une violation grave ou critique fait échouer `npm run check`. L'audit manuel (lecteurs d'écran réels, zoom) reste à mener avant le lancement.
 
+## D118 — Vérifier le fichier, pas sa déclaration
+Le navigateur dépose la photo dans le stockage privé ; le serveur la relit avant de l'enregistrer : signature d'image, taille, empreinte SHA-256. Le type annoncé par le navigateur et le nom du fichier ne sont jamais crus. Sans fournisseur d'antivirus, seuls des formats d'image sont acceptés.
+
+## D119 — Un défi anti-robot sans traçage
+Champ piège invisible et délai minimal de saisie sur les formulaires anonymes (inscription, mot de passe oublié), en plus de la limitation de débit ; un robot reçoit la même réponse qu'un humain. Pas de CAPTCHA tiers (dépendance, traçage, accessibilité) tant que les abus ne l'exigent pas.
+
+## D120 — La fraude se signale, elle ne se sanctionne pas automatiquement
+Les indices de fraude forment un score montré à l'équipe (file des annonces, `/admin/fraude`, alerte au-delà de 5). Toute suspension reste une décision humaine motivée, et chaque décision est contestable par recours, tranché par une autre décision humaine journalisée.
+
+## D121 — Charte de confiance et accord de transaction
+L'annonceur s'engage à chaque soumission ; le visiteur accepte la charte avant son premier message, une fois par version (acceptation datée). L'accord imprimable formalise la transaction entre les parties ; la plateforme n'y est pas partie. Textes provisoires, à relire par un juriste avant le lancement.
+
+## D122 — Politique de contenu sans nonce
+La CSP interdit tout script, objet et cadre externes et limite les connexions à Supabase ; les scripts en ligne de Next restent autorisés, car un nonce imposerait un rendu dynamique de toutes les pages (perte du pré-rendu). À revoir si Next permet un hachage des scripts en ligne des pages statiques.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `@axe-core/playwright` 4.13.0 (audit WCAG automatique, version exacte publiée depuis plus de deux mois, niveau 25), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

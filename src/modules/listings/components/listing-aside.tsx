@@ -9,6 +9,7 @@ import { ReportForm } from "./report-form";
 /** Colonne d'actions : contacter, annonceur, favoris, partage, signalement. */
 export function ListingAside({
   listingId,
+  slug,
   title,
   url,
   back,
@@ -16,6 +17,7 @@ export function ListingAside({
   isOwner,
   isPublic,
   signedIn,
+  charterAccepted,
   channels,
   seller,
   contactName,
@@ -23,6 +25,7 @@ export function ListingAside({
   likes,
 }: {
   listingId: string;
+  slug: string;
   title: string;
   url: string;
   back: string;
@@ -30,6 +33,7 @@ export function ListingAside({
   isOwner: boolean;
   isPublic: boolean;
   signedIn: boolean;
+  charterAccepted: boolean;
   channels: ContactChannel[];
   seller: ListingSeller | null;
   contactName: string | null;
@@ -42,7 +46,7 @@ export function ListingAside({
         <CardBody className="gap-4">
           <CardTitle className="text-lg">Contacter l’annonceur</CardTitle>
           {canContact ? (
-            <ContactPanel listingId={listingId} back={back} channels={channels} signedIn={signedIn} />
+            <ContactPanel listingId={listingId} slug={slug} back={back} channels={channels} signedIn={signedIn} charterAccepted={charterAccepted} />
           ) : (
             <p className="text-sm text-ink-muted">
               {isOwner ? "C’est votre annonce : les messages reçus arrivent dans votre messagerie." : "Cette annonce ne peut plus être sollicitée."}

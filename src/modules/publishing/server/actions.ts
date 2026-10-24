@@ -12,6 +12,7 @@ import { slugify } from "@/modules/admin/domain/categories";
 import { LISTINGS_CACHE_TAG } from "@/modules/listings/server/queries";
 import { getCityContext } from "@/server/city-context";
 import { getCurrentAccount, getSessionUser } from "@/server/auth";
+import { recordCharterAcceptance } from "@/modules/trust/server/charter";
 import { consumeRateLimit } from "@/server/rate-limit";
 import { extractFromText, type Suggestion } from "../domain/assistant";
 import { cleanAttributes, draftSchema, submissionProblems, type ListingDraft } from "../domain/fields";
@@ -279,7 +280,8 @@ export interface SubmitState extends FormState {
 export async function submitListingAction(_previous: SubmitState, formData: FormData): Promise<SubmitState> {
   const id = z.uuid().safeParse(formData.get("annonce"));
   if (!id.success) return { status: "error", message: "Annonce introuvable." };
-  const { supabase } = await session();
+  if (formData.get("charte") !== "1") return { status: "error", message: "Engagez-vous à respecter la charte de confiance pour soumettre l’annonce." };
+  const { user, supabase } = await session();
   const { data: listing } = await supabase.from("listings").select("id, slug, status, title, description, category_id, attributes").eq("id", id.data).maybeSingle();
   if (!listing || listing.status !== "draft") return { status: "error", message: "Seul un brouillon peut être soumis." };
   const schema = await schemaOf(listing.category_id);
@@ -296,6 +298,7 @@ export async function submitListingAction(_previous: SubmitState, formData: Form
     const result = failure(error, "L’annonce n’a pas pu être soumise");
     return { status: "error", message: result.message };
   }
+  await recordCharterAcceptance(user.id, "annonceur");
   redirect(href("myListings", { query: { soumise: "1" } }));
 }
 
