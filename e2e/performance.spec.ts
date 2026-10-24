@@ -27,7 +27,7 @@ const BUDGETS = {
   lcpMs: 4000,
 };
 
-const PAGES = ["/", "/immobilier/location", "/evenements", "/guide", "/professionnels", "/carte", "/lieux/exemple-lieu-a-visiter"];
+const PAGES = ["/", "/annonces", "/immobilier/location", "/evenements", "/guide", "/professionnels", "/carte", "/lieux/exemple-lieu-a-visiter"];
 const MEDIA = /tile\.openstreetmap|\/_next\/image|\.(png|jpe?g|webp|avif|svg|ico)(\?|$)/;
 
 interface Received {

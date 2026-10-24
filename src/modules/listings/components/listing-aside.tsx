@@ -2,9 +2,22 @@ import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import type { ContactChannel } from "../domain/presentation";
 import type { ListingSeller } from "../server/detail";
 import { ContactPanel } from "./contact-panel";
+import type { AvailabilityStatus } from "../domain/availability";
 import { FavoriteButton, LikeButton, ShareButton, WhatsAppShareLink } from "./listing-buttons";
 import { SellerCard } from "./listing-sections";
 import { ReportForm } from "./report-form";
+
+/** Bien non disponible ou réservé : le contact reste possible, mais la demande change (savoir s'il se libère). */
+const AVAILABILITY_NOTICES: Partial<Record<AvailabilityStatus, { title: string; body: string }>> = {
+  unavailable: {
+    title: "Non disponible pour le moment",
+    body: "L’annonceur indique que ce bien n’est plus disponible. Vous pouvez lui écrire pour savoir s’il se libère ou s’il en propose un autre.",
+  },
+  reserved: {
+    title: "Réservé pour le moment",
+    body: "L’annonceur indique une réservation en cours. Écrivez-lui pour être prévenu si elle n’aboutit pas.",
+  },
+};
 
 /** Colonne d'actions : contacter, annonceur, favoris, partage, signalement. */
 export function ListingAside({
@@ -14,6 +27,7 @@ export function ListingAside({
   url,
   back,
   canContact,
+  availability,
   isOwner,
   isPublic,
   signedIn,
@@ -30,6 +44,7 @@ export function ListingAside({
   url: string;
   back: string;
   canContact: boolean;
+  availability: AvailabilityStatus;
   isOwner: boolean;
   isPublic: boolean;
   signedIn: boolean;
@@ -40,11 +55,13 @@ export function ListingAside({
   favorite: boolean;
   likes: { count: number; liked: boolean } | null;
 }) {
+  const notice = AVAILABILITY_NOTICES[availability];
   return (
     <aside className="flex flex-col gap-4 lg:sticky lg:top-24" aria-label="Contacter et agir">
       <Card>
         <CardBody className="gap-4">
-          <CardTitle className="text-lg">Contacter l’annonceur</CardTitle>
+          <CardTitle className="text-lg">{canContact && notice ? notice.title : "Contacter l’annonceur"}</CardTitle>
+          {canContact && notice && <p className="text-sm text-ink-muted">{notice.body}</p>}
           {canContact ? (
             <ContactPanel listingId={listingId} slug={slug} back={back} channels={channels} signedIn={signedIn} charterAccepted={charterAccepted} />
           ) : (

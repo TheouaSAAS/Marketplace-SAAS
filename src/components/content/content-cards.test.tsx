@@ -28,7 +28,7 @@ describe("ListingCard", () => {
   it("n'invente jamais un prix absent et signale une disponibilité seulement déclarée", () => {
     render(<ListingCard listing={listing} now={now} />);
     expect(screen.getByText("Prix non communiqué")).toBeInTheDocument();
-    expect(screen.getByText("Disponible (déclaré)")).toBeInTheDocument();
+    expect(screen.getByText("Disponible")).toHaveAttribute("title", "Disponibilité déclarée par l’annonceur, non vérifiée par la plateforme.");
     expect(screen.getByText("À vérifier")).toBeInTheDocument();
     expect(screen.getByText("Location · Cité")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("Studio meublé");

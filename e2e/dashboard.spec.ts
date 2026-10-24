@@ -91,8 +91,13 @@ test.describe("Tableau de bord", () => {
       await page.goto("/tableau-de-bord/annonces?statut=published");
       const item = page.getByRole("listitem").filter({ hasText: title });
       await expect(item.getByText("Vues", { exact: true })).toBeVisible();
-      await item.getByRole("button", { name: "Marquer indisponible" }).click();
-      await expect(item.getByText("Indisponible", { exact: true })).toBeVisible({ timeout: NETWORK });
+      await item.getByRole("button", { name: "Marquer non disponible" }).click();
+      await expect(item.getByText("Non disponible", { exact: true })).toBeVisible({ timeout: NETWORK });
+      // Et l'inverse : le bien redevient disponible, toujours publié.
+      await item.getByRole("button", { name: "Marquer disponible" }).click();
+      await expect(item.getByText("Disponible", { exact: true })).toBeVisible({ timeout: NETWORK });
+      await item.getByRole("button", { name: "Marquer non disponible" }).click();
+      await expect(item.getByText("Non disponible", { exact: true })).toBeVisible({ timeout: NETWORK });
       await item.locator("summary", { hasText: "Archiver" }).click();
       await item.getByLabel(/Je confirme : l’annonce quitte le site/).check();
       await item.getByRole("button", { name: "Archiver" }).click();
@@ -101,7 +106,7 @@ test.describe("Tableau de bord", () => {
       const archived = page.getByRole("listitem").filter({ hasText: title });
       await archived.getByText("Historique").click();
       await expect(archived.getByText(/publiée → archivée/)).toBeVisible({ timeout: NETWORK });
-      await expect(archived.getByText(/disponibilité : indisponible/)).toBeVisible();
+      await expect(archived.getByText(/disponibilité : non disponible/).first()).toBeVisible();
 
       // Notifications : une catégorie coupée reste coupée.
       await page.goto("/tableau-de-bord/notifications");

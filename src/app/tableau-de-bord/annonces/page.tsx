@@ -20,6 +20,7 @@ import { requireAccount } from "@/server/auth";
 import { AppealForm } from "@/modules/appeals/components/appeal-forms";
 import { APPEAL_STATUSES, latestAppeal, type MyAppeal } from "@/modules/appeals/domain/appeals";
 import { listMyAppeals } from "@/modules/appeals/server/queries";
+import { AVAILABILITY_BADGES, type AvailabilityStatus } from "@/modules/listings/domain/availability";
 
 export const metadata: Metadata = { title: "Mes annonces" };
 
@@ -35,7 +36,7 @@ const DONE: Record<string, string> = {
 };
 
 const STATUS_WORDS: Record<string, string> = { draft: "brouillon", pending: "en attente", published: "publiée", rejected: "refusée", expired: "expirée", archived: "archivée" };
-const AVAILABILITY_WORDS: Record<string, string> = { available: "disponible", unavailable: "indisponible", reserved: "réservée", unknown: "non précisée" };
+const AVAILABILITY_WORDS: Record<string, string> = { available: "disponible", unavailable: "non disponible", reserved: "réservée", unknown: "non précisée" };
 
 async function History({ id }: { id: string }) {
   const history = await getListingHistory(id).catch(() => null);
@@ -60,11 +61,12 @@ async function History({ id }: { id: string }) {
 function ListingItem({ listing, appeal }: { listing: DashboardListing; appeal: MyAppeal | null }) {
   const actions = listingActions(listing.status);
   const unavailable = listing.availability_status === "unavailable";
+  const availability = AVAILABILITY_BADGES[listing.availability_status as AvailabilityStatus];
   return (
     <li className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone={CONTENT_STATUS_META[listing.status].tone}>{CONTENT_STATUS_META[listing.status].label}</Badge>
-        {listing.status === "published" && unavailable && <Badge tone="neutral">Indisponible</Badge>}
+        {listing.status === "published" && availability && <Badge tone={availability.tone}>{availability.label}</Badge>}
         <span className="text-xs text-ink-muted">
           {listing.category.name} · modifiée le {formatDateTime(listing.updated_at)}
         </span>

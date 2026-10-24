@@ -503,6 +503,7 @@ export type Database = {
       }
       categories: {
         Row: {
+          attribute_fields: string[] | null
           attribute_schema: string | null
           content_types: Database["public"]["Enums"]["content_type"][]
           created_at: string
@@ -519,6 +520,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          attribute_fields?: string[] | null
           attribute_schema?: string | null
           content_types?: Database["public"]["Enums"]["content_type"][]
           created_at?: string
@@ -535,6 +537,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          attribute_fields?: string[] | null
           attribute_schema?: string | null
           content_types?: Database["public"]["Enums"]["content_type"][]
           created_at?: string
@@ -3883,6 +3886,18 @@ export type Database = {
           id: number
         }[]
       }
+      admin_category_usage: {
+        Args: never
+        Returns: {
+          businesses: number
+          category_id: string
+          children: number
+          events: number
+          listings_other: number
+          listings_published: number
+          places: number
+        }[]
+      }
       admin_organizations: {
         Args: { p_query?: string }
         Returns: {
@@ -4129,6 +4144,10 @@ export type Database = {
           p_source_title: string
         }
         Returns: undefined
+      }
+      delete_category: {
+        Args: { p_category: string; p_move_to: string; p_reason: string }
+        Returns: number
       }
       demo_content_public: { Args: never; Returns: boolean }
       event_point: {
@@ -4808,6 +4827,28 @@ export type Database = {
           title: string
           url_path: string
           verified_at: string
+        }[]
+      }
+      search_listings: {
+        Args: {
+          p_available_only?: boolean
+          p_categories?: string[]
+          p_city?: string
+          p_eq?: Json
+          p_limit?: number
+          p_max?: Json
+          p_min?: Json
+          p_neighborhood?: string
+          p_offset?: number
+          p_price_max?: number
+          p_price_min?: number
+          p_query?: string
+          p_sort?: string
+          p_text?: Json
+        }
+        Returns: {
+          id: string
+          total_count: number
         }[]
       }
       search_matches: {

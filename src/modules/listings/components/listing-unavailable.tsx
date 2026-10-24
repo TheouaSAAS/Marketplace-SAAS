@@ -23,7 +23,7 @@ export async function ListingUnavailable({
   });
   return (
     <div className="flex flex-col gap-6">
-      <Breadcrumbs items={[{ label: "Annonces", href: href("search", { query: { type: "annonces" } }) }, { label: state.title }]} />
+      <Breadcrumbs items={[{ label: "Annonces", href: href("listings") }, { label: state.title }]} />
       <h1 className="text-2xl font-extrabold sm:text-3xl">{state.title}</h1>
       <Alert tone={notice.tone} title={notice.title}>
         {notice.body}

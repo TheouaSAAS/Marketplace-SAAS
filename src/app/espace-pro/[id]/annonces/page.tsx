@@ -23,7 +23,7 @@ function ListingRow({ listing }: { listing: ProListing }) {
     <li className="flex flex-col gap-2 rounded-card border border-border bg-surface p-4">
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone={CONTENT_STATUS_META[listing.status].tone}>{CONTENT_STATUS_META[listing.status].label}</Badge>
-        {listing.status === "published" && listing.availability_status === "unavailable" && <Badge tone="neutral">Indisponible</Badge>}
+        {listing.status === "published" && listing.availability_status === "unavailable" && <Badge tone="neutral">Non disponible</Badge>}
         <span className="text-xs text-ink-muted">
           {listing.category_name} · modifiée le {formatDateTime(listing.updated_at)}
         </span>

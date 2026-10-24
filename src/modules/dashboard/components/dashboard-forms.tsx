@@ -67,7 +67,7 @@ export function AvailabilityForm({ id, available }: { id: string; available: boo
       <input type="hidden" name="dispo" value={available ? "unavailable" : "available"} />
       <FormStatus state={state} />
       <SubmitButton variant="secondary" fullWidth={false}>
-        {available ? "Marquer indisponible" : "Marquer disponible"}
+        {available ? "Marquer non disponible" : "Marquer disponible"}
       </SubmitButton>
     </form>
   );

@@ -108,6 +108,7 @@ async function Editor({ params }: { params: Promise<{ id: string }> }) {
           id: category.id,
           name: category.parentName ? `${category.parentName} › ${category.name}` : category.name,
           schema: category.schema,
+          fields: category.fields,
         }))}
         neighborhoods={editor.neighborhoods.map(({ id: neighborhoodId, name }) => ({ id: neighborhoodId, name }))}
         photos={editor.photos}

@@ -9,7 +9,7 @@ import { Checkbox, Radio } from "@/components/ui/choice-controls";
 import { Field, Input, Select, Textarea } from "@/components/ui/form-controls";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/feedback";
-import { ATTRIBUTE_SCHEMAS, type AttributeDefinition } from "@/modules/listings/domain/attributes";
+import { activeDefinitions, type AttributeDefinition } from "@/modules/listings/domain/attributes";
 import { getField, setField } from "../domain/draft-fields";
 import {
   DESCRIPTION_MAX,
@@ -135,7 +135,7 @@ export function ListingEditor({
   userId: string;
   initialCategoryId: string;
   initialDraft: ListingDraft;
-  categories: { id: string; name: string; schema: string | null }[];
+  categories: { id: string; name: string; schema: string | null; fields: string[] | null }[];
   neighborhoods: { id: string; name: string }[];
   photos: DraftPhoto[];
   initialSuggestions: StoredSuggestion[];
@@ -154,8 +154,10 @@ export function ListingEditor({
   const dirty = useRef(false);
   const latest = useRef({ categoryId, draft });
 
-  const schema = categories.find((category) => category.id === categoryId)?.schema ?? null;
-  const definitions = schema ? ATTRIBUTE_SCHEMAS[schema] : undefined;
+  const current = categories.find((category) => category.id === categoryId);
+  const schema = current?.schema ?? null;
+  // Seuls les champs activés pour la catégorie sont proposés (un meuble n'a pas de kilométrage).
+  const definitions = activeDefinitions(schema, current?.fields);
   const positionless = POSITIONLESS.includes(schema ?? "");
 
   const persist = useCallback(async () => {
@@ -308,10 +310,10 @@ export function ListingEditor({
           <Checkbox name="negociable" label="Prix à débattre" checked={draft.negotiable} onChange={(event) => set("negotiable", event.target.checked)} />
         </Section>
 
-        {definitions && (
+        {definitions.length > 0 && (
           <Section id="caracteristiques" title="Caractéristiques">
             <div className="grid gap-4 sm:grid-cols-2">
-              {Object.entries(definitions).map(([key, definition]) => (
+              {definitions.map(([key, definition]) => (
                 <AttributeInput
                   key={`${schema}-${key}`}
                   name={key}

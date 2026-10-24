@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/container";
 import { Alert, ErrorState } from "@/components/ui/feedback";
 import { Skeleton } from "@/components/ui/spinner";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { LiveListings } from "@/modules/listings/components/live-listings";
 import { CompareBar } from "@/modules/real-estate/components/compare";
 import { ModeNav } from "@/modules/real-estate/components/mode-nav";
 import { PropertyFilters } from "@/modules/real-estate/components/property-filters";
@@ -56,9 +57,13 @@ async function Results({ mode, searchParams }: { mode: RealEstateMode; searchPar
           <PropertyFilters key={realEstateQuery(data.filters)} mode={mode} filters={data.filters} neighborhoods={data.neighborhoods} />
         </aside>
         <section aria-labelledby="resultats" className="flex min-w-0 flex-col gap-4">
-          <h2 id="resultats" className="text-xl font-bold">
-            {data.total === 0 ? "Aucun bien" : `${data.total} bien${data.total > 1 ? "s" : ""}`} · {data.cityName}
-          </h2>
+          {/* Statut du direct sur sa propre ligne au téléphone : son libellé change sans déplacer la liste. */}
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+            <h2 id="resultats" className="text-xl font-bold">
+              {data.total === 0 ? "Aucun bien" : `${data.total} bien${data.total > 1 ? "s" : ""}`} · {data.cityName}
+            </h2>
+            <LiveListings />
+          </div>
           <p className="text-sm text-ink-muted">
             Les informations (prix, surface, disponibilité) sont déclarées par les annonceurs. Une annonce non confirmée depuis 30 jours est
             signalée « à reconfirmer ». Ne versez jamais d’argent avant d’avoir visité.

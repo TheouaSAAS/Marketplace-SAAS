@@ -11,6 +11,7 @@ import { HAS_DATABASE, NO_DATABASE } from "./env";
 const PAGES = [
   "/",
   "/annonces",
+  "/annonces?categorie=voitures",
   "/immobilier",
   "/emploi",
   "/services",

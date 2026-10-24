@@ -1,6 +1,7 @@
 import "server-only";
 import { href } from "@/config/routes";
 import { SITE } from "@/config/site";
+import { JOB_SCHEMAS } from "@/modules/publishing/server/queries";
 import { listingStructuredData } from "../domain/structured-data";
 import type { ListingDetail } from "./detail";
 
@@ -9,7 +10,10 @@ export function listingUrl(slug: string): string {
 }
 
 export function listingCategoryHref(listing: ListingDetail): string | null {
-  return listing.category ? href("search", { query: { type: "annonces", categorie: listing.category.slug } }) : null;
+  if (!listing.category) return null;
+  // Les offres d'emploi ont leur rubrique ; les autres annonces se parcourent dans « Toutes les annonces ».
+  if (JOB_SCHEMAS.includes(listing.category.attribute_schema ?? "")) return href("jobs");
+  return href("listings", { query: { categorie: listing.category.slug } });
 }
 
 /**
@@ -38,6 +42,6 @@ export function listingJsonLd(listing: ListingDetail, organizationName: string |
       imageUrls: [],
     },
     SITE.url,
-    `${SITE.url}${href("search", { query: { type: "annonces" } })}`,
+    `${SITE.url}${href("listings")}`,
   ).slice(1);
 }

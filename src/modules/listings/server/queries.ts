@@ -47,12 +47,13 @@ export async function listListingsByCategories(cityId: string, categoryIds: read
   return z.array(listingCardSchema).parse(data);
 }
 
-/** Annonces publiées par identifiants, dans l'ordre donné (résultats de recherche). */
+/**
+ * Annonces publiées par identifiants, dans l'ordre donné (résultats de recherche).
+ * Lues en direct, sans cache : les listes se rechargent à chaque changement
+ * signalé en temps réel (disponibilité, prix, retrait), y compris quand il ne
+ * vient pas du site (expiration planifiée, modération, autre serveur).
+ */
 export async function listListingsByIds(ids: readonly string[]): Promise<ListingCardData[]> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag(LISTINGS_CACHE_TAG);
-
   const supabase = createPublicSupabaseClient();
   if (!supabase || ids.length === 0) return [];
   const { data, error } = await supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "published").in("id", [...ids]);

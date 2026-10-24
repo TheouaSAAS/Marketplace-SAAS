@@ -6,14 +6,14 @@ Rapport du **niveau 27** (24/10/2026). Toutes les suites se rejouent avec `npm r
 
 | Suite | Commande | Contenu | Résultat |
 | --- | --- | --- | --- |
-| Unitaires et intégration | `npm test` | Règles métier, filtres, statuts, droits par rôle, transformations IA (modèle simulé), composants | 499 tests, 56 fichiers |
+| Unitaires et intégration | `npm test` | Règles métier, filtres, statuts, droits par rôle, transformations IA (modèle simulé), composants | 515 tests, 58 fichiers |
 | Couverture | `npm run test:coverage` | Règles métier (`domain`), `lib`, configuration, composants | domaine 94,6 % des lignes, `lib` 79,9 %, configuration 100 %, composants 11,5 % (exercés par les tests de bout en bout) |
-| Base de données | `npm run db:verify` | RLS, fonctions, déclencheurs, modération, notifications, IA, sécurité, hygiène des données | 25 suites, ~500 vérifications |
+| Base de données | `npm run db:verify` | RLS, fonctions, déclencheurs, modération, notifications, IA, sécurité, hygiène des données | 26 suites, 532 vérifications |
 | Statique SQL | `npm test` (`supabase/migrations.test.ts`) | Syntaxe SQL et PL/pgSQL de toutes les migrations et données de démonstration | — |
-| Smoke | `npm run smoke` | 43 pages (statut, contenu attendu), sitemap, absence de secret dans le code du navigateur | 43 pages |
-| Bout en bout | `npm run e2e` | Edge mobile (Pixel 7) et ordinateur, 29 fichiers ; comptes de test créés et supprimés automatiquement | ~310 réussis, 63 ignorés par conception |
-| Accessibilité | (inclus) `e2e/accessibility.spec.ts` | axe-core WCAG 2.2 AA : 31 pages publiques (dont 7 fiches) et 17 pages connectées, mouvement réduit, focus | bloquant (grave, critique) |
-| Performance | (inclus) `e2e/performance.spec.ts` | Poids compressé, CLS, LCP sur 7 pages mobiles | bloquant (budget) |
+| Smoke | `npm run smoke` | 44 pages (statut, contenu attendu), sitemap, absence de secret dans le code du navigateur | 44 pages |
+| Bout en bout | `npm run e2e` | Edge mobile (Pixel 7) et ordinateur, 30 fichiers ; comptes de test créés et supprimés automatiquement | ~320 réussis, 67 ignorés par conception |
+| Accessibilité | (inclus) `e2e/accessibility.spec.ts` | axe-core WCAG 2.2 AA : 32 pages publiques (dont 7 fiches) et 17 pages connectées, mouvement réduit, focus | bloquant (grave, critique) |
+| Performance | (inclus) `e2e/performance.spec.ts` | Poids compressé, CLS, LCP sur 8 pages mobiles (dont « Toutes les annonces ») | bloquant (budget) |
 | Sécurité | (inclus) `e2e/security.spec.ts`, `level26_security.sql` | En-têtes, CSP sans violation, défi anti-robot, matrice d'accès | bloquant |
 
 « Ignorés par conception » : tests qui modifient des comptes de test partagés (exécutés sur un seul profil), tests de mesure réservés au mobile, et tests qui exigent la base (ignorés en CI sans base, où l'état dégradé est testé à leur place).
@@ -31,6 +31,8 @@ Rapport du **niveau 27** (24/10/2026). Toutes les suites se rejouent avec `npm r
 | « Nouveau à San Pedro ? » | ✅ | ✅ | `newcomer.spec`, `level6_newcomer.sql`, `ai.spec` |
 | Pages pro, espace pro, équipe | — | ✅ | `pros.spec`, `pro-space.spec`, `level19_pros.sql`, `level21_pro_dashboard.sql` |
 | Événements, emploi, guide, quartiers, carte, tourisme, commerces | ✅ | ✅ | un fichier e2e et une suite SQL par domaine |
+| Toutes les annonces : rubriques, filtres par catégorie, tri, retour depuis une fiche, temps réel (publication, disponibilité, retrait sans rechargement) | ✅ | ✅ | `listings-browse.spec`, `browse.test`, `live.test`, `level28_listing_sections.sql` |
+| Rubriques administrables (création, quatre niveaux, suppression avec reprise) | — | ✅ | `admin.spec`, `categories.test` (admin), `level28_listing_sections.sql` |
 | Notifications, préférences, désabonnement | ✅ | ✅ | `notifications.spec`, `dashboard.spec`, `level24_notifications.sql`, `email.test` |
 
 Les parcours qui modifient des comptes partagés tournent sur le profil ordinateur ; leur rendu mobile est couvert par les tests de pages, l'audit d'accessibilité et le test de débordement à 360 px.

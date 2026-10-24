@@ -2,8 +2,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { FOOTER_SECTIONS, MOBILE_TABS, NAV_SECTIONS, NEWCOMER_LINK } from "./navigation";
-import { hasPage, ROUTES } from "./routes";
-import { SECTION_PREVIEWS } from "./sections";
+import { hasPage, ROUTES, type RouteStatus } from "./routes";
 
 const seed = readFileSync(new URL("../../supabase/seed.sql", import.meta.url), "utf8");
 const allLinks = [
@@ -37,10 +36,7 @@ describe("navigation", () => {
   });
 
   it("n'utilise que des catégories présentes dans les données de référence", () => {
-    const slugs = [
-      ...allLinks.flatMap((link) => (link.category ? [link.category] : [])),
-      ...Object.values(SECTION_PREVIEWS).flatMap((preview) => ("categories" in preview ? [...preview.categories] : [])),
-    ];
+    const slugs = allLinks.flatMap((link) => (link.category ? [link.category] : []));
     expect(slugs.length).toBeGreaterThan(5);
     for (const slug of slugs) expect(seed, slug).toContain(`'${slug}'`);
   });
@@ -55,11 +51,7 @@ describe("navigation", () => {
     for (const tab of MOBILE_TABS) expect(hasPage(tab.route), tab.label).toBe(true);
   });
 
-  it("chaque rubrique en préparation a son écran d'attente", () => {
-    for (const [key, route] of Object.entries(ROUTES)) {
-      if (route.status === "preview" && !["search", "favorites"].includes(key)) {
-        expect(SECTION_PREVIEWS, key).toHaveProperty(key);
-      }
-    }
+  it("ne laisse plus aucune rubrique en écran d'attente : chaque lien mène à une page terminée ou est marqué « Bientôt »", () => {
+    expect(Object.entries(ROUTES).filter(([, route]) => (route.status as RouteStatus) === "preview").map(([key]) => key)).toEqual([]);
   });
 });

@@ -10,6 +10,7 @@ import { displayAttributes } from "@/modules/listings/domain/attributes";
 import { confirmationFreshness, freshnessLabel } from "../domain/freshness";
 import type { RealEstateCardData } from "../server/queries";
 import { CompareToggle } from "./compare";
+import { AVAILABILITY_BADGES, AVAILABILITY_NOTE } from "@/modules/listings/domain/availability";
 
 const KEY_FACTS = new Set(["Type de bien", "Pièces", "Chambres", "Surface", "Meublé"]);
 
@@ -18,14 +19,18 @@ export function PropertyCard({ property, now }: { property: RealEstateCardData; 
   const facts = displayAttributes("immobilier", property.attributes).filter((fact) => KEY_FACTS.has(fact.label));
   const freshness = confirmationFreshness(property.last_confirmed_at, property.published_at, now);
   const detail = href("listingDetail", { params: { slug: property.slug } });
+  const availability = AVAILABILITY_BADGES[property.availability_status];
   return (
     <article className="relative flex flex-col overflow-hidden rounded-card border border-border bg-surface shadow-card has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-focus">
       <CategoryVisual icon={property.category?.icon} fallback={House} tone="brand" />
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex flex-wrap gap-1.5">
           <VerificationBadge status={displayedVerification(property.verification_status, property.verified_at, now)} />
-          {property.availability_status === "available" && <Badge tone="success">Disponible (déclaré)</Badge>}
-          {property.availability_status === "reserved" && <Badge tone="warning">Réservé</Badge>}
+          {availability && (
+          <Badge tone={availability.tone} title={AVAILABILITY_NOTE}>
+            {availability.label}
+          </Badge>
+        )}
         </div>
         <h3 className="line-clamp-2 font-bold leading-snug">
           <Link href={detail} className="after:absolute after:inset-0 hover:text-brand-700 focus-visible:outline-none">

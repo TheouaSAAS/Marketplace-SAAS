@@ -9,6 +9,7 @@ import { ProBadgeList } from "@/modules/businesses/components/pro-badges";
 import type { BusinessCardData } from "@/modules/businesses/server/queries";
 import type { EventCardData } from "@/modules/events/server/queries";
 import type { GuideCardData } from "@/modules/guide/server/queries";
+import { AVAILABILITY_BADGES, AVAILABILITY_NOTE } from "@/modules/listings/domain/availability";
 import type { ListingCardData } from "@/modules/listings/server/queries";
 import type { PlaceCardData } from "@/modules/places/server/queries";
 import { Badge } from "@/components/ui/badge";
@@ -70,12 +71,6 @@ function PublicVerification({
   return <VerificationBadge status={displayedVerification(status, verifiedAt, now, kind)} />;
 }
 
-const AVAILABILITY: Record<ListingCardData["availability_status"], { label: string; tone: "success" | "warning" | "neutral" } | null> = {
-  available: { label: "Disponible (déclaré)", tone: "success" },
-  reserved: { label: "Réservé", tone: "warning" },
-  unavailable: { label: "Indisponible", tone: "neutral" },
-  unknown: null,
-};
 
 /** Titre de carte ; avec `href`, le lien couvre toute la carte (un seul arrêt au clavier). */
 function CardTitle({ title, href, className }: { title: string; href?: string; className?: string }) {
@@ -92,13 +87,18 @@ function CardTitle({ title, href, className }: { title: string; href?: string; c
   );
 }
 
-export function ListingCard({ listing, now, index, context, href }: CardProps & { listing: ListingCardData; href?: string }) {
-  const availability = AVAILABILITY[listing.availability_status];
+/** `action` (ex. favori) reste cliquable au-dessus du lien qui couvre la carte. */
+export function ListingCard({ listing, now, index, context, href, action }: CardProps & { listing: ListingCardData; href?: string; action?: ReactNode }) {
+  const availability = AVAILABILITY_BADGES[listing.availability_status];
   return (
     <CardShell index={index} context={context} visual={<CategoryVisual icon={listing.category?.icon} fallback={Package} tone="brand" />}>
       <div className="flex flex-wrap gap-1.5">
         <PublicVerification status={listing.verification_status} verifiedAt={listing.verified_at} now={now} />
-        {availability && <Badge tone={availability.tone}>{availability.label}</Badge>}
+        {availability && (
+          <Badge tone={availability.tone} title={AVAILABILITY_NOTE}>
+            {availability.label}
+          </Badge>
+        )}
       </div>
       <CardTitle title={listing.title} href={href} />
       <Meta items={[listing.category?.name, listing.neighborhood?.name]} />
@@ -106,6 +106,7 @@ export function ListingCard({ listing, now, index, context, href }: CardProps & 
         <p className="font-bold text-brand-800">{formatPrice(listing.price, listing.price_unit ?? "total")}</p>
         {listing.published_at && <p className="text-xs text-ink-subtle">Publiée le {formatDate(listing.published_at, "short")}</p>}
       </div>
+      {action && <div className="relative z-10 pt-1">{action}</div>}
     </CardShell>
   );
 }

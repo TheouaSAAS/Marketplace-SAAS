@@ -38,11 +38,12 @@ const PAGES = [
   {
     path: "/sitemap.xml",
     status: 200,
-    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces", "/guide", "/quartiers", "/carte", "/evenements", "/emploi", "/publier", "/professionnels", "/offres"],
+    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces", "/guide", "/quartiers", "/carte", "/evenements", "/emploi", "/publier", "/professionnels", "/offres", "/annonces</loc>"],
     // Ni pages privées, ni rubriques en préparation (contenu encore mince).
-    excludes: ["/design-system", "/admin", "/interne", "/mes-annonces", "/tableau-de-bord", "/espace-pro", "/mes-pages-pro", "/publier/", "/annonces</loc>", "/profil", "/hors-ligne", "/tourisme/itineraire?"],
+    excludes: ["/design-system", "/admin", "/interne", "/mes-annonces", "/tableau-de-bord", "/espace-pro", "/mes-pages-pro", "/publier/", "/profil", "/hors-ligne", "/tourisme/itineraire?"],
   },
-  { path: "/annonces", status: 200, includes: ["En préparation", "noindex"] },
+  { path: "/annonces", status: 200, includes: DB ? ["Toutes les annonces", "Filtres et tri", "Biens et objets", "Véhicules"] : ["Toutes les annonces", "Annonces indisponibles"], excludes: ["En préparation", "noindex"] },
+  { path: "/annonces?categorie=voitures", status: 200, includes: DB ? ["Voitures", "Kilométrage", "Carburant"] : ["Toutes les annonces"] },
   { path: "/immobilier", status: 200, includes: ["Immobilier à San Pedro", "Logements à louer", "Locations de courte durée"], excludes: ["En préparation"] },
   { path: "/immobilier/location", status: 200, includes: DB ? ["Logements à louer", "Filtres et tri", "à reconfirmer"] : ["Logements à louer", ...SEARCH_DOWN] },
   {

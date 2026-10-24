@@ -31,7 +31,7 @@ export const ROUTES = {
   search: { path: "/recherche", label: "Recherche", level: 7, status: "live", private: true },
 
   // Annonces & opportunités
-  listings: { path: "/annonces", label: "Annonces", level: 7, status: "preview" },
+  listings: { path: "/annonces", label: "Annonces", level: 7, status: "live" },
   listingDetail: { path: "/annonces/[slug]", label: "Détail d’une annonce", level: 8, status: "live" },
   listingAgreement: { path: "/annonces/[slug]/accord", label: "Accord de transaction", level: 26, status: "live" },
   realEstate: { path: "/immobilier", label: "Immobilier", level: 9, status: "live" },

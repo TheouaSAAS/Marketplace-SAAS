@@ -11,7 +11,7 @@ import { toggleLikeAction } from "../server/like-action";
 const ROUND = "inline-flex h-11 items-center gap-2 rounded-pill border px-4 text-sm font-semibold transition-colors disabled:opacity-60";
 
 /** Favori : liste privée. Sans compte, le clic mène à la connexion puis revient ici. */
-export function FavoriteButton({ listingId, active, back }: { listingId: string; active: boolean; back: string }) {
+export function FavoriteButton({ listingId, active, back, title }: { listingId: string; active: boolean; back: string; title?: string }) {
   const [state, action, pending] = useActionState(toggleFavoriteAction, INITIAL_FORM_STATE);
   return (
     <form action={action}>
@@ -25,6 +25,8 @@ export function FavoriteButton({ listingId, active, back }: { listingId: string;
       >
         <Heart aria-hidden className={cn("h-4 w-4", active && "fill-current")} />
         {active ? "Dans mes favoris" : "Ajouter aux favoris"}
+        {/* Dans une liste, le titre distingue les boutons pour les lecteurs d'écran. */}
+        {title && <span className="sr-only"> : {title}</span>}
       </button>
       {state.status === "error" && (
         <p role="alert" className="mt-1 text-sm text-danger">

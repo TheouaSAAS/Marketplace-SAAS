@@ -21,6 +21,9 @@ export interface AttributeDefinition {
   type: AttributeKind;
 }
 
+/** État d'un objet, d'un véhicule ou d'une pièce (déclaré par l'annonceur, jamais vérifié par la plateforme). */
+export const CONDITIONS = { neuf: "Neuf", tres_bon: "Très bon état", bon: "Bon état", correct: "État correct", pour_pieces: "À réparer" } as const;
+
 export const ATTRIBUTE_SCHEMAS: Record<string, Record<string, AttributeDefinition>> = {
   immobilier: {
     type_bien: {
@@ -67,16 +70,17 @@ export const ATTRIBUTE_SCHEMAS: Record<string, Record<string, AttributeDefinitio
       label: "Carburant",
       type: { kind: "choice", options: { essence: "Essence", diesel: "Diesel", electrique: "Électrique", hybride: "Hybride" } },
     },
-    boite: { label: "Boîte de vitesses", type: { kind: "choice", options: { manuelle: "Manuelle", automatique: "Automatique" } } },
+    boite: { label: "Transmission", type: { kind: "choice", options: { manuelle: "Manuelle", automatique: "Automatique" } } },
+    etat: { label: "État général", type: { kind: "choice", options: CONDITIONS } },
+  },
+  piece: {
+    type_piece: { label: "Type de pièce", type: { kind: "text" } },
+    etat: { label: "État", type: { kind: "choice", options: CONDITIONS } },
+    marque: { label: "Marque", type: { kind: "text" } },
+    compatibilite: { label: "Compatibilité (modèles, années)", type: { kind: "text" } },
   },
   bien: {
-    etat: {
-      label: "État",
-      type: {
-        kind: "choice",
-        options: { neuf: "Neuf", tres_bon: "Très bon état", bon: "Bon état", correct: "État correct", pour_pieces: "Pour pièces" },
-      },
-    },
+    etat: { label: "État", type: { kind: "choice", options: CONDITIONS } },
     marque: { label: "Marque", type: { kind: "text" } },
   },
   service: {
@@ -96,6 +100,40 @@ export const ATTRIBUTE_SCHEMAS: Record<string, Record<string, AttributeDefinitio
     date_limite: { label: "Date limite de dépôt", type: { kind: "date" } },
   },
 };
+
+/** Schémas proposés à l'administration pour une catégorie d'annonce (champs définis ci-dessus). */
+export const SCHEMA_LABELS: Record<string, string> = {
+  bien: "Biens et objets (état, marque)",
+  vehicule: "Véhicule complet (marque, modèle, année, kilométrage, carburant, transmission, état)",
+  piece: "Pièces et accessoires (type, état, marque, compatibilité)",
+  immobilier: "Immobilier (type de bien, pièces, surface, équipements)",
+  service: "Service (zone d’intervention, déplacement)",
+  formation: "Formation (durée, niveau, certification)",
+  emploi: "Offre d’emploi (parcours dédié)",
+  opportunite: "Opportunité (parcours dédié)",
+  appel_offres: "Appel d’offres (parcours dédié)",
+};
+
+/** Filtres proposés par schéma : seuls ces champs servent de critères de recherche. */
+export const FILTERABLE_FIELDS: Record<string, readonly string[]> = {
+  bien: ["etat", "marque"],
+  vehicule: ["marque", "annee", "kilometrage", "carburant", "boite", "etat"],
+  piece: ["etat", "marque", "type_piece"],
+  immobilier: ["type_bien", "chambres", "meuble"],
+};
+
+/** Champs du schéma activés pour une catégorie (null : tous), dans l'ordre du registre. */
+export function activeDefinitions(schema: string | null | undefined, fields: readonly string[] | null | undefined): [string, AttributeDefinition][] {
+  const definitions = schema ? ATTRIBUTE_SCHEMAS[schema] : undefined;
+  if (!definitions) return [];
+  return Object.entries(definitions).filter(([key]) => !fields || fields.includes(key));
+}
+
+/** Filtres d'une catégorie : champs filtrables du schéma, parmi ses champs actifs. */
+export function categoryFilters(schema: string | null | undefined, fields: readonly string[] | null | undefined): [string, AttributeDefinition][] {
+  const filterable = schema ? (FILTERABLE_FIELDS[schema] ?? []) : [];
+  return activeDefinitions(schema, fields).filter(([key]) => filterable.includes(key));
+}
 
 const NUMBER = new Intl.NumberFormat("fr-FR");
 const DATE = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Abidjan" });

@@ -11,6 +11,8 @@ const category = (id: string, slug: string, parent: string | null = null): Categ
   sort_order: 0,
   content_types: [],
   attribute_schema: null,
+  attribute_fields: null,
+  description: null,
   keywords: [],
 });
 

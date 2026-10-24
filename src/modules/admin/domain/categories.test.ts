@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { categoryForest, parseKeywords, slugify, type AdminCategory } from "./categories";
+import { categoryForest, moveTargets, parseKeywords, replacementTargets, slugify, type AdminCategory } from "./categories";
 
 const category = (id: string, name: string, parent: string | null, sort = 0): AdminCategory => ({
   id,
@@ -10,6 +10,11 @@ const category = (id: string, name: string, parent: string | null, sort = 0): Ad
   sort_order: sort,
   is_active: true,
   keywords: [],
+  description: null,
+  icon: null,
+  content_types: ["listing"],
+  attribute_schema: null,
+  attribute_fields: null,
 });
 
 describe("référentiel des catégories", () => {
@@ -37,5 +42,29 @@ describe("référentiel des catégories", () => {
       ["Plomberie", 1],
       ["Climatisation", 1],
     ]);
+  });
+
+  // Arbre : Véhicules › Voitures › SUV › Compacts ; Biens › Meubles ; Restaurants (autre famille).
+  const tree = [
+    category("v", "Véhicules", null, 1),
+    category("vo", "Voitures", "v", 1),
+    category("suv", "SUV", "vo", 1),
+    category("co", "Compacts", "suv", 1),
+    category("b", "Biens", null, 2),
+    category("m", "Meubles", "b", 1),
+    { ...category("r", "Restaurants", null, 1), family: "decouvrir" as const },
+    { ...category("x", "Ancienne rubrique", "b", 9), is_active: false },
+  ];
+  const names = (nodes: { category: AdminCategory }[]) => nodes.map((node) => node.category.name);
+
+  it("ne propose comme parent ni la catégorie, ni ses descendantes, ni une autre famille, ni un cinquième niveau", () => {
+    // Voitures porte deux niveaux sous elle : seules des rubriques principales peuvent l'accueillir.
+    expect(names(moveTargets(tree, tree[1]!))).toEqual(["Véhicules", "Biens"]);
+    expect(names(moveTargets(tree, tree[5]!))).toEqual(["Véhicules", "Voitures", "SUV", "Biens", "Ancienne rubrique"]);
+    expect(names(moveTargets(tree, tree[3]!))).toEqual(["Véhicules", "Voitures", "SUV", "Biens", "Meubles", "Ancienne rubrique"]);
+  });
+
+  it("ne propose pour reprendre les contenus que des catégories actives de la même famille", () => {
+    expect(names(replacementTargets(tree, tree[5]!))).toEqual(["Véhicules", "Voitures", "SUV", "Compacts", "Biens"]);
   });
 });

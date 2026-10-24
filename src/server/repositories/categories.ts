@@ -14,6 +14,9 @@ const categorySchema = z.object({
   sort_order: z.number(),
   content_types: z.array(z.enum(["listing", "place", "event", "business"])),
   attribute_schema: z.string().nullable(),
+  /** Champs du schéma activés pour cette catégorie (null : tous). */
+  attribute_fields: z.array(z.string()).nullable(),
+  description: z.string().nullable(),
   keywords: z.array(z.string()),
 });
 
@@ -33,7 +36,7 @@ export async function listCategories(): Promise<Category[]> {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("categories")
-    .select("id, slug, name, parent_id, icon, sort_order, content_types, attribute_schema, keywords")
+    .select("id, slug, name, parent_id, icon, sort_order, content_types, attribute_schema, attribute_fields, description, keywords")
     .eq("is_active", true)
     .order("sort_order");
   if (error) throw new Error(`Lecture des catégories impossible : ${error.message}`);
@@ -63,4 +66,16 @@ export function selectCategoryTree(all: Category[], parentSlugs: readonly string
     if (!parent) return [];
     return [{ parent, children: all.filter((category) => category.parent_id === parent.id) }];
   });
+}
+
+/** Ancêtres d'une catégorie, de la rubrique principale jusqu'à elle (fil d'Ariane). */
+export function categoryPath(all: readonly Category[], id: string): Category[] {
+  const byId = new Map(all.map((category) => [category.id, category]));
+  const path: Category[] = [];
+  let current = byId.get(id);
+  while (current && path.length < 6) {
+    path.unshift(current);
+    current = current.parent_id ? byId.get(current.parent_id) : undefined;
+  }
+  return path;
 }

@@ -60,11 +60,12 @@ describe("href", () => {
 });
 
 describe("statuts", () => {
-  it("distingue page terminée, page en préparation et page absente", () => {
+  it("distingue page terminée et page absente", () => {
     expect(isLive("home")).toBe(true);
     expect(hasPage("home")).toBe(true);
-    expect(isLive("listings")).toBe(false);
+    expect(isLive("listings")).toBe(true);
     expect(hasPage("listings")).toBe(true);
+    expect(isLive("city")).toBe(false);
     expect(hasPage("city")).toBe(false);
   });
 });

@@ -1,30 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const SECTIONS: [string, string][] = [
-  ["/annonces", "Annonces et opportunités"],
-];
-
 test.describe("Shell — rubriques", () => {
-  test("toutes les rubriques majeures sont accessibles, explicites et non indexées", async ({ page }) => {
-    test.setTimeout(90_000);
-    for (const [path, title] of SECTIONS) {
-      const response = await page.goto(path);
-      expect(response?.status(), path).toBe(200);
-      await expect(page.getByRole("heading", { level: 1 }), path).toHaveText(title);
-      await expect(page.getByText("En préparation", { exact: true }), path).toBeVisible();
-      await expect(page.getByRole("navigation", { name: "Fil d’Ariane" }), path).toBeVisible();
-      await expect(page.locator('meta[name="robots"]'), path).toHaveAttribute("content", /noindex/);
-    }
-  });
-
-  test("une rubrique présente ses catégories réelles et la catégorie choisie", async ({ page }) => {
-    test.skip(!process.env.NEXT_PUBLIC_SUPABASE_URL, "Supabase non configuré");
-    await page.goto("/annonces");
-    await page.getByRole("link", { name: "Voitures", exact: true }).click();
-    await expect(page).toHaveURL(/\/annonces\?categorie=voitures$/);
-    await expect(page.getByText("Catégorie : Voitures")).toBeVisible();
-  });
-
   test("les pages d'aide et de confiance sont complètes et indexables", async ({ page }) => {
     const pages: [string, string][] = [
       ["/aide", "Aide"],

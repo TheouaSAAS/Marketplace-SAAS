@@ -38,7 +38,7 @@ async function cleanup(titlePrefix: string) {
   }
 }
 
-async function startDraft(page: Page, category = "Voitures") {
+async function startDraft(page: Page, category = "Citadines et berlines") {
   await page.goto("/publier");
   await page.getByRole("button", { name: category, exact: true }).first().click();
   await expect(page).toHaveURL(/\/publier\/[0-9a-f-]{36}$/, { timeout: NETWORK });

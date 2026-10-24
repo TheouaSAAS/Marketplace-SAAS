@@ -16,13 +16,18 @@ export const JOB_SCHEMAS = ["emploi", "opportunite", "appel_offres"];
 
 export interface PublishableCategory extends CategoryChoice {
   slug: string;
+  /** Modèle de fiche : celui de la catégorie, sinon celui de son plus proche parent. */
   schema: string | null;
+  /** Champs du modèle activés par l'administration (null : tous). */
+  fields: string[] | null;
 }
 
 export interface CategoryGroup {
   id: string;
   name: string;
   children: PublishableCategory[];
+  /** Mêmes catégories, rangées par sous-rubrique (null : directement sous la rubrique). */
+  sections: { name: string | null; children: PublishableCategory[] }[];
 }
 
 /** Catégories proposées à la publication, groupées par rubrique (référentiel administrable). */
@@ -30,29 +35,40 @@ export async function publishableCategories(): Promise<{ groups: CategoryGroup[]
   const all = await listCategories();
   const byId = new Map(all.map((category) => [category.id, category]));
   const usable = (category: Category) => category.content_types.includes("listing") && !JOB_SCHEMAS.includes(category.attribute_schema ?? "");
+  const withSchema = (category: Category): Category => {
+    let current: Category | undefined = category;
+    while (current && !current.attribute_schema) current = current.parent_id ? byId.get(current.parent_id) : undefined;
+    return current ?? category;
+  };
   const toChoice = (category: Category, parent: Category | undefined): PublishableCategory => ({
     id: category.id,
     slug: category.slug,
     name: category.name,
     keywords: category.keywords,
     parentName: parent?.name ?? null,
-    schema: category.attribute_schema,
+    schema: withSchema(category).attribute_schema,
+    fields: withSchema(category).attribute_fields,
   });
-  const root = (category: Category): Category => {
-    let current = category;
-    while (current.parent_id && byId.has(current.parent_id)) current = byId.get(current.parent_id)!;
-    return current;
+  // Parcours de l'arbre dans l'ordre d'affichage : rubrique, sous-rubrique, puis leurs catégories.
+  const walk = (category: Category, path: Category[]): { leaf: Category; path: Category[] }[] => {
+    const children = all.filter((child) => child.parent_id === category.id && usable(child));
+    return children.length ? children.flatMap((child) => walk(child, [...path, child])) : [{ leaf: category, path }];
   };
-  // On publie dans une catégorie « feuille » (sans sous-catégorie publiable), rangée sous sa rubrique.
-  const leaves = all.filter((category) => usable(category) && !all.some((child) => child.parent_id === category.id && usable(child)));
-  const groups = new Map<string, CategoryGroup>();
-  for (const leaf of leaves) {
-    const top = root(leaf);
-    const group = groups.get(top.id) ?? { id: top.id, name: top.name, children: [] };
-    group.children.push(toChoice(leaf, leaf.parent_id ? byId.get(leaf.parent_id) : undefined));
-    groups.set(top.id, group);
-  }
-  const ordered = [...groups.values()];
+  // On publie dans une catégorie « feuille » (sans sous-catégorie publiable), rangée sous sa rubrique et sa sous-rubrique.
+  const ordered: CategoryGroup[] = all
+    .filter((category) => !category.parent_id && usable(category))
+    .map((top) => {
+      const group: CategoryGroup = { id: top.id, name: top.name, children: [], sections: [] };
+      for (const { leaf, path } of walk(top, [top])) {
+        const choice = toChoice(leaf, leaf.parent_id ? byId.get(leaf.parent_id) : undefined);
+        group.children.push(choice);
+        const sectionName = path.length > 2 ? path[1]!.name : null;
+        const last = group.sections.at(-1);
+        if (last && last.name === sectionName) last.children.push(choice);
+        else group.sections.push({ name: sectionName, children: [choice] });
+      }
+      return group;
+    });
   return { groups: ordered, flat: ordered.flatMap((group) => group.children) };
 }
 

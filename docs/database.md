@@ -218,6 +218,16 @@ Rôles internes d'une organisation : `owner` > `admin` > `editor` > `viewer`. `c
 - `fraud_signals_for` (calcul interne, non exposé), `listing_fraud_signals` (équipe), `fraud_review_queue` (score ≥ 3), alerte `listings_fraud_alert` (score ≥ 5 : notification `securite` à l'équipe). Aucun de ces éléments ne modifie un contenu.
 - `charter_acceptances` : acceptation datée de la charte par rôle et version, en son nom seulement et au moment présent.
 
+## Rubriques des annonces et temps réel (migrations `20261108000100` à `…000300`)
+
+- `categories.attribute_fields` : champs du modèle de fiche activés pour la catégorie (null : tous).
+- `protect_category_tree` (déclencheur) : quatre niveaux au plus, même famille, pas de cycle, y compris pour les sous-catégories d'une catégorie déplacée.
+- `admin_category_usage()` (administrateurs) : sous-catégories, annonces publiées et autres, lieux, événements, pages pro par catégorie.
+- `delete_category(catégorie, reprise, raison)` (administrateurs) : refuse s'il reste des sous-catégories ; déplace annonces, lieux, événements, pages pro et campagnes vers la catégorie de reprise (active, même famille) ; journal `categorie.suppression`.
+- `search_listings(...)` (invocateur, anon et membres) : annonces publiées, non expirées et visibles de toutes les rubriques hors emploi ; filtres ville, quartier, catégories, prix, disponibilité, caractéristiques exactes (`p_eq`), textes sans casse ni accents (`p_text`), bornes (`p_min`, `p_max` : une annonce sans la caractéristique est exclue, correctif `…000200`) ; tri récent, prix croissant ou décroissant, pertinence ; total avant pagination.
+- `broadcast_listing_change` (déclencheur) : diffuse `{ id }` sur le canal public `annonces` (événement `annonce`) quand une annonce visible change ; ignore les compteurs ; un échec de diffusion ne bloque pas l'écriture. Les partitions quotidiennes de `realtime.messages` sont créées par le service Realtime de Supabase tant qu'il est actif.
+- Référentiel livré : Biens et objets (9 sous-rubriques), Véhicules (6 sous-rubriques), modèles `bien`, `vehicule`, `piece`.
+
 ## Règles en base (déclencheurs)
 
 `enforce_content_rules` (modération + vérification), `validate_content_references` (catégorie, quartier, ville), `validate_organization_assignment` (publier au nom d'une organisation), `protect_profile_privileges` (rôles), `protect_organization_members` (toujours un propriétaire), `enforce_review_rules` (pas d'auto-évaluation ; le professionnel répond sans modifier la note), `validate_job_application` (offre publiée, ouverte, date limite non passée), `protect_job_application`, `apply_listing_deadline`, `require_listing_location`, `notify_listing_moderation`, `protect_image` (photos privées d’office, limite, champs protégés), `protect_listing_suggestion` (décisions tracées), `filter_muted_notification` (catégories coupées), `protect_contact_request` (statut seul), `validate_listing_business` (annonce au nom d’une page), `track_event_schedule` (report, annulation motivée), `record_revision` (historique), `audit_account_change` (journal des rôles et suspensions), `enforce_message_blocks` (blocage), `alert_risky_listing` (alerte anti-fraude), versionnement du guide, `set_contact_request_recipient`.

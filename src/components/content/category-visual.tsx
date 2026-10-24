@@ -40,6 +40,9 @@ const ICONS: Record<string, LucideIcon> = {
   "file-text": FileText,
 };
 
+/** Noms d'icônes proposés à l'administration des catégories. */
+export const CATEGORY_ICON_NAMES = Object.keys(ICONS);
+
 const TONES = {
   brand: "from-brand-50 to-brand-100 text-brand-700",
   lagoon: "from-lagoon-50 to-lagoon-100 text-lagoon-700",

@@ -13,6 +13,7 @@ import { getSessionUser } from "@/server/auth";
 import { getCityContext } from "@/server/city-context";
 import { isFeatureEnabled } from "@/server/features";
 import { categoryIdsWithDescendants, listCategories } from "@/server/repositories/categories";
+import { LiveListings } from "@/modules/listings/components/live-listings";
 import { hasExplicitCriteria, resolveSearch } from "../domain/effective";
 import { interpretWithAi } from "../server/ai-interpretation";
 import { NO_SPONSORING, overviewRule, SORT_RULES, TYPE_DESCRIPTIONS } from "../domain/explanations";
@@ -327,6 +328,7 @@ export async function SearchContent({ searchParams }: { searchParams: Promise<Ra
                   Trié par : {SORTS[page.sort].toLowerCase()} · {current.name}
                 </p>
               )}
+              {params.type === "annonces" && <LiveListings />}
             </div>
             {canSave && total > 0 && <SaveSearchForm query={query} suggestedName={suggestedName(params, filters)} signedIn={user !== null} />}
           </div>

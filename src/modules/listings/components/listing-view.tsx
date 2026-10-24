@@ -15,6 +15,7 @@ import { ListingAside } from "./listing-aside";
 import { ListingGallery } from "./listing-gallery";
 import { ListingHeader } from "./listing-header";
 import { ListingJsonLd } from "./listing-json-ld";
+import { LiveListings } from "./live-listings";
 import { ListingLocation } from "./listing-location";
 import { CommentsSection, OwnerListings, SimilarListings } from "./listing-sections";
 import { ListingAttributes, ListingDescription } from "./listing-text";
@@ -38,7 +39,7 @@ export function ListingView({ data }: { data: LoadedListing }) {
       {isPublic && <ListingJsonLd items={listingJsonLd(listing, seller?.organization_name ?? null)} />}
       <Breadcrumbs
         items={[
-          { label: "Annonces", href: href("search", { query: { type: "annonces" } }) },
+          { label: "Annonces", href: href("listings") },
           ...(listing.category && categoryHref ? [{ label: listing.category.name, href: categoryHref }] : []),
           { label: listing.title },
         ]}
@@ -58,6 +59,7 @@ export function ListingView({ data }: { data: LoadedListing }) {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <div className="flex min-w-0 flex-col gap-6">
           <ListingHeader listing={listing} now={now} active={state === "active"} />
+          {isPublic && <LiveListings listingId={listing.id} />}
           {listing.category?.attribute_schema === "immobilier" && state === "active" && (
             <RealEstateNotice lastConfirmedAt={listing.last_confirmed_at} publishedAt={listing.published_at} now={now} />
           )}
@@ -102,6 +104,7 @@ export function ListingView({ data }: { data: LoadedListing }) {
           url={listingUrl(listing.slug)}
           back={back}
           canContact={isPublic && state === "active" && !isOwner}
+          availability={listing.availability_status}
           isOwner={isOwner}
           isPublic={isPublic}
           signedIn={userId !== null}

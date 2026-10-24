@@ -5,8 +5,8 @@ import { formatPrice } from "@/lib/format";
 import { displayAttributes } from "@/modules/listings/domain/attributes";
 import { confirmationFreshness, freshnessLabel } from "../domain/freshness";
 import type { RealEstateCardData } from "../server/queries";
+import { availabilityText } from "@/modules/listings/domain/availability";
 
-const AVAILABILITY = { available: "Disponible (déclaré)", reserved: "Réservé", unavailable: "Indisponible", unknown: "Non précisée" } as const;
 const ATTRIBUTE_ROWS = ["Type de bien", "Pièces", "Chambres", "Surface", "Salles de bain", "Meublé", "Équipements déclarés"];
 
 /** Une ligne par critère, une colonne par bien ; « — » quand l'annonceur n'a rien déclaré. */
@@ -16,7 +16,7 @@ export function CompareTable({ properties, now }: { properties: RealEstateCardDa
     { label: "Prix déclaré", values: properties.map((property) => formatPrice(property.price, property.price_unit ?? "total")) },
     ...ATTRIBUTE_ROWS.map((label) => ({ label, values: facts.map((map) => map.get(label) ?? "—") })),
     { label: "Quartier", values: properties.map((property) => property.neighborhood?.name ?? "—") },
-    { label: "Disponibilité", values: properties.map((property) => AVAILABILITY[property.availability_status]) },
+    { label: "Disponibilité", values: properties.map((property) => availabilityText(property.availability_status)) },
     {
       label: "Fraîcheur",
       values: properties.map((property) =>

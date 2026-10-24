@@ -18,6 +18,16 @@ async function restoreKeywords(keywords: string[]) {
   });
 }
 
+/** Supprime les catégories créées par le test (préfixe propre aux tests), même s'il échoue en route. */
+async function deleteTestCategories() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const secret = process.env.SUPABASE_SECRET_KEY!;
+  await fetch(`${url}/rest/v1/categories?slug=like.zqe2e-*`, {
+    method: "DELETE",
+    headers: { apikey: secret, Authorization: `Bearer ${secret}`, "User-Agent": "e2e-admin" },
+  });
+}
+
 test.describe("Administration du référentiel", () => {
   test("sans compte, la page des catégories passe par la connexion", async ({ page }) => {
     await page.goto("/admin/categories");
@@ -65,5 +75,51 @@ test.describe("Administration du référentiel", () => {
     await page.goto("/admin/categories");
     await expect(page.getByText("Cette page est réservée aux administrateurs de la plateforme.")).toBeVisible();
     await expect(page.getByLabel("Mots-clés")).toHaveCount(0);
+  });
+
+  test("un administrateur ajoute une sous-catégorie, la voit dans « Toutes les annonces », puis la supprime", async ({ page }, testInfo) => {
+    test.skip(!HAS_DATABASE || !email || !password, NO_DATABASE);
+    test.skip(testInfo.project.name !== "desktop", "Référentiel partagé : un seul projet le modifie");
+    test.setTimeout(150_000);
+    await page.goto("/connexion");
+    await page.getByLabel("Adresse e-mail").fill(email!);
+    await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(password!);
+    await page.getByRole("button", { name: "Se connecter" }).click();
+    await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
+    try {
+      await page.goto("/admin/categories");
+      const row = page.getByRole("listitem").filter({ has: page.getByText("Meubles", { exact: true }) });
+      await row.getByText("Meubles", { exact: true }).click();
+      await expect(row.getByText("Niveau : Sous-catégorie")).toBeVisible();
+      // Les champs du modèle « bien » sont configurables, l'état est aussi un filtre.
+      await expect(row.getByLabel("État · filtre")).toBeChecked();
+      await row.getByText("Ajouter une sous-catégorie").click();
+      const form = row.locator("form").filter({ has: page.getByRole("button", { name: "Ajouter à « Meubles »" }) });
+      await form.getByLabel("Nom").fill("Zqe2e Canapés");
+      await form.getByLabel("Adresse (facultatif)").fill("zqe2e-canapes");
+      await form.getByRole("button", { name: "Ajouter à « Meubles »" }).click();
+      await expect(form.getByText(/ajoutée \(adresse : zqe2e-canapes\)/)).toBeVisible({ timeout: NETWORK });
+
+      await page.goto("/annonces?categorie=meubles");
+      await page.getByRole("group", { name: "Sous-rubriques de Meubles" }).getByRole("link", { name: "Zqe2e Canapés" }).click();
+      await expect(page).toHaveURL(/categorie=zqe2e-canapes$/, { timeout: NETWORK });
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("Zqe2e Canapés");
+      await expect(page.getByRole("navigation", { name: "Fil d’Ariane" }).getByRole("link", { name: "Meubles" })).toBeVisible();
+
+      await page.goto("/admin/categories");
+      const created = page.getByRole("listitem").filter({ has: page.getByText("Zqe2e Canapés", { exact: true }) });
+      await created.getByText("Zqe2e Canapés", { exact: true }).click();
+      await expect(created.getByText("Niveau : Catégorie détaillée")).toBeVisible();
+      // Quatrième niveau : pas de sous-catégorie possible.
+      await expect(created.getByText("Ajouter une sous-catégorie")).toHaveCount(0);
+      await created.getByText("Supprimer la catégorie").click();
+      await created.getByLabel("Raison de la suppression").fill("Test automatique");
+      await created.getByRole("button", { name: "Supprimer « Zqe2e Canapés »" }).click();
+      await expect(created).toHaveCount(0, { timeout: NETWORK });
+      await page.goto("/annonces?categorie=zqe2e-canapes");
+      await expect(page).toHaveURL(/\/annonces$/, { timeout: NETWORK });
+    } finally {
+      await deleteTestCategories();
+    }
   });
 });

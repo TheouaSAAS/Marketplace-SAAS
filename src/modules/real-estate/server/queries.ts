@@ -1,8 +1,7 @@
 import "server-only";
-import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
-import { LISTING_CARD_COLUMNS, LISTINGS_CACHE_TAG, listingCardSchema } from "@/modules/listings/server/queries";
+import { LISTING_CARD_COLUMNS, listingCardSchema } from "@/modules/listings/server/queries";
 import { orderByIds } from "@/modules/shared/server/by-ids";
 import { CONFIRMATION_DAYS } from "../domain/freshness";
 import type { RealEstateFilters } from "../domain/filters";
@@ -13,12 +12,8 @@ export const PAGE_SIZE = 12;
 const realEstateCardSchema = listingCardSchema.extend({ attributes: z.record(z.string(), z.unknown()) });
 export type RealEstateCardData = z.infer<typeof realEstateCardSchema>;
 
-/** Cartes immobilières (colonnes publiques + attributs déclarés), dans l'ordre donné. */
+/** Cartes immobilières (colonnes publiques + attributs déclarés), dans l'ordre donné. Lues en direct, comme les résultats d'annonces (temps réel). */
 export async function listRealEstateCards(ids: readonly string[]): Promise<RealEstateCardData[]> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag(LISTINGS_CACHE_TAG);
-
   const supabase = createPublicSupabaseClient();
   if (!supabase || ids.length === 0) return [];
   const { data, error } = await supabase

@@ -118,13 +118,18 @@ async function Categories({ searchParams }: { searchParams: Promise<Raw> }) {
               <h3 id={`rubrique-${group.id}`} className="font-bold">
                 {group.name}
               </h3>
-              <ul className="grid gap-2 sm:grid-cols-2">
-                {group.children.map((category) => (
-                  <li key={category.id}>
-                    <CategoryButton category={category} text={text || undefined} pageId={page?.id} />
-                  </li>
-                ))}
-              </ul>
+              {group.sections.map((section, index) => (
+                <div key={section.name ?? index} className="flex flex-col gap-2">
+                  {section.name && <h4 className="text-sm font-semibold text-ink-muted">{section.name}</h4>}
+                  <ul className="grid gap-2 sm:grid-cols-2">
+                    {section.children.map((category) => (
+                      <li key={category.id}>
+                        <CategoryButton category={category} text={text || undefined} pageId={page?.id} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </section>
           ))}
         </div>
