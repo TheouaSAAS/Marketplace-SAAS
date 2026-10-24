@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { detailMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -41,7 +42,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { current } = await getCityContext();
   const hood = current.id ? await getNeighborhood(current.id, slug) : null;
   if (!hood) return { title: "Quartier", robots: { index: false, follow: true } };
-  return { title: `${hood.name} — quartier de San Pedro`, description: hood.description?.slice(0, 160) ?? `Contenus enregistrés dans le quartier ${hood.name}.` };
+  return detailMetadata({
+    title: `${hood.name} — quartier de San Pedro`,
+    description: hood.description ?? `Contenus enregistrés dans le quartier ${hood.name}.`,
+    path: href("neighborhoodDetail", { params: { slug } }),
+    noindex: false,
+  });
 }
 
 /** Lien vers la page du domaine filtrée sur ce quartier. */

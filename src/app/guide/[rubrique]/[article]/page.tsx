@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { detailMetadata } from "@/lib/seo";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -24,14 +25,16 @@ import { getCityContext } from "@/server/city-context";
 type Props = PageProps<"/guide/[rubrique]/[article]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { article: slug } = await params;
+  const { rubrique, article: slug } = await params;
   const article = await getGuideArticle(slug);
   if (!article) return { title: "Guide pratique", robots: { index: false, follow: true } };
-  return {
+  return detailMetadata({
     title: article.title,
-    description: article.summary ?? undefined,
-    robots: article.verification_status === "placeholder" ? { index: false, follow: true } : undefined,
-  };
+    description: article.summary,
+    path: href("guideArticle", { params: { rubrique, article: slug } }),
+    noindex: article.verification_status === "placeholder",
+    type: "article",
+  });
 }
 
 async function Provenance({ article }: { article: GuideArticle }) {

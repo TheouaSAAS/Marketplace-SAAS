@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 import { ArrowRight, Clock, Compass, ListChecks, ShieldCheck } from "lucide-react";
 import { href } from "@/config/routes";
@@ -11,10 +12,12 @@ import { answersToSearchParams } from "@/modules/newcomer/domain/answers";
 import { getSavedNewcomerAnswers } from "@/modules/newcomer/server/queries";
 import { formatDate } from "@/lib/format";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: `Nouveau à ${LAUNCH_CITY.name} ?`,
   description: `Vous arrivez à ${LAUNCH_CITY.name} ? Quelques questions, puis un plan personnalisé : logement, quartiers, services, déplacements, sorties.`,
-};
+  path: "/nouveau-arrivant",
+  searchParams: {},
+});
 
 const PROMISES = [
   { icon: Clock, title: "2 minutes", text: "Cinq étapes courtes, modifiables à tout moment." },

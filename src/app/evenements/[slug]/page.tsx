@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { LAUNCH_CITY } from "@/domain/city";
+import { JsonLd } from "@/components/layout/json-ld";
+import { detailMetadata, eventJsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -34,11 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const event = await getPublicEvent(slug);
   if (!event) return { title: "Événement", robots: { index: false, follow: true } };
-  return {
-    title: event.title,
-    description: event.description.slice(0, 160),
-    robots: event.verification_status === "placeholder" ? { index: false, follow: true } : undefined,
-  };
+  return detailMetadata({ title: event.title, description: event.description, path: href("eventDetail", { params: { slug } }), noindex: event.verification_status === "placeholder" });
 }
 
 function price(event: EventDetail): string {
@@ -135,6 +134,26 @@ async function EventView({ params }: Pick<Props, "params">) {
   return (
     <div className="flex flex-col gap-6">
       <Breadcrumbs items={[{ label: "Événements", href: href("events") }, { label: event.title }]} />
+      <JsonLd
+        data={eventJsonLd({
+          title: event.title,
+          description: event.description,
+          path: back,
+          startsAt: event.starts_at,
+          endsAt: event.ends_at,
+          schedule: event.schedule_status,
+          originalStartsAt: event.original_starts_at,
+          isFree: event.is_free,
+          priceMin: event.price_min,
+          ticketUrl: event.ticket_url,
+          organizerName: event.business?.name ?? event.organizer_name,
+          placeName: event.place?.name ?? null,
+          address: event.address_text,
+          neighborhood: event.neighborhood?.name ?? null,
+          city: LAUNCH_CITY.name,
+          verified: event.verification_status === "verified" && !past,
+        })}
+      />
       {event.verification_status === "placeholder" && (
         <Alert tone="warning" title="Exemple de démonstration">
           Cet événement est fictif et sert à tester la plateforme : il n’aura pas lieu.

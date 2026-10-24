@@ -2,10 +2,20 @@ import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
 import { ROUTES } from "@/config/routes";
 
+/**
+ * Espaces privés interdits aux robots. Un segment dynamique (« /publier/[id] »)
+ * devient un préfixe (« /publier/ ») : la syntaxe [id] n'existe pas dans robots.txt.
+ */
 export default function robots(): MetadataRoute.Robots {
-  const disallow = Object.values(ROUTES)
-    .filter((route) => "private" in route && route.private)
-    .map((route) => route.path);
+  const disallow = [
+    ...new Set(
+      Object.values(ROUTES)
+        .filter((route) => "private" in route && route.private)
+        .map((route) => route.path.replace(/\[[^\]]+\].*$/, "")),
+    ),
+    "/api/",
+    "/interne",
+  ].sort();
 
   return {
     rules: [{ userAgent: "*", allow: "/", disallow }],

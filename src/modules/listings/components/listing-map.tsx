@@ -43,5 +43,11 @@ export function ListingMap({
     };
   }, [lat, lng, radiusMeters, tileUrl, attribution]);
 
-  return <div ref={container} role="img" aria-label={label} className="relative z-0 h-64 w-full overflow-hidden rounded-card border border-border sm:h-80" />;
+  // Une figure légendée plutôt qu'une « image » : la carte contient des contrôles (zoom, attribution).
+  return (
+    <figure className="m-0">
+      <div ref={container} className="relative z-0 h-64 w-full overflow-hidden rounded-card border border-border sm:h-80" />
+      <figcaption className="sr-only">{label}</figcaption>
+    </figure>
+  );
 }

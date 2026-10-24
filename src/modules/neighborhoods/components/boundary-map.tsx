@@ -28,5 +28,11 @@ export function BoundaryMap({ geojson, tileUrl, attribution, label }: { geojson:
     };
   }, [geojson, tileUrl, attribution]);
 
-  return <div ref={container} role="img" aria-label={label} className="relative z-0 h-72 w-full overflow-hidden rounded-card border border-border sm:h-96" />;
+  // Une figure légendée plutôt qu'une « image » : la carte contient des contrôles (zoom, attribution).
+  return (
+    <figure className="m-0">
+      <div ref={container} className="relative z-0 h-72 w-full overflow-hidden rounded-card border border-border sm:h-96" />
+      <figcaption className="sr-only">{label}</figcaption>
+    </figure>
+  );
 }

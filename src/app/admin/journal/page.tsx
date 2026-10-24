@@ -91,7 +91,7 @@ function RevisionList({ revisions, focused }: { revisions: Revision[]; focused: 
             </div>
             {revision.reason && <p>Raison : {revision.reason}</p>}
             {changes.length > 0 && (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto" tabIndex={0} role="group" aria-label="Champs modifiés (défilement horizontal)">
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="text-ink-muted">

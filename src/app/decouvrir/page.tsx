@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -17,10 +18,12 @@ import { TourismAdvice } from "@/modules/tourism/components/tourism-explorer";
 import { getCityContext } from "@/server/city-context";
 import { categoryIdsWithDescendants, listCategories } from "@/server/repositories/categories";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Découvrir et sortir à San Pedro",
   description: "Où dormir, où manger, que découvrir, où sortir : lieux datés et sourcés, itinéraires composés uniquement avec des lieux réellement enregistrés.",
-};
+  path: "/decouvrir",
+  searchParams: {},
+});
 
 const ICONS: Record<TourismEntry, LucideIcon> = { "ou-dormir": BedDouble, "ou-manger": Utensils, "que-decouvrir": Compass, sortir: PartyPopper };
 

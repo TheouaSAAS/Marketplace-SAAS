@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 import { href } from "@/config/routes";
 import { Container } from "@/components/ui/container";
@@ -6,10 +7,16 @@ import { Skeleton } from "@/components/ui/spinner";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { TourismExplorer } from "@/modules/tourism/components/tourism-explorer";
 
-export const metadata: Metadata = {
-  title: "Tourisme à San Pedro et dans ses environs",
-  description: "Sites naturels, plages, lieux à visiter, hébergements, restaurants, activités et opérateurs : fiches datées, sources et avertissements.",
-};
+/** Variantes filtrées ou triées : canonique vers la rubrique, non indexées. */
+export async function generateMetadata({ searchParams }: PageProps<"/tourisme">): Promise<Metadata> {
+  return listMetadata({
+    title: "Tourisme à San Pedro et dans ses environs",
+    description: "Sites naturels, plages, lieux à visiter, hébergements, restaurants, activités et opérateurs : fiches datées, sources et avertissements.",
+    path: "/tourisme",
+    searchParams: await searchParams,
+    keep: ["type"],
+  });
+}
 
 export default function TourismPage({ searchParams }: PageProps<"/tourisme">) {
   return (

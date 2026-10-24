@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -16,10 +17,12 @@ import { NEIGHBORHOOD_NEUTRALITY } from "@/modules/neighborhoods/domain/tabs";
 import { getNeighborhoodOverview, type NeighborhoodOverview } from "@/modules/neighborhoods/server/queries";
 import { getCityContext } from "@/server/city-context";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Quartiers de San Pedro",
   description: "Les quartiers de San Pedro et les contenus réellement enregistrés qui y sont rattachés : logements, services, commerces, lieux, événements.",
-};
+  path: "/quartiers",
+  searchParams: {},
+});
 
 async function NeighborhoodList() {
   await connection();

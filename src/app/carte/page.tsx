@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Form from "next/form";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -19,10 +20,16 @@ import { loadMapPage, MAP_LIMIT } from "@/modules/map/server/page-data";
 import { PositionControl } from "@/modules/search/components/position-control";
 import { isFeatureEnabled } from "@/server/features";
 
-export const metadata: Metadata = {
-  title: "Carte interactive de San Pedro",
-  description: "Logements, services, commerces, lieux touristiques et événements sur la carte, synchronisés avec la liste. Positions publiques uniquement.",
-};
+/** Variantes filtrées ou triées : canonique vers la rubrique, non indexées. */
+export async function generateMetadata({ searchParams }: PageProps<"/carte">): Promise<Metadata> {
+  return listMetadata({
+    title: "Carte interactive de San Pedro",
+    description: "Logements, services, commerces, lieux touristiques et événements sur la carte, synchronisés avec la liste. Positions publiques uniquement.",
+    path: "/carte",
+    searchParams: await searchParams,
+    keep: [],
+  });
+}
 
 type Raw = Record<string, string | string[] | undefined>;
 

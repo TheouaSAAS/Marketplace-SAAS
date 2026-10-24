@@ -15,7 +15,8 @@ import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
-  subsets: ["latin", "latin-ext"],
+  // « latin » couvre le français (é, è, ç, œ, ’, …) : pas de second fichier préchargé sur chaque page.
+  subsets: ["latin"],
   display: "swap",
 });
 
@@ -34,6 +35,7 @@ export const metadata: Metadata = {
     title: `${SITE.name} — ${SITE.slogan}`,
     description: SITE.description,
   },
+  twitter: { card: "summary_large_image", title: `${SITE.name} — ${SITE.slogan}`, description: SITE.description },
   formatDetection: { telephone: false },
 };
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Form from "next/form";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -17,10 +18,16 @@ import { ServiceFiltersForm } from "@/modules/services/components/service-filter
 import { TradeList } from "@/modules/services/components/trade-list";
 import { loadServicesPage } from "@/modules/services/server/page-data";
 
-export const metadata: Metadata = {
-  title: "Services de proximité à San Pedro",
-  description: "Trouver un artisan ou un prestataire : métier, quartier, distance, disponibilité déclarée, vérification, demande de devis.",
-};
+/** Variantes filtrées ou triées : canonique vers la rubrique, non indexées. */
+export async function generateMetadata({ searchParams }: PageProps<"/services">): Promise<Metadata> {
+  return listMetadata({
+    title: "Services de proximité à San Pedro",
+    description: "Trouver un artisan ou un prestataire : métier, quartier, distance, disponibilité déclarée, vérification, demande de devis.",
+    path: "/services",
+    searchParams: await searchParams,
+    keep: ["metier"],
+  });
+}
 
 function NeedBox({ query }: { query: string }) {
   return (

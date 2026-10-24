@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Form from "next/form";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -17,10 +18,16 @@ import { ShopFiltersForm } from "@/modules/shops/components/shop-filters";
 import { ShopViews } from "@/modules/shops/components/shop-views";
 import { loadShopsPage } from "@/modules/shops/server/page-data";
 
-export const metadata: Metadata = {
-  title: "Commerces de proximité à San Pedro",
-  description: "Restaurants, alimentation, boutiques, quincailleries, auto, téléphonie : vitrines locales avec horaires sourcés ou signalés « à confirmer ».",
-};
+/** Variantes filtrées ou triées : canonique vers la rubrique, non indexées. */
+export async function generateMetadata({ searchParams }: PageProps<"/commerces">): Promise<Metadata> {
+  return listMetadata({
+    title: "Commerces de proximité à San Pedro",
+    description: "Restaurants, alimentation, boutiques, quincailleries, auto, téléphonie : vitrines locales avec horaires sourcés ou signalés « à confirmer ».",
+    path: "/commerces",
+    searchParams: await searchParams,
+    keep: ["type"],
+  });
+}
 
 function ShopSearch({ filters }: { filters: ShopFilters }) {
   return (

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Form from "next/form";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -18,10 +19,16 @@ import { jobQuery, SINCE, type JobFilters } from "@/modules/jobs/domain/params";
 import { JobCard } from "@/modules/jobs/components/job-card";
 import { loadJobsPage } from "@/modules/jobs/server/page-data";
 
-export const metadata: Metadata = {
-  title: "Emploi et opportunités à San Pedro",
-  description: "Offres d’emploi, stages, missions, formations, appels à prestataires : offres modérées, candidatures privées, dates limites respectées.",
-};
+/** Variantes filtrées ou triées : canonique vers la rubrique, non indexées. */
+export async function generateMetadata({ searchParams }: PageProps<"/emploi">): Promise<Metadata> {
+  return listMetadata({
+    title: "Emploi et opportunités à San Pedro",
+    description: "Offres d’emploi, stages, missions, formations, appels à prestataires : offres modérées, candidatures privées, dates limites respectées.",
+    path: "/emploi",
+    searchParams: await searchParams,
+    keep: ["type"],
+  });
+}
 
 type Raw = Record<string, string | string[] | undefined>;
 

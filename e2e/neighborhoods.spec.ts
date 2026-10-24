@@ -79,14 +79,14 @@ test.describe("Quartiers", () => {
 
       await page.reload();
       const draft = page.getByRole("listitem").filter({ hasText: "Note : Test automatique" });
-      await expect(draft.getByRole("img", { name: /Brouillon de périmètre/ })).toBeVisible();
+      await expect(draft.getByRole("figure", { name: /Brouillon de périmètre/ })).toBeVisible();
       await draft.getByRole("button", { name: "Valider et publier" }).click();
       // La page se met à jour : le brouillon passe « Publié », avec la date de décision.
       await expect(draft.getByText("Publié", { exact: true })).toBeVisible({ timeout: NETWORK });
       await expect(draft.getByText(/^Décision le/)).toBeVisible();
 
       await page.goto(`/quartiers/${ADMIN_HOOD}?onglet=carte`);
-      await expect(page.getByRole("img", { name: "Périmètre validé du quartier Zone industrielle" })).toBeVisible({ timeout: NETWORK });
+      await expect(page.getByRole("figure", { name: "Périmètre validé du quartier Zone industrielle" })).toBeVisible({ timeout: NETWORK });
 
       await page.goto(`/admin/quartiers/${ADMIN_HOOD}`);
       await page.getByText("Retirer le périmètre publié").first().click();

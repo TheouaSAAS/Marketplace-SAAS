@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowRight, BedDouble, Building2, House, KeyRound, ShieldCheck } from "lucide-react";
 import { href } from "@/config/routes";
@@ -7,10 +8,12 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { PropertySearchBox } from "@/modules/real-estate/components/property-search-box";
 import { REAL_ESTATE_MODE_KEYS, REAL_ESTATE_MODES, type RealEstateMode } from "@/modules/real-estate/domain/modes";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Immobilier à San Pedro",
   description: "Logements à louer, biens et terrains à vendre, séjours temporaires et locaux professionnels, avec filtres précis.",
-};
+  path: "/immobilier",
+  searchParams: {},
+});
 
 const ICONS: Record<RealEstateMode, typeof House> = {
   location: KeyRound,

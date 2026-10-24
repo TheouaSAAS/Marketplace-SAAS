@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/layout/json-ld";
+import { detailMetadata, localJsonLd } from "@/lib/seo";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -32,11 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const place = await getPublicPlace(slug);
   if (!place) return { title: "Lieu", robots: { index: false, follow: true } };
-  return {
-    title: place.name,
-    description: (place.summary ?? place.description ?? "").slice(0, 160) || undefined,
-    robots: place.verification_status === "placeholder" ? { index: false, follow: true } : undefined,
-  };
+  return detailMetadata({ title: place.name, description: place.summary ?? place.description, path: href("placeDetail", { params: { slug } }), noindex: place.verification_status === "placeholder" });
 }
 
 function Hours({ place, now }: { place: PlaceDetail; now: Date }) {
@@ -232,6 +230,23 @@ async function Place({ params }: Pick<Props, "params">) {
       <Breadcrumbs
         items={[isShop ? { label: "Commerces de proximité", href: href("shops") } : { label: "Découvrir et sortir", href: href("discover") }, { label: place.name }]}
       />
+      <JsonLd
+        data={localJsonLd(
+          {
+            name: place.name,
+            description: place.summary ?? place.description,
+            path: back,
+            address: place.address_text,
+            neighborhood: place.neighborhood?.name ?? null,
+            city: place.city.name,
+            telephone: place.phone,
+            website: place.website,
+            categoryName: place.category.name,
+            verified: place.verification_status === "verified",
+          },
+          isShop ? "LocalBusiness" : "TouristAttraction",
+        )}
+      />
       {place.verification_status === "placeholder" && (
         <Alert tone="warning" title="Exemple de démonstration">
           Cette vitrine est fictive et sert à tester la plateforme : ne vous y fiez pas.
@@ -261,7 +276,7 @@ async function Place({ params }: Pick<Props, "params">) {
               <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {images.map((image) => (
                   <li key={image.id} className="relative aspect-[4/3] overflow-hidden rounded-control bg-sand-100">
-                    <Image src={image.url} alt={image.alt} fill sizes="(min-width: 640px) 33vw, 50vw" className="object-cover" unoptimized />
+                    <Image src={image.url} alt={image.alt} fill sizes="(min-width: 640px) 33vw, 50vw" className="object-cover" />
                   </li>
                 ))}
               </ul>

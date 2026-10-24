@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BadgeCheck, Plus, Store } from "lucide-react";
@@ -28,6 +29,8 @@ const WEBSITE_JSON_LD = {
  * Accueil : accroche et recherche (statiques, chargées instantanément), accès
  * rapides, puis sections alimentées par la base pour la ville choisie.
  */
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
 export default function HomePage() {
   return (
     <>

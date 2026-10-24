@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { href } from "@/config/routes";
@@ -21,10 +22,15 @@ export function generateStaticParams() {
   return REAL_ESTATE_MODE_KEYS.map((mode) => ({ mode }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { mode } = await params;
   if (!isRealEstateMode(mode)) return { title: "Immobilier" };
-  return { title: `${REAL_ESTATE_MODES[mode].title} à San Pedro`, description: REAL_ESTATE_MODES[mode].description };
+  return listMetadata({
+    title: `${REAL_ESTATE_MODES[mode].title} à San Pedro`,
+    description: REAL_ESTATE_MODES[mode].description,
+    path: `/immobilier/${mode}`,
+    searchParams: await searchParams,
+  });
 }
 
 async function Results({ mode, searchParams }: { mode: RealEstateMode; searchParams: Props["searchParams"] }) {

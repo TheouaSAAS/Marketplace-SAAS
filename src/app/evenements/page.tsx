@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Form from "next/form";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -19,10 +20,16 @@ import { EVENT_PRICES, EVENT_WHEN, eventQuery, type EventFilters } from "@/modul
 import { loadEventsPage } from "@/modules/events/server/page-data";
 import type { EventCardData } from "@/modules/events/server/queries";
 
-export const metadata: Metadata = {
-  title: "Événements à San Pedro",
-  description: "Concerts, sport, formations, rencontres professionnelles : l’agenda de San Pedro, avec les reports et annulations signalés.",
-};
+/** Variantes filtrées ou triées : canonique vers la rubrique, non indexées. */
+export async function generateMetadata({ searchParams }: PageProps<"/evenements">): Promise<Metadata> {
+  return listMetadata({
+    title: "Événements à San Pedro",
+    description: "Concerts, sport, formations, rencontres professionnelles : l’agenda de San Pedro, avec les reports et annulations signalés.",
+    path: "/evenements",
+    searchParams: await searchParams,
+    keep: ["categorie"],
+  });
+}
 
 type Raw = Record<string, string | string[] | undefined>;
 

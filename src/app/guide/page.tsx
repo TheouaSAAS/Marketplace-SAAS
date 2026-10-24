@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Form from "next/form";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -16,10 +17,12 @@ import { GUIDE_DISCLAIMER } from "@/modules/guide/domain/trust";
 import { countGuideArticles, listGuideSections, searchGuide } from "@/modules/guide/server/queries";
 import { getCityContext } from "@/server/city-context";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Guide pratique de San Pedro",
   description: "S’installer, se loger, se déplacer, se soigner, faire ses courses : articles datés et sourcés, rédigés par l’équipe locale.",
-};
+  path: "/guide",
+  searchParams: {},
+});
 
 type Raw = Record<string, string | string[] | undefined>;
 

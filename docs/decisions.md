@@ -341,5 +341,17 @@ Chaque catégorie se règle sur le site et par e-mail ; « aucun e-mail » coupe
 ## D113 — Fournisseurs facultatifs
 E-mail : Resend si configuré ; sans fournisseur, simulé dans la console en développement et ignoré en production (statut « ignoré », jamais « envoyé »). Push et SMS : abstraction prête, aucun envoi tant qu'aucun fournisseur n'est branché. Les e-mails de compte (vérification, réinitialisation) restent ceux de Supabase Auth.
 
+## D114 — Une adresse indexable par contenu
+Rubriques : seuls la catégorie (ou le type, le métier) et la page forment une adresse canonique ; texte, prix, tri, quartier, distance créent des variantes non indexées dont la canonique pointe vers la rubrique (liens suivis). La recherche reste non indexée. Fiches : canonique propre, partage social ; exemples de démonstration et annonces des membres qui refusent l'indexation exclus (noindex et sitemap).
+
+## D115 — Données structurées seulement si l'information est vérifiée
+Event, LocalBusiness et TouristAttraction ne sont publiés que pour un contenu vérifié (source, date, responsable) ; un événement passé n'en a plus. Champs vides omis, jamais complétés ; un professionnel n'expose jamais son adresse ; le site officiel n'est cité que s'il est en https. Les annonces gardent leurs règles (niveau 8).
+
+## D116 — Budget de performance mesuré hors navigateur
+Le budget porte sur le poids compressé des ressources du site au chargement initial (JavaScript 230 Ko, total 300 Ko hors images et tuiles), le CLS (0,1) et un LCP bloquant à 4 s en local (objectif 2,5 s en production). Les ressources sont retéléchargées puis compressées par le test : sur le poste de développement, un antivirus réécrit le trafic du navigateur.
+
+## D117 — Audit d'accessibilité automatique et bloquant
+axe-core contrôle les règles WCAG 2.2 A et AA sur les pages publiques et connectées principales, sur mobile et ordinateur ; une violation grave ou critique fait échouer `npm run check`. L'audit manuel (lecteurs d'écran réels, zoom) reste à mener avant le lancement.
+
 ## Dépendances (justification, §3.1)
-`@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).
+`@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `@axe-core/playwright` 4.13.0 (audit WCAG automatique, version exacte publiée depuis plus de deux mois, niveau 25), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

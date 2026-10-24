@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Suspense } from "react";
 import { href } from "@/config/routes";
@@ -12,10 +13,12 @@ import { PlansList } from "@/modules/businesses/components/plans-list";
 import { listPlans } from "@/modules/businesses/server/pro-queries";
 import { isFeatureEnabled } from "@/server/features";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Offres et visibilité",
   description: "Publication et page professionnelle gratuites. Options de visibilité présentées avec leur prix, toujours signalées « Sponsorisé ».",
-};
+  path: "/offres",
+  searchParams: {},
+});
 
 async function Plans() {
   let plans;

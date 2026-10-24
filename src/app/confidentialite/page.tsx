@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { href } from "@/config/routes";
 import { SITE } from "@/config/site";
 import { LegalDocument, ToComplete } from "@/components/layout/legal-document";
 import { PRIVACY_VERSION } from "@/modules/accounts/domain/schemas";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Politique de confidentialité",
   description: `Données personnelles traitées par ${SITE.name}, finalités, durées de conservation et droits.`,
-};
+  path: "/confidentialite",
+  searchParams: {},
+});
 
 export default function PrivacyPage() {
   return (

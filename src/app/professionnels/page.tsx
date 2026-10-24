@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Form from "next/form";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -19,10 +20,16 @@ import { proContext } from "@/modules/services/domain/present";
 import { PRO_BADGES } from "@/modules/businesses/domain/pro";
 import { loadDirectoryPage } from "@/modules/businesses/server/directory";
 
-export const metadata: Metadata = {
-  title: "Professionnels et entreprises",
-  description: "Annuaire des professionnels de San Pedro : artisans, commerces, agences, opérateurs. Badges expliqués, avis modérés.",
-};
+/** Variantes filtrées ou triées : canonique vers la rubrique, non indexées. */
+export async function generateMetadata({ searchParams }: PageProps<"/professionnels">): Promise<Metadata> {
+  return listMetadata({
+    title: "Professionnels et entreprises",
+    description: "Annuaire des professionnels de San Pedro : artisans, commerces, agences, opérateurs. Badges expliqués, avis modérés.",
+    path: "/professionnels",
+    searchParams: await searchParams,
+    keep: ["categorie"],
+  });
+}
 
 type Raw = Record<string, string | string[] | undefined>;
 

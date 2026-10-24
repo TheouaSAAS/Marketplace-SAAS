@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/layout/json-ld";
+import { detailMetadata, localJsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -38,11 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const pro = await getPublicBusiness(slug);
   if (!pro) return { title: "Professionnel", robots: { index: false, follow: true } };
-  return {
-    title: pro.name,
-    description: (pro.description ?? pro.services.join(", ")).slice(0, 160),
-    robots: pro.verification_status === "placeholder" ? { index: false, follow: true } : undefined,
-  };
+  return detailMetadata({ title: pro.name, description: pro.description ?? pro.services.join(", "), path: href("professionalDetail", { params: { slug } }), noindex: pro.verification_status === "placeholder" });
 }
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
@@ -85,6 +83,20 @@ async function Professional({ params }: Pick<Props, "params">) {
   return (
     <div className="flex flex-col gap-6">
       <Breadcrumbs items={[{ label: "Professionnels et entreprises", href: href("directory") }, { label: pro.name }]} />
+      <JsonLd
+        data={localJsonLd({
+          name: pro.name,
+          description: pro.description,
+          path: back,
+          address: null,
+          neighborhood: pro.neighborhood?.name ?? null,
+          city: pro.city.name,
+          telephone: pro.phone,
+          website: pro.website,
+          categoryName: pro.category?.name ?? null,
+          verified: verification === "verified",
+        })}
+      />
       {pro.verification_status === "placeholder" && (
         <Alert tone="warning" title="Exemple de démonstration">
           Cette fiche est fictive et sert à tester la plateforme : ne vous y fiez pas.

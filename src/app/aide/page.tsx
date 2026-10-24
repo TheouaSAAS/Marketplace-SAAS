@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { href } from "@/config/routes";
 import { SITE } from "@/config/site";
 import { Faq, InfoPage } from "@/components/layout/info-page";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Aide",
   description: `Questions fréquentes sur ${SITE.name} : compte, publication, vérification des informations, sécurité.`,
-};
+  path: "/aide",
+  searchParams: {},
+});
 
 const LINK = "font-semibold text-brand-700 underline";
 

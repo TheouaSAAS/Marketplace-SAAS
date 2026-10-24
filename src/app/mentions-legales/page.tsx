@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import { SITE } from "@/config/site";
 import { LegalDocument, ToComplete } from "@/components/layout/legal-document";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Mentions légales",
   description: `Éditeur, hébergement et contact de ${SITE.name}.`,
-};
+  path: "/mentions-legales",
+  searchParams: {},
+});
 
 export default function LegalNoticePage() {
   return (

@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { href } from "@/config/routes";
 import { Alert } from "@/components/ui/feedback";
 import { InfoPage } from "@/components/layout/info-page";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Signaler un contenu",
   description: "Signaler une annonce frauduleuse, une information erronée ou un contenu inapproprié.",
-};
+  path: "/signaler",
+  searchParams: {},
+});
 
 export default function ReportPage() {
   return (

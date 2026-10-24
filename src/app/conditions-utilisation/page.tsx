@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import { SITE } from "@/config/site";
 import { LegalDocument, ToComplete } from "@/components/layout/legal-document";
 import { TERMS_VERSION } from "@/modules/accounts/domain/schemas";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Conditions d’utilisation",
   description: `Règles d’utilisation de ${SITE.name} : comptes, publication, modération, responsabilités.`,
-};
+  path: "/conditions-utilisation",
+  searchParams: {},
+});
 
 export default function TermsPage() {
   return (

@@ -96,7 +96,7 @@ async function AiControl() {
         {usage.length === 0 ? (
           <p className="text-sm text-ink-muted">Aucun appel ce mois-ci.</p>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" tabIndex={0} role="group" aria-label="Consommation par usage (défilement horizontal)">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="text-ink-muted">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listMetadata } from "@/lib/seo";
 import { SITE } from "@/config/site";
 import { VERIFICATION_VALIDITY_DAYS } from "@/domain/verification";
 import { SponsoredBadge, StatusBadge } from "@/components/ui/badge";
@@ -6,10 +7,12 @@ import { FreshnessNote, VerificationBadge } from "@/components/ui/verification";
 import { PRO_BADGES } from "@/modules/businesses/domain/pro";
 import { InfoPage } from "@/components/layout/info-page";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = listMetadata({
   title: "Comment nous vérifions les informations",
   description: `Statuts de vérification, sources et dates sur ${SITE.name} : ce qui est contrôlé, ce qui ne l’est pas.`,
-};
+  path: "/verification",
+  searchParams: {},
+});
 
 export default function VerificationPolicyPage() {
   return (
