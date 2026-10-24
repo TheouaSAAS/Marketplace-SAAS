@@ -368,5 +368,14 @@ L'annonceur s'engage à chaque soumission ; le visiteur accepte la charte avant 
 ## D122 — Politique de contenu sans nonce
 La CSP interdit tout script, objet et cadre externes et limite les connexions à Supabase ; les scripts en ligne de Next restent autorisés, car un nonce imposerait un rendu dynamique de toutes les pages (perte du pré-rendu). À revoir si Next permet un hachage des scripts en ligne des pages statiques.
 
+## D123 — Couverture mesurée là où vit la logique
+La couverture est mesurée sur les règles métier, `lib`, la configuration et les composants ; l'objectif porte sur les règles métier (plus de 90 % des lignes). Pages, actions serveur et base sont vérifiées par les tests de bout en bout et les suites SQL, qui exercent les vraies règles d'accès plutôt que des simulations.
+
+## D124 — L'IA se teste sans réseau
+Les limites de l'IA (absence de source, contenu non vérifié, demande ambiguë, injection, référentiel inventé, coupure, quota) sont testées avec un modèle simulé : rapides, reproductibles, sans coût. L'essai avec le vrai modèle se fait en préproduction, budget plafonné.
+
+## D125 — Les tests ne laissent aucune trace
+Comptes et contenus de test portent des marqueurs dédiés (`@test.invalid`, `Zq…`, `Zqe2e…`) et sont supprimés, organisations comprises ; une suite SQL d'hygiène échoue s'il en reste plus d'un jour. Les exemples de démonstration restent distincts (statut `placeholder`, « Exemple — … »).
+
 ## Dépendances (justification, §3.1)
-`@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `@axe-core/playwright` 4.13.0 (audit WCAG automatique, version exacte publiée depuis plus de deux mois, niveau 25), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).
+`@supabase/supabase-js`, `@supabase/ssr` (base, session) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `@axe-core/playwright` 4.13.0 (audit WCAG automatique, version exacte publiée depuis plus de deux mois, niveau 25), `@vitest/coverage-v8` 5.0.5 (couverture des tests ; version imposée, identique à celle de `vitest`, niveau 27), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

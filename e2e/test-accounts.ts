@@ -20,10 +20,16 @@ export async function adminFetch(url: string, secret: string, path: string, init
   }
 }
 
-/** Supprime un compte de test et les demandes qu'il a envoyées (elles survivent au compte, expéditeur effacé). */
+/**
+ * Supprime un compte de test, les demandes qu'il a envoyées (elles survivent au compte, expéditeur effacé)
+ * et les organisations qu'il a créées : sinon la base refuse la suppression (une organisation garde
+ * toujours son créateur et un propriétaire) et le compte reste orphelin.
+ */
 export async function deleteTestUser(url: string, secret: string, id: string): Promise<boolean> {
   const requests = await adminFetch(url, secret, `/rest/v1/contact_requests?sender_id=eq.${id}`, { method: "DELETE" });
   if (!requests.ok) console.warn(`Demandes du compte de test ${id} non supprimées : HTTP ${requests.status}`);
+  const organizations = await adminFetch(url, secret, `/rest/v1/organizations?created_by=eq.${id}`, { method: "DELETE" });
+  if (!organizations.ok) console.warn(`Organisations du compte de test ${id} non supprimées : HTTP ${organizations.status}`);
   const response = await adminFetch(url, secret, `/auth/v1/admin/users/${id}`, { method: "DELETE" });
   if (!response.ok) console.warn(`Compte de test ${id} non supprimé : HTTP ${response.status}`);
   return response.ok;

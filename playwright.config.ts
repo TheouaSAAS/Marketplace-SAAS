@@ -26,6 +26,9 @@ export default defineConfig({
   // Base distante (Supabase, ~0,7 s par appel depuis San Pedro) et projets en parallèle :
   // une navigation peut dépasser les 5 s par défaut sans être en défaut.
   expect: { timeout: 10_000 },
+  // Délai par test, création du navigateur comprise : sous charge (deux navigateurs, serveur,
+  // audit d'accessibilité), l'ouverture d'une page a dépassé les 30 s par défaut.
+  timeout: 45_000,
   reporter: [["list"]],
   use: {
     baseURL: `http://localhost:${port}`,

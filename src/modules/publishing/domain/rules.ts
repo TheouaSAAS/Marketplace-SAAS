@@ -29,7 +29,12 @@ const FORBIDDEN: Rule[] = [
 
 /** Formulations typiques des arnaques. */
 const FRAUD: Rule[] = [
-  { rule: "Paiement avant visite", pattern: /\b(frais de (visite|dossier|reservation) a (payer|verser)|payer avant (la )?visite|avance avant (de voir|visite)|caution avant visite)\b/, advice: "Ne demandez jamais d’argent avant une visite ou une remise en main propre." },
+  {
+    rule: "Paiement avant visite",
+    // Un acompte à la signature reste possible ; c'est l'acompte EXIGÉ À DISTANCE ou AVANT LA VISITE qui signe l'arnaque.
+    pattern: /\b(frais de (visite|dossier|reservation) a (payer|verser)|payer avant (la )?visite|(avance|acompte|caution) avant (de voir|(la )?visite)|(envoy|vers|transfer)\w* (un |l |votre )?acompte)\b/,
+    advice: "Ne demandez jamais d’argent avant une visite ou une remise en main propre.",
+  },
   { rule: "Transfert d’argent préalable", pattern: /\b(mobile money|orange money|mtn money|moov money|wave|western union|moneygram)\b.{0,40}\b(avant|d abord|prealable|avance)\b|\b(envoy|vers|transfer)\w* (d abord|avant|l avance)\b/, advice: "Pas de paiement à distance exigé avant d’avoir vu le bien." },
   { rule: "Promesse irréaliste", pattern: /\b(gain garanti|argent facile|devenez riche|doublez votre argent|investissement sans risque)\b/, advice: "Retirez les promesses de gain : elles sont typiques des arnaques." },
 ];

@@ -92,6 +92,13 @@ describe("contenus interdits et photos", () => {
     expect(checkListing("Belle table en bois massif, très bon état")).toEqual([]);
   });
 
+  it("bloque l'acompte exigé à distance ou avant la visite, pas l'acompte à la signature", () => {
+    expect(checkListing("Envoyez un acompte par Western Union pour réserver").map((hit) => hit.rule)).toContain("Paiement avant visite");
+    expect(checkListing("Acompte avant la visite obligatoire").map((hit) => hit.rule)).toContain("Paiement avant visite");
+    expect(checkListing("Versez l’acompte et je vous envoie les clés").map((hit) => hit.rule)).toContain("Paiement avant visite");
+    expect(checkListing("Un mois d’acompte demandé à la signature du bail, après visite")).toEqual([]);
+  });
+
   it("refuse les mauvais formats et signale les photos faibles", () => {
     expect(assessPhoto({ type: "image/gif", bytes: 1000, width: 1000, height: 1000 }).errors).toHaveLength(1);
     expect(assessPhoto({ type: "image/jpeg", bytes: 6 * 1024 * 1024, width: 1000, height: 1000 }).errors).toHaveLength(1);
