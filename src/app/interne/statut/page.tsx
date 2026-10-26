@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import packageJson from "../../../../package.json";
 import { FEATURE_KEYS, FEATURES } from "@/config/feature-flags";
+import { APP_ENVIRONMENTS, resolveAppEnvironment } from "@/config/environment";
 import { ROUTES, type AppRoute } from "@/config/routes";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Card, CardBody, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,9 @@ import { Alert } from "@/components/ui/feedback";
 import { Spinner } from "@/components/ui/spinner";
 import { checkDatabase, describeServices, environmentPresence, type CheckStatus, type ServiceCheck } from "@/server/diagnostics";
 import { getFeatureStates, requirementLabel } from "@/server/features";
+import { readOpsMetrics } from "@/server/ops-metrics";
+import { getServerEnv } from "@/lib/env.server";
+import { OpsCard } from "@/components/layout/ops-card";
 import { canViewInternalStatus } from "@/server/internal-access";
 
 export const metadata: Metadata = {
@@ -46,8 +50,10 @@ async function StatusContent({ searchParams }: Pick<PageProps<"/interne/statut">
   if (!canViewInternalStatus(typeof token === "string" ? token : undefined)) notFound();
   await connection();
 
-  const [database, services, features, env] = [await checkDatabase(), describeServices(), getFeatureStates(), environmentPresence()];
+  const [database, services, features, env, metrics] = [await checkDatabase(), describeServices(), getFeatureStates(), environmentPresence(), await readOpsMetrics()];
   const routes = Object.values(ROUTES as Record<string, AppRoute>);
+  const environment = resolveAppEnvironment();
+  const commit = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_COMMIT_SHA;
   const live = routes.filter((route) => route.status === "live");
 
   return (
@@ -59,7 +65,13 @@ async function StatusContent({ searchParams }: Pick<PageProps<"/interne/statut">
             <dt className="text-ink-muted">Version</dt>
             <dd>{packageJson.version}</dd>
             <dt className="text-ink-muted">Environnement</dt>
-            <dd>{process.env.NODE_ENV}</dd>
+            <dd>
+              {APP_ENVIRONMENTS[environment]} (<code>{environment}</code>, build {process.env.NODE_ENV})
+            </dd>
+            <dt className="text-ink-muted">Commit déployé</dt>
+            <dd>{commit ? <code>{commit.slice(0, 12)}</code> : "non renseigné (GIT_COMMIT_SHA)"}</dd>
+            <dt className="text-ink-muted">Accès</dt>
+            <dd>{process.env.SITE_ACCESS_CODE ? "réservé (code d’accès actif)" : "ouvert à tous"}</dd>
             <dt className="text-ink-muted">Node.js</dt>
             <dd>{process.versions.node}</dd>
             <dt className="text-ink-muted">Pages publiées</dt>
@@ -69,6 +81,8 @@ async function StatusContent({ searchParams }: Pick<PageProps<"/interne/statut">
           </dl>
         </CardBody>
       </Card>
+
+      <OpsCard metrics={metrics} aiBudgetEur={getServerEnv().AI_MONTHLY_BUDGET_EUR} />
 
       <Card>
         <CardBody>

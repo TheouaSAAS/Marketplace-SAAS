@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger";
 import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/server/auth";
 import { redirect } from "next/navigation";
+import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
 
 const sendSchema = z.object({
   conversation: z.uuid(),
@@ -20,6 +21,7 @@ const sendSchema = z.object({
  * chez l'interlocuteur en temps réel.
  */
 export async function sendMessageAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  if (!isFeatureEnabled("messaging")) return { status: "error", message: closedFeatureMessage("messaging") };
   const parsed = sendSchema.safeParse({ conversation: formData.get("conversation"), message: formData.get("message") });
   if (!parsed.success) {
     return { status: "error", message: parsed.error.issues[0]?.message ?? "Message invalide.", values: formValues(formData) };

@@ -2,6 +2,13 @@
 
 État au **niveau 26** (24/10/2026). Les règles d'accès sont garanties par la base (RLS, fonctions à droits vérifiés) ; l'interface ne fait que masquer ce qui n'est pas permis. Matrice d'accès vérifiée par `supabase/tests/level26_security.sql` et les tests des niveaux précédents.
 
+## Accès réservé et environnements (niveau 28)
+
+- Préproduction et bêta privée : `SITE_ACCESS_CODE` (12 caractères minimum). Le proxy sert `/acces` (401, non indexée) sans cookie valide ; le cookie (`HttpOnly`, `SameSite=Lax`, `Secure` en HTTPS, 30 jours) contient une empreinte SHA-256 du code ; 10 essais par quart d'heure et par adresse. Changer le code révoque tous les accès.
+- Hors production : `robots.txt` fermé et `X-Robots-Tag: noindex, nofollow` sur toutes les réponses.
+- `npm run env:check` refuse les réglages de test en production et signale les accès d'administration de la base laissés dans l'application.
+- Alertes d'erreurs : seul le chemin (sans paramètres), la méthode et l'empreinte de l'erreur quittent le serveur vers `ALERT_WEBHOOK_URL`.
+
 ## Entrées et fichiers
 
 - Validation stricte côté serveur (Zod) de chaque action ; longueurs bornées en base (`check`).

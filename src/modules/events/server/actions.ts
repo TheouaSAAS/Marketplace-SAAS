@@ -14,6 +14,7 @@ import { getCityContext } from "@/server/city-context";
 import { getCurrentAccount, getSessionUser } from "@/server/auth";
 import type { Database } from "@/types/database";
 import { EVENTS_CACHE_TAG } from "./queries";
+import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
 
 const SHOWN_CODES = ["23514", "42501", "CP429"];
 
@@ -62,6 +63,7 @@ const messageSchema = z.object({
 
 /** Message à l'organisateur par la messagerie interne (aucune coordonnée échangée). */
 export async function contactOrganizerAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  if (!isFeatureEnabled("messaging")) return { status: "error", message: closedFeatureMessage("messaging") };
   const back = safeRedirectPath(formData.get("retour"), href("events"));
   const parsed = messageSchema.safeParse({ evenement: formData.get("evenement"), message: formData.get("message") });
   if (!parsed.success) return { status: "error", fieldErrors: fieldErrorsFrom(parsed.error), values: formValues(formData) };

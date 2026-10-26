@@ -8,7 +8,7 @@
  * chaque nouvelle page livrée (tableau PAGES ci-dessous).
  */
 import { spawn } from "node:child_process";
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,6 +18,10 @@ const external = process.env.SMOKE_BASE_URL;
 const BASE = external ?? `http://localhost:${PORT}`;
 // Jeton éphémère pour le serveur local ; sur un déploiement, fournir SMOKE_STATUS_TOKEN.
 const STATUS_TOKEN = external ? process.env.SMOKE_STATUS_TOKEN : randomBytes(24).toString("hex");
+// Site à accès réservé (préproduction, bêta privée) : même empreinte que src/lib/site-access.ts.
+const ACCESS_COOKIE = process.env.SMOKE_ACCESS_CODE
+  ? `cdp_acces=${createHash("sha256").update(`carrefour-des-possibles:acces:${process.env.SMOKE_ACCESS_CODE}`).digest("hex")}`
+  : undefined;
 
 const SLOGAN = "Votre ville, mille opportunités";
 
@@ -92,6 +96,9 @@ const PAGES = [
   { path: "/annonces/annonce-qui-n-existe-pas", status: 200, includes: ["introuvable", "noindex"] },
   { path: "/sw.js", status: 200, includes: ["hors-ligne"] },
   { path: "/api/health", status: 200, includes: ['"status":"ok"'], excludes: ["SUPABASE", "KEY"] },
+  // Disponibilité réelle (supervision externe) : 503 sans base.
+  { path: "/api/health/ready", status: DB ? 200 : 503, includes: DB ? ['"database":"ok"'] : ['"status":"degraded"'], excludes: ["SUPABASE", "KEY"] },
+  { path: "/acces", status: 200, includes: ["Accès réservé", "Code d’accès", "noindex"] },
   { path: "/connexion", status: 200, includes: DB ? ["Connexion", "Mot de passe oublié"] : ["Connexion", ...ACCOUNTS_DOWN] },
   { path: "/inscription", status: 200, includes: DB ? ["Créer un compte", "conditions d’utilisation"] : ACCOUNTS_DOWN },
   { path: "/mot-de-passe-oublie", status: 200, includes: ["Mot de passe oublié"] },
@@ -155,7 +162,7 @@ async function main() {
   const failures = [];
   if (!external && !scanClientBundle()) failures.push("bundle");
   for (const page of PAGES) {
-    const response = await fetch(BASE + page.path, { redirect: "manual" });
+    const response = await fetch(BASE + page.path, { redirect: "manual", headers: ACCESS_COOKIE ? { Cookie: ACCESS_COOKIE } : {} });
     const body = await response.text();
     const problems = [];
     const expected = [page.status].flat();

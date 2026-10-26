@@ -10,6 +10,7 @@ import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { safeRedirectPath } from "@/modules/accounts/domain/schemas";
 import { getSessionUser } from "@/server/auth";
 import { CLAIMANT_ROLES } from "../domain/claims";
+import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
 
 async function signedIn(back: string) {
   const user = await getSessionUser();
@@ -67,6 +68,7 @@ const messageSchema = z.object({
 
 /** Message à l'exploitant d'une vitrine revendiquée (messagerie interne, aucune coordonnée échangée). */
 export async function contactPlaceAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  if (!isFeatureEnabled("messaging")) return { status: "error", message: closedFeatureMessage("messaging") };
   const back = safeRedirectPath(formData.get("retour"), href("shops"));
   const parsed = messageSchema.safeParse({ lieu: formData.get("lieu"), message: formData.get("message") });
   if (!parsed.success) return { status: "error", fieldErrors: fieldErrorsFrom(parsed.error), values: formValues(formData) };

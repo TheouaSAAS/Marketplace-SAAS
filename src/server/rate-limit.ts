@@ -27,6 +27,7 @@ export const RATE_RULES = {
   aiAssist: { limit: 30, windowSeconds: 86400 },
   aiAssistant: { limit: 20, windowSeconds: 3600 },
   aiSearch: { limit: 40, windowSeconds: 86400 },
+  siteAccess: { limit: 10, windowSeconds: 900 },
 } as const satisfies Record<string, RateRule>;
 
 export type RateAction = keyof typeof RATE_RULES;

@@ -395,5 +395,20 @@ Un déclencheur diffuse sur le canal public « annonces » l'identifiant de tout
 ## D131 — Disponibilité distincte de la publication
 « Disponible », « Réservé », « Non disponible » : déclarés par l'annonceur depuis « Mes annonces », réversibles, sans effet sur le statut de publication (une annonce non disponible reste publiée). La fiche l'affiche clairement et adapte le contact (« Non disponible pour le moment : écrivez pour savoir s'il se libère ») sans l'empêcher ; filtre « Disponibles uniquement » dans les recherches.
 
+## D132 — Trois environnements, un seul indexable
+L'environnement (`APP_ENV`, sinon l'hébergeur, sinon le build) décide de l'indexation : seule la production l'est. La préproduction a sa propre base, un bandeau visible et un code d'accès ; elle n'est jamais pointée sur la base de production.
+
+## D133 — Un accès réservé sans compte
+La bêta privée et la préproduction se ferment par un code partagé (`SITE_ACCESS_CODE`) vérifié par le proxy : cookie d'empreinte (jamais le code), essais limités, supervision toujours joignable, changement de code = révocation de tous les accès. Pas de liste d'invités à gérer en base avant l'ouverture.
+
+## D134 — Migrations en avant, compatibles avec le code en ligne
+Une migration n'est jamais modifiée ni annulée automatiquement : une erreur se corrige par une migration compensatoire. Chaque migration reste compatible avec la version précédente du code (ajouter avant de retirer), ce qui rend le retour arrière du code toujours possible. Ordre : préproduction, vérifications SQL, production, puis code.
+
+## D135 — Observer sans dépendre d'un fournisseur
+Journaux JSON masqués, erreurs serveur captées par `onRequestError` et envoyées à un webhook d'équipe (une alerte par erreur et par 10 minutes), sonde de disponibilité réelle (`/api/health/ready`), indicateurs d'exploitation calculés en base (`ops_metrics`, réservé au serveur). Un service de suivi d'erreurs dédié pourra s'ajouter sans changer le code métier.
+
+## D136 — Une fonctionnalité coupée ferme proprement
+Les drapeaux qui ferment une action (publication, pages professionnelles, messagerie) sont vérifiés côté serveur, dans chaque action concernée, avec un message explicite ; la consultation reste intacte. Le temps réel a son drapeau (`live_updates`) et se replie sur un rechargement périodique.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session), `@supabase/realtime-js` (temps réel des listes, chargé après l'affichage ; déjà dépendance de supabase-js) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `@axe-core/playwright` 4.13.0 (audit WCAG automatique, version exacte publiée depuis plus de deux mois, niveau 25), `@vitest/coverage-v8` 5.0.5 (couverture des tests ; version imposée, identique à celle de `vitest`, niveau 27), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

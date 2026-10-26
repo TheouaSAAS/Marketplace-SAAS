@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { NextRequest } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { SITE_ACCESS_COOKIE, siteAccessFingerprint } from "./lib/site-access";
 import { proxy } from "./proxy";
 
 const request = (path: string, cookies: Record<string, string> = {}) => {
@@ -68,5 +69,39 @@ describe("proxy — pages internes", () => {
     expect(response.headers.get("x-middleware-rewrite")).toBeNull();
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
     expect(response.headers.get("cache-control")).toBe("private, no-store");
+  });
+});
+
+describe("proxy — accès réservé", () => {
+  it("sert la page de saisie du code sans cookie d'accès, avec un 401 non indexable", async () => {
+    vi.stubEnv("SITE_ACCESS_CODE", "code-de-la-beta-2026");
+    const response = await proxy(request("/annonces?q=frigo"));
+    expect(response.status).toBe(401);
+    const target = new URL(response.headers.get("x-middleware-rewrite")!);
+    expect(target.pathname).toBe("/acces");
+    expect(target.searchParams.get("suivant")).toBe("/annonces?q=frigo");
+    expect(response.headers.get("x-robots-tag")).toContain("noindex");
+  });
+
+  it("laisse passer avec la bonne empreinte, refuse une empreinte d'un autre code", async () => {
+    vi.stubEnv("SITE_ACCESS_CODE", "code-de-la-beta-2026");
+    const good = await proxy(request("/annonces", { [SITE_ACCESS_COOKIE]: await siteAccessFingerprint("code-de-la-beta-2026") }));
+    expect(good.status).toBe(200);
+    const stale = await proxy(request("/annonces", { [SITE_ACCESS_COOKIE]: await siteAccessFingerprint("ancien-code") }));
+    expect(stale.status).toBe(401);
+  });
+
+  it("laisse toujours passer la supervision et la page de saisie", async () => {
+    vi.stubEnv("SITE_ACCESS_CODE", "code-de-la-beta-2026");
+    vi.stubEnv("NODE_ENV", "development");
+    for (const path of ["/acces", "/api/health", "/interne/statut", "/api/interne/notifications"]) {
+      const response = await proxy(request(path));
+      expect(response.status, path).not.toBe(401);
+    }
+  });
+
+  it("n'intervient pas sans code configuré", async () => {
+    const response = await proxy(request("/annonces"));
+    expect(response.status).toBe(200);
   });
 });

@@ -4472,6 +4472,7 @@ export type Database = {
       }
       notification_category: { Args: { p_type: string }; Returns: string }
       notify_expiring_listings: { Args: never; Returns: number }
+      ops_metrics: { Args: never; Returns: Json }
       organization_invitation_preview: {
         Args: { p_token: string }
         Returns: {

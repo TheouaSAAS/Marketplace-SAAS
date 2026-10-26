@@ -328,7 +328,7 @@ export async function SearchContent({ searchParams }: { searchParams: Promise<Ra
                   Trié par : {SORTS[page.sort].toLowerCase()} · {current.name}
                 </p>
               )}
-              {params.type === "annonces" && <LiveListings />}
+              {params.type === "annonces" && <LiveListings enabled={isFeatureEnabled("live_updates")} />}
             </div>
             {canSave && total > 0 && <SaveSearchForm query={query} suggestedName={suggestedName(params, filters)} signedIn={user !== null} />}
           </div>

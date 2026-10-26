@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { FEATURE_KEYS, featureEnvName } from "@/config/feature-flags";
 import { parseServerEnv, serverEnvSchema } from "@/lib/env.server";
-import { evaluateFeatures } from "./features";
+import { closedFeatureMessage, evaluateFeatures } from "./features";
 
 describe("évaluation des drapeaux", () => {
   it("chaque drapeau possède sa variable de forçage dans le schéma d'environnement", () => {
@@ -44,5 +44,13 @@ describe("évaluation des drapeaux", () => {
 
   it("refuse une valeur de forçage inconnue", () => {
     expect(() => parseServerEnv({ FEATURE_MAP: "oui" })).toThrow(/FEATURE_MAP/);
+  });
+});
+
+describe("fonctionnalités coupées", () => {
+  it("explique la fermeture sans laisser croire à une erreur", () => {
+    expect(closedFeatureMessage("publishing")).toContain("brouillons sont conservés");
+    expect(closedFeatureMessage("messaging")).toContain("momentanément indisponible");
+    expect(closedFeatureMessage("map")).toBe("Cette fonctionnalité est momentanément indisponible.");
   });
 });

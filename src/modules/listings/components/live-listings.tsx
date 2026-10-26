@@ -22,7 +22,7 @@ const LABELS: Record<Mode, string> = {
  * une reconnexion ou un retour sur l'onglet, un rechargement rattrape les
  * changements manqués.
  */
-export function LiveListings({ listingId, pollSeconds = 60 }: { listingId?: string; pollSeconds?: number }) {
+export function LiveListings({ listingId, enabled = true, pollSeconds = 60 }: { listingId?: string; enabled?: boolean; pollSeconds?: number }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("connecting");
 
@@ -48,6 +48,8 @@ export function LiveListings({ listingId, pollSeconds = 60 }: { listingId?: stri
 
     let unwatch: (() => void) | undefined;
     const start = () => {
+      // Temps réel coupé (drapeau live_updates) : rechargement périodique seul.
+      if (!enabled) return setMode("polling");
       unwatch = watchTopic("annonces", "annonce", {
         onMessage: (payload) => {
           if (!listingId || (payload as { id?: unknown } | undefined)?.id === listingId) refresh();
@@ -84,7 +86,7 @@ export function LiveListings({ listingId, pollSeconds = 60 }: { listingId?: stri
       window.removeEventListener("load", start);
       unwatch?.();
     };
-  }, [router, listingId, pollSeconds]);
+  }, [router, listingId, enabled, pollSeconds]);
 
   return (
     <p className="flex shrink-0 items-center gap-1.5 text-xs text-ink-muted sm:w-64 sm:justify-end" data-live={mode}>

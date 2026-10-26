@@ -59,7 +59,7 @@ export function ListingView({ data }: { data: LoadedListing }) {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <div className="flex min-w-0 flex-col gap-6">
           <ListingHeader listing={listing} now={now} active={state === "active"} />
-          {isPublic && <LiveListings listingId={listing.id} />}
+          {isPublic && <LiveListings listingId={listing.id} enabled={isFeatureEnabled("live_updates")} />}
           {listing.category?.attribute_schema === "immobilier" && state === "active" && (
             <RealEstateNotice lastConfirmedAt={listing.last_confirmed_at} publishedAt={listing.published_at} now={now} />
           )}

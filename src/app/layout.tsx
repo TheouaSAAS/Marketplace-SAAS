@@ -9,6 +9,7 @@ import { ServiceWorkerRegistration } from "@/components/layout/service-worker-re
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { OfflineBanner } from "@/components/ui/offline-banner";
+import { EnvironmentBanner } from "@/components/layout/environment-banner";
 import { ToastProvider } from "@/components/ui/toast";
 import { isFeatureEnabled } from "@/server/features";
 import "./globals.css";
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Aller au contenu
         </a>
+        <EnvironmentBanner />
         <ToastProvider>
           <SiteHeader />
           <OfflineBanner />

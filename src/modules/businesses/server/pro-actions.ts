@@ -18,6 +18,7 @@ import { consumeRateLimit } from "@/server/rate-limit";
 import { ORGANIZATION_KINDS, pageSchema, parseWeekHours, splitList, type OrganizationKind } from "../domain/pro";
 import { generateProText } from "./pro-ai";
 import { BUSINESSES_CACHE_TAG } from "./queries";
+import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
 
 const SHOWN_CODES = ["23514", "42501", "23505", "CP429"];
 
@@ -52,6 +53,7 @@ const createSchema = z.object({
 
 /** Crée une page en brouillon (le titulaire la complète puis la soumet). */
 export async function createProPageAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  if (!isFeatureEnabled("pro_publishing")) return { status: "error", message: closedFeatureMessage("pro_publishing") };
   const parsed = createSchema.safeParse({ nom: formData.get("nom"), categorie: formData.get("categorie") });
   if (!parsed.success) return { status: "error", fieldErrors: fieldErrorsFrom(parsed.error), values: formValues(formData) };
   const account = await getCurrentAccount();
@@ -146,6 +148,7 @@ export async function saveProPageAction(_previous: FormState, formData: FormData
 
 /** Soumission à la modération (brouillon ou page refusée). */
 export async function submitProPageAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  if (!isFeatureEnabled("pro_publishing")) return { status: "error", message: closedFeatureMessage("pro_publishing") };
   const id = z.uuid().safeParse(formData.get("page"));
   if (!id.success) return { status: "error", message: "Page introuvable." };
   const { supabase } = await session(editorPath(id.data));
@@ -163,6 +166,7 @@ const teamSchema = z.object({ page: z.uuid(), type: z.enum(Object.keys(ORGANIZAT
 
 /** Crée l'équipe d'une page : le titulaire en devient propriétaire, la page lui est rattachée. */
 export async function createTeamAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  if (!isFeatureEnabled("pro_publishing")) return { status: "error", message: closedFeatureMessage("pro_publishing") };
   const parsed = teamSchema.safeParse({ page: formData.get("page"), type: formData.get("type") });
   if (!parsed.success) return { status: "error", message: "Choisissez le type d’organisation." };
   const { user, supabase } = await session(editorPath(parsed.data.page));

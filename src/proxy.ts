@@ -1,12 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { internalTokenMatches } from "@/lib/internal-token";
+import { hasSiteAccess, isSiteAccessExempt, SITE_ACCESS_COOKIE } from "@/lib/site-access";
 import { hasSupabaseSessionCookie, refreshSupabaseSession } from "@/lib/supabase/proxy-session";
 
 /**
  * Proxy (ex-middleware) : contrôles exécutés AVANT le rendu.
  *
  * 0. Maintenance : toutes les pages publiques servent /maintenance (503).
+ * 0 bis. Accès réservé (`SITE_ACCESS_CODE`, bêta privée ou préproduction) :
+ *    sans le cookie d'accès, la page de saisie du code est servie (401).
  * 1. Pages internes (/interne/*) : sans jeton valide, réécriture vers une
  *    adresse inexistante pour obtenir une vraie 404.
  * 2. Espaces protégés : sans cookie de session, redirection vers la connexion.
@@ -30,6 +33,14 @@ export async function proxy(request: NextRequest) {
       status: 503,
       headers: { "Retry-After": "600", "Cache-Control": "no-store" },
     });
+  }
+
+  // 0 bis. Accès réservé : code partagé avec les testeurs ; jamais indexé.
+  const accessCode = process.env.SITE_ACCESS_CODE || undefined;
+  if (accessCode && !isSiteAccessExempt(pathname) && !(await hasSiteAccess(request.cookies.get(SITE_ACCESS_COOKIE)?.value, accessCode))) {
+    const gate = new URL("/acces", request.url);
+    gate.searchParams.set("suivant", `${pathname}${search}`);
+    return NextResponse.rewrite(gate, { status: 401, headers: { "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "private, no-store" } });
   }
 
   if (pathname.startsWith("/interne")) {

@@ -261,12 +261,44 @@ async function applyAuthConfig() {
   }
 }
 
+/**
+ * Sauvegardes du projet (API d'administration, lecture seule). La restauration
+ * reste une action humaine délibérée, depuis le tableau de bord Supabase
+ * (docs/runbook.md). Code de sortie 1 si aucune sauvegarde n'est disponible.
+ */
+async function listBackups() {
+  const token = process.env.SUPABASE_ACCESS_TOKEN;
+  if (!token || !process.env.NEXT_PUBLIC_SUPABASE_URL) throw new Error("SUPABASE_ACCESS_TOKEN et NEXT_PUBLIC_SUPABASE_URL requis.");
+  const ref = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname.split(".")[0];
+  const response = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/backups`, {
+    headers: { Authorization: `Bearer ${token}`, "User-Agent": "carrefour-des-possibles-db/0.1" },
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status} : ${await response.text()}`);
+  const info = await response.json();
+  console.log(`Projet ${ref} (${info.region}) — restauration à un instant donné (PITR) : ${info.pitr_enabled ? "activée" : "non activée"}`);
+  const backups = info.backups ?? [];
+  for (const backup of backups.slice(0, 10)) console.log(`  ${backup.inserted_at} — ${backup.status}${backup.is_physical_backup ? " (physique)" : ""}`);
+  if (backups.length === 0 && !info.pitr_enabled) {
+    console.log("AUCUNE sauvegarde disponible : passer à un forfait avec sauvegardes quotidiennes (ou PITR), ou planifier un pg_dump, AVANT toute ouverture au public.");
+    process.exitCode = 1;
+  } else console.log(`${backups.length} sauvegarde(s) listée(s).`);
+}
+
 const [command, ...args] = process.argv.slice(2);
 if (command === "auth-config") {
   try {
     await applyAuthConfig();
   } catch (error) {
     console.error(`Configuration impossible : ${error.message}`);
+    process.exitCode = 1;
+  }
+  process.exit();
+}
+if (command === "backups") {
+  try {
+    await listBackups();
+  } catch (error) {
+    console.error(`Lecture des sauvegardes impossible : ${error.message}`);
     process.exitCode = 1;
   }
   process.exit();

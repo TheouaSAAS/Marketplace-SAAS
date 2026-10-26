@@ -18,6 +18,7 @@ export const FEATURE_KEYS = [
   "reviews",
   "map",
   "geolocation",
+  "live_updates",
   "ai_search",
   "ai_assistant",
   "ai_publishing",
@@ -84,6 +85,12 @@ export const FEATURES: Record<FeatureKey, FeatureDefinition> = {
     description: "Position du visiteur, sur autorisation explicite, jamais stockée par défaut.",
     defaultOn: true,
     requires: [],
+  },
+  live_updates: {
+    label: "Annonces en temps réel",
+    description: "Listes et fiches mises à jour sans rechargement (Supabase Realtime) ; coupé : rechargement chaque minute.",
+    defaultOn: true,
+    requires: ["database"],
   },
   ai_search: {
     label: "Recherche en langage naturel (IA)",

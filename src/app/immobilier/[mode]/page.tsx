@@ -8,6 +8,7 @@ import { Alert, ErrorState } from "@/components/ui/feedback";
 import { Skeleton } from "@/components/ui/spinner";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { LiveListings } from "@/modules/listings/components/live-listings";
+import { isFeatureEnabled } from "@/server/features";
 import { CompareBar } from "@/modules/real-estate/components/compare";
 import { ModeNav } from "@/modules/real-estate/components/mode-nav";
 import { PropertyFilters } from "@/modules/real-estate/components/property-filters";
@@ -62,7 +63,7 @@ async function Results({ mode, searchParams }: { mode: RealEstateMode; searchPar
             <h2 id="resultats" className="text-xl font-bold">
               {data.total === 0 ? "Aucun bien" : `${data.total} bien${data.total > 1 ? "s" : ""}`} · {data.cityName}
             </h2>
-            <LiveListings />
+            <LiveListings enabled={isFeatureEnabled("live_updates")} />
           </div>
           <p className="text-sm text-ink-muted">
             Les informations (prix, surface, disponibilité) sont déclarées par les annonceurs. Une annonce non confirmée depuis 30 jours est

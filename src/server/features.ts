@@ -65,6 +65,17 @@ export function getFeatures(): FeatureMap {
   return Object.fromEntries(FEATURE_KEYS.map((key) => [key, states[key].enabled])) as FeatureMap;
 }
 
+/** Message affiché quand une action est refusée parce que sa fonctionnalité est coupée. */
+const CLOSED_MESSAGES: Partial<Record<FeatureKey, string>> = {
+  publishing: "La publication d’annonces est momentanément fermée. Vos brouillons sont conservés.",
+  pro_publishing: "Les pages professionnelles sont momentanément fermées aux nouvelles publications.",
+  messaging: "La messagerie est momentanément indisponible. Réessayez plus tard.",
+};
+
+export function closedFeatureMessage(key: FeatureKey): string {
+  return CLOSED_MESSAGES[key] ?? "Cette fonctionnalité est momentanément indisponible.";
+}
+
 export function isFeatureEnabled(key: FeatureKey): boolean {
   return getFeatureStates()[key].enabled;
 }

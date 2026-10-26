@@ -15,6 +15,7 @@ import { getCityContext } from "@/server/city-context";
 import { getCurrentAccount, getSessionUser } from "@/server/auth";
 import { APPLY_MODES, CONTRACTS, DOMAINS, EXPERIENCE, ORGANIZATIONS, REMOTE, safeApplyLink } from "../domain/attributes";
 import { checkOffer } from "../domain/rules";
+import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
 
 const SHOWN_CODES = ["23514", "42501", "CP429"];
 const keys = <T extends Record<string, string>>(table: T) => Object.keys(table) as [keyof T & string, ...(keyof T & string)[]];
@@ -176,6 +177,7 @@ const offerSchema = z
 
 /** Offre envoyée « en attente » : relue par la modération avant publication (règle en base). */
 export async function publishJobAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  if (!isFeatureEnabled("publishing")) return { status: "error", message: closedFeatureMessage("publishing") };
   const fields = ["categorie", "titre", "description", "contrat", "domaine", "experience", "teletravail", "organisation", "date_limite", "candidature", "lien", "quartier", "contact"] as const;
   const parsed = offerSchema.safeParse(Object.fromEntries(fields.map((name) => [name, read(formData, name)])));
   if (!parsed.success) return { status: "error", message: "Vérifiez les champs.", fieldErrors: fieldErrorsFrom(parsed.error), values: formValues(formData) };

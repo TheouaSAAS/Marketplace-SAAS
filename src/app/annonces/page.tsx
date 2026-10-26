@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/spinner";
 import { BrowseFilters } from "@/modules/listings/components/browse-filters";
 import { FavoriteButton } from "@/modules/listings/components/listing-buttons";
 import { LiveListings } from "@/modules/listings/components/live-listings";
+import { isFeatureEnabled } from "@/server/features";
 import { browseQuery, BROWSE_PAGE_SIZE, parseBrowseParams, type BrowseParams } from "@/modules/listings/domain/browse";
 import { loadBrowsePage } from "@/modules/listings/server/browse";
 import { listCategories } from "@/server/repositories/categories";
@@ -127,7 +128,7 @@ async function Results({ searchParams }: { searchParams: Props["searchParams"] }
               {total === 0 ? "Aucune annonce" : `${total} annonce${total > 1 ? "s" : ""}`}
               {data.cityName && ` · ${data.cityName}`}
             </h2>
-            <LiveListings />
+            <LiveListings enabled={isFeatureEnabled("live_updates")} />
           </div>
           <p className="text-sm text-ink-muted">
             Prix, état et disponibilité sont déclarés par les annonceurs : la plateforme ne les vérifie pas, sauf mention « Vérifié ». Ne versez jamais

@@ -21,6 +21,7 @@ import { checkListing } from "../domain/rules";
 import { aiAvailability, extractWithAi, type AiInput } from "./ai";
 import { promotePhotos } from "./photo-store";
 import { publishableCategories, type StoredSuggestion } from "./queries";
+import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
 
 const SHOWN_CODES = ["23514", "42501", "CP429"];
 
@@ -53,6 +54,7 @@ const startSchema = z.object({ categorie: z.uuid(), texte: z.string().trim().max
 export async function startDraftAction(formData: FormData): Promise<void> {
   const parsed = startSchema.safeParse({ categorie: formData.get("categorie"), texte: formData.get("texte") || undefined, page: formData.get("page") || undefined });
   if (!parsed.success) redirect(href("publish"));
+  if (!isFeatureEnabled("publishing") || (parsed.data.page && !isFeatureEnabled("pro_publishing"))) redirect(href("publish", { query: { ferme: "1" } }));
   const account = await getCurrentAccount();
   if (!account) redirect(href("login", { query: { suivant: href("publish") } }));
   if (account.isSuspended) redirect(href("publish"));
@@ -280,6 +282,7 @@ export interface SubmitState extends FormState {
 export async function submitListingAction(_previous: SubmitState, formData: FormData): Promise<SubmitState> {
   const id = z.uuid().safeParse(formData.get("annonce"));
   if (!id.success) return { status: "error", message: "Annonce introuvable." };
+  if (!isFeatureEnabled("publishing")) return { status: "error", message: closedFeatureMessage("publishing") };
   if (formData.get("charte") !== "1") return { status: "error", message: "Engagez-vous à respecter la charte de confiance pour soumettre l’annonce." };
   const { user, supabase } = await session();
   const { data: listing } = await supabase.from("listings").select("id, slug, status, title, description, category_id, attributes").eq("id", id.data).maybeSingle();

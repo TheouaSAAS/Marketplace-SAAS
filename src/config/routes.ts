@@ -136,6 +136,7 @@ export const ROUTES = {
 
   // Pages techniques
   maintenance: { path: "/maintenance", label: "Maintenance", level: 4, status: "live", private: true },
+  siteAccess: { path: "/acces", label: "Accès réservé", level: 28, status: "live", private: true },
   offline: { path: "/hors-ligne", label: "Hors ligne", level: 4, status: "live", private: true },
   designSystem: { path: "/design-system", label: "Système de design", level: 1, status: "live", private: true },
   internalStatus: { path: "/interne/statut", label: "Statut interne", level: 0, status: "live", private: true },

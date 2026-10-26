@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { isIndexableEnvironment, resolveAppEnvironment } from "./src/config/environment";
 
 const supabaseHost = (() => {
   try {
@@ -52,6 +53,8 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   // La géolocalisation n'est autorisée que pour notre origine, jamais pour un iframe tiers.
   { key: "Permissions-Policy", value: "geolocation=(self), camera=(), microphone=(), payment=()" },
+  // Préproduction et développement : jamais indexés, même si une adresse fuit.
+  ...(isIndexableEnvironment(resolveAppEnvironment()) ? [] : [{ key: "X-Robots-Tag", value: "noindex, nofollow" }]),
 ];
 
 const nextConfig: NextConfig = {

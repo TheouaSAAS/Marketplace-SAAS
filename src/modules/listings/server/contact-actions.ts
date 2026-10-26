@@ -9,6 +9,7 @@ import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { safeRedirectPath } from "@/modules/accounts/domain/schemas";
 import { getSessionUser } from "@/server/auth";
 import { hasAcceptedCharter, recordCharterAcceptance } from "@/modules/trust/server/charter";
+import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
 
 /** Codes de refus de la base dont le message est destiné au public. */
 const READABLE = new Set(["CP429", "23514", "42501"]);
@@ -48,6 +49,7 @@ const messageSchema = z.object({
  * de cette annonce, puis mène à la messagerie.
  */
 export async function contactSellerAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  if (!isFeatureEnabled("messaging")) return { status: "error", message: closedFeatureMessage("messaging") };
   const back = safeRedirectPath(formData.get("retour"), href("search"));
   const parsed = messageSchema.safeParse({ annonce: formData.get("annonce"), message: formData.get("message") });
   if (!parsed.success) {

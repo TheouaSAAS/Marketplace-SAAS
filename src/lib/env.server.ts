@@ -45,6 +45,13 @@ export const serverEnvSchema = z.object({
   /** Jeton d'accès à /interne/statut. Obligatoire en production pour consulter la page. */
   INTERNAL_STATUS_TOKEN: blankAsUndefined(z.string().min(24, "24 caractères minimum").optional()),
 
+  /** Environnement déclaré : development | preview | production (voir src/config/environment.ts). */
+  APP_ENV: blankAsUndefined(z.enum(["development", "preview", "production"]).optional()),
+  /** Code d'accès réservé (bêta privée, préproduction) : sans lui, seules la supervision et la page /acces répondent. */
+  SITE_ACCESS_CODE: blankAsUndefined(z.string().min(12, "12 caractères minimum").optional()),
+  /** Adresse d'un canal d'alerte (webhook Slack, Discord, Google Chat…) pour les erreurs serveur. */
+  ALERT_WEBHOOK_URL: blankAsUndefined(z.url().optional()),
+
   /** Secret des tâches planifiées (envoi des notifications, alertes) : en-tête « Authorization: Bearer … ». */
   CRON_SECRET: blankAsUndefined(z.string().min(24, "24 caractères minimum").optional()),
 
@@ -55,6 +62,7 @@ export const serverEnvSchema = z.object({
   FEATURE_REVIEWS: flagOverride,
   FEATURE_MAP: flagOverride,
   FEATURE_GEOLOCATION: flagOverride,
+  FEATURE_LIVE_UPDATES: flagOverride,
   FEATURE_AI_SEARCH: flagOverride,
   FEATURE_AI_ASSISTANT: flagOverride,
   FEATURE_AI_PUBLISHING: flagOverride,

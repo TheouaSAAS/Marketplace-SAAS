@@ -16,6 +16,7 @@ import { startDraftAction } from "@/modules/publishing/server/actions";
 import { getManageablePage } from "@/modules/businesses/server/workspace";
 import { listMyListings, publishableCategories, type CategoryGroup, type PublishableCategory } from "@/modules/publishing/server/queries";
 import { getCurrentAccount } from "@/server/auth";
+import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
 
 export const metadata: Metadata = {
   title: "Publier une annonce",
@@ -56,12 +57,17 @@ async function Categories({ searchParams }: { searchParams: Promise<Raw> }) {
     logger.error("Catégories indisponibles", { module: "publication", error });
     return <ErrorState title="Catégories momentanément indisponibles" description="Réessayez dans quelques instants." />;
   }
+  // Publication coupée (drapeau publishing) : rien à choisir, les brouillons restent dans « Mes annonces ».
+  if (!isFeatureEnabled("publishing")) {
+    return <Alert tone="warning" title="Publication momentanément fermée">{closedFeatureMessage("publishing")}</Alert>;
+  }
   if (flat.length === 0) return <ErrorState title="Publication indisponible" description="Aucune catégorie n’est ouverte à la publication pour l’instant." />;
   const suggested = text ? suggestCategories(text, flat) : [];
   const page = await getManageablePage(typeof raw.page === "string" ? raw.page : undefined).catch(() => null);
   return (
     <div className="flex flex-col gap-8">
       {page && <Alert tone="info">Annonce publiée au nom de la page « {page.name} » : visible de son équipe dans l’espace professionnel.</Alert>}
+      {raw.ferme === "1" && <Alert tone="warning">{closedFeatureMessage("pro_publishing")}</Alert>}
       {raw.limite === "1" && <Alert tone="warning">Vous avez créé beaucoup de brouillons aujourd’hui : terminez ou supprimez-en avant d’en créer d’autres.</Alert>}
       {raw.erreur === "1" && <Alert tone="danger">Le brouillon n’a pas pu être créé. Réessayez.</Alert>}
       <section aria-labelledby="decrire" className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4 sm:p-6">
