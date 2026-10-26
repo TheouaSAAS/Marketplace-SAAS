@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { href } from "@/config/routes";
-import { assignableRoles, ROLE_LABELS, USER_ROLES, type UserRole } from "@/domain/roles";
+import { assignableRoles, isBackOffice, ROLE_LABELS, USER_ROLES, type UserRole } from "@/domain/roles";
 import { formatDate } from "@/lib/format";
 import { logger } from "@/lib/logger";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, ErrorState } from "@/components/ui/feedback";
 import { AccessDenied, AdminFrame, teamAccount } from "@/modules/admin/components/admin-frame";
-import { AccountForm, OrganizationForm } from "@/modules/admin/components/back-office-forms";
+import { AccountForm, OrganizationForm, ResetSecondFactorForm } from "@/modules/admin/components/back-office-forms";
 import { listAccounts, listOrganizations, type AdminAccount, type AdminOrganization } from "@/modules/admin/server/back-office";
 
 export const metadata: Metadata = {
@@ -90,7 +90,10 @@ async function Accounts({ searchParams }: { searchParams: Promise<Raw> }) {
                 {item.id === account.id ? (
                   <p className="text-sm text-ink-muted">Votre propre compte ne se modifie pas d’ici.</p>
                 ) : (
-                  <AccountForm accountId={item.id} role={item.role} suspended={item.is_suspended} assignable={assignable} />
+                  <>
+                    <AccountForm accountId={item.id} role={item.role} suspended={item.is_suspended} assignable={assignable} />
+                    {account.role === "superadmin" && isBackOffice(item.role as UserRole) && <ResetSecondFactorForm accountId={item.id} />}
+                  </>
                 )}
               </li>
             ))}

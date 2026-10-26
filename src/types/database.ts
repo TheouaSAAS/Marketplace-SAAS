@@ -16,6 +16,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_access_log: {
+        Row: {
+          created_at: string
+          email_fingerprint: string | null
+          event: string
+          id: string
+          ip_fingerprint: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_fingerprint?: string | null
+          event: string
+          id?: string
+          ip_fingerprint?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_fingerprint?: string | null
+          event?: string
+          id?: string
+          ip_fingerprint?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_access_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_audit_log: {
         Row: {
           action: string
@@ -3789,6 +3824,8 @@ export type Database = {
           account_intent: string
           locale: string
           notification_channels: Json
+          pending_business_category: string | null
+          pending_business_name: string | null
           search_indexing: boolean
           show_listing_count: boolean
           show_member_since: boolean
@@ -3800,6 +3837,8 @@ export type Database = {
           account_intent?: string
           locale?: string
           notification_channels?: Json
+          pending_business_category?: string | null
+          pending_business_name?: string | null
           search_indexing?: boolean
           show_listing_count?: boolean
           show_member_since?: boolean
@@ -3811,6 +3850,8 @@ export type Database = {
           account_intent?: string
           locale?: string
           notification_channels?: Json
+          pending_business_category?: string | null
+          pending_business_name?: string | null
           search_indexing?: boolean
           show_listing_count?: boolean
           show_member_since?: boolean
@@ -3819,6 +3860,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_preferences_pending_business_category_fkey"
+            columns: ["pending_business_category"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_preferences_user_id_fkey"
             columns: ["user_id"]
@@ -3995,6 +4043,7 @@ export type Database = {
         Returns: boolean
       }
       attr_int: { Args: { p_attributes: Json; p_key: string }; Returns: number }
+      backoffice_mfa_required: { Args: never; Returns: boolean }
       become_individual: { Args: never; Returns: undefined }
       become_professional: { Args: never; Returns: undefined }
       business_private_location: {

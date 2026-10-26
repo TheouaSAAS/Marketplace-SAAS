@@ -1,16 +1,13 @@
 import { randomBytes } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { HAS_DATABASE, NO_DATABASE } from "./env";
+import { signInAs } from "./sign-in";
 
 const NETWORK = 20_000;
 
 async function asUser(browser: Browser, prefix: "E2E_USER" | "E2E_USER2" | "E2E_ADMIN"): Promise<Page> {
   const page = await (await browser.newContext()).newPage();
-  await page.goto("/connexion");
-  await page.getByLabel("Adresse e-mail").fill(process.env[`${prefix}_EMAIL`]!);
-  await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(process.env[`${prefix}_PASSWORD`]!);
-  await page.getByRole("button", { name: "Se connecter" }).click();
-  await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
+  await signInAs(page, prefix);
   return page;
 }
 

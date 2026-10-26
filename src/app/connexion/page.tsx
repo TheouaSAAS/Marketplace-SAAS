@@ -7,6 +7,7 @@ import { Alert } from "@/components/ui/feedback";
 import { AuthShell } from "@/modules/accounts/components/auth-shell";
 import { FormSkeleton } from "@/modules/accounts/components/form-skeleton";
 import { LoginForm } from "@/modules/accounts/components/login-form";
+import { ResendConfirmation } from "@/modules/accounts/components/resend-confirmation";
 import { safeRedirectPath } from "@/modules/accounts/domain/schemas";
 import { getSessionUser } from "@/server/auth";
 
@@ -27,9 +28,13 @@ async function LoginContent({ searchParams }: Pick<PageProps<"/connexion">, "sea
   return (
     <>
       {first(params.erreur) === "lien" && (
-        <Alert tone="warning" title="Lien invalide ou expiré">
-          Le lien utilisé n’est plus valable (il dure une heure et ne sert qu’une fois). Connectez-vous, ou demandez un nouvel e-mail.
-        </Alert>
+        <div className="flex flex-col gap-3">
+          <Alert tone="warning" title="Lien invalide, expiré ou déjà utilisé">
+            Un lien de confirmation dure une heure et ne sert qu’une fois. Si votre adresse est déjà confirmée, connectez-vous ; sinon, demandez un
+            nouvel e-mail.
+          </Alert>
+          <ResendConfirmation />
+        </div>
       )}
       {first(params.suivant) && (
         <Alert tone="info">Connectez-vous pour accéder à cette page.</Alert>
@@ -43,7 +48,7 @@ export default function LoginPage({ searchParams }: PageProps<"/connexion">) {
   return (
     <AuthShell
       title="Connexion"
-      description="Retrouvez vos annonces, favoris et messages."
+      description="Retrouvez vos annonces, favoris et messages. Les visiteurs explorent le site sans compte."
       footer={
         <p>
           Pas encore de compte ?{" "}

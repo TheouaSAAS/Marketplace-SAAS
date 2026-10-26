@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
+import { totp } from "./sign-in";
 import { adminFetch, deleteOrphanTestUsers } from "./test-accounts";
 
 /**
@@ -47,4 +48,28 @@ export default async function globalSetup() {
     body: JSON.stringify({ role: "admin" }),
   });
   if (!promoted.ok) throw new Error(`Attribution du rôle administrateur impossible : HTTP ${promoted.status} ${await promoted.text()}`);
+  await enrollSecondFactor(url, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
+}
+
+/**
+ * Second facteur de l'administrateur de test : configuré par l'API publique
+ * d'authentification, exactement comme le ferait l'application (inscription
+ * du facteur TOTP, puis premier code vérifié). La clé est exposée aux tests.
+ */
+async function enrollSecondFactor(url: string, publishableKey: string) {
+  const call = async (path: string, body: unknown, token?: string) => {
+    const response = await fetch(`${url}/auth/v1${path}`, {
+      method: "POST",
+      headers: { apikey: publishableKey, "Content-Type": "application/json", ...(token && { Authorization: `Bearer ${token}` }) },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (!response.ok) throw new Error(`Second facteur de test : HTTP ${response.status} sur ${path} — ${await response.text()}`);
+    return response.json();
+  };
+  const session = await call("/token?grant_type=password", { email: process.env.E2E_ADMIN_EMAIL, password: process.env.E2E_ADMIN_PASSWORD });
+  const factor = await call("/factors", { factor_type: "totp", friendly_name: "e2e" }, session.access_token);
+  const challenge = await call(`/factors/${factor.id}/challenge`, {}, session.access_token);
+  await call(`/factors/${factor.id}/verify`, { challenge_id: challenge.id, code: totp(factor.totp.secret) }, session.access_token);
+  process.env.E2E_ADMIN_TOTP_SECRET = factor.totp.secret;
 }

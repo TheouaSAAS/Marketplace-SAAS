@@ -52,6 +52,14 @@ Prérequis (☐ à mettre en place avant l’ouverture) : forfait avec sauvegard
 6. **Vérifier** : `verification`, `/interne/statut` sans alerte.
 7. **Consigner** : date, durée, cause, impact, actions, prévention (dans le suivi de l’équipe).
 
+## Comptes de l'équipe
+
+- **Premier superadministrateur** : la personne s'inscrit sur le site et confirme son adresse, puis `npm run db:promote -- <adresse> superadmin` sur le poste d'exploitation (contexte système, journalisé ; refuse une adresse inconnue ou non confirmée) ; elle configure son second facteur à sa première connexion sur `/admin/connexion`.
+- **Autres rôles** : attribués dans `/admin/comptes` (raison obligatoire, journalisée) ; l'administrateur ne crée pas d'administrateur, seul un superadministrateur le fait.
+- **Téléphone perdu** : un superadministrateur vérifie l'identité de la personne (hors ligne), puis « Réinitialiser le second facteur » dans `/admin/comptes` ; la personne en configure un nouveau à sa connexion suivante.
+- **Départ d'un membre de l'équipe** : lui retirer son rôle dans `/admin/comptes` le jour même.
+- **Échecs répétés** : visibles dans `/admin/journal` (« Accès à l'administration ») et signalés dans les journaux ; au-delà de 5 essais en 15 minutes, la connexion est bloquée temporairement.
+
 ## Services externes en panne
 
 | Service | Effet | Le site reste utilisable ? |

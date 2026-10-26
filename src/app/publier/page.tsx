@@ -16,7 +16,7 @@ import { startDraftAction } from "@/modules/publishing/server/actions";
 import { getManageablePage } from "@/modules/businesses/server/workspace";
 import { listMyListings, publishableCategories, type CategoryGroup, type PublishableCategory } from "@/modules/publishing/server/queries";
 import { getCurrentAccount } from "@/server/auth";
-import { closedFeatureMessage, isFeatureEnabled } from "@/server/features";
+import { closedFeatureMessage, isFeatureClosed } from "@/server/features";
 
 export const metadata: Metadata = {
   title: "Publier une annonce",
@@ -57,8 +57,9 @@ async function Categories({ searchParams }: { searchParams: Promise<Raw> }) {
     logger.error("Catégories indisponibles", { module: "publication", error });
     return <ErrorState title="Catégories momentanément indisponibles" description="Réessayez dans quelques instants." />;
   }
-  // Publication coupée (drapeau publishing) : rien à choisir, les brouillons restent dans « Mes annonces ».
-  if (!isFeatureEnabled("publishing")) {
+  // Publication coupée par l'équipe (drapeau publishing) : rien à choisir, les brouillons restent dans « Mes annonces ».
+  // Une base injoignable n'est pas une fermeture : le message « indisponible » ci-dessous s'applique.
+  if (isFeatureClosed("publishing")) {
     return <Alert tone="warning" title="Publication momentanément fermée">{closedFeatureMessage("publishing")}</Alert>;
   }
   if (flat.length === 0) return <ErrorState title="Publication indisponible" description="Aucune catégorie n’est ouverte à la publication pour l’instant." />;

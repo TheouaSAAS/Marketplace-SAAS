@@ -1,21 +1,14 @@
-import { expect, test, type Browser, type Page } from "@playwright/test";
+import { expect, test, type Browser } from "@playwright/test";
 import { HAS_DATABASE, NO_DATABASE } from "./env";
+import { signInAs } from "./sign-in";
 
 const NETWORK = 20_000;
 const SHOWCASE = "/lieux/exemple-restaurant";
 const CLAIMED = "/lieux/exemple-quincaillerie";
 
-async function signIn(page: Page, email: string, password: string) {
-  await page.goto("/connexion");
-  await page.getByLabel("Adresse e-mail").fill(email);
-  await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(password);
-  await page.getByRole("button", { name: "Se connecter" }).click();
-  await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
-}
-
 async function asUser(browser: Browser, prefix: "E2E_USER" | "E2E_USER2" | "E2E_ADMIN") {
   const page = await (await browser.newContext()).newPage();
-  await signIn(page, process.env[`${prefix}_EMAIL`]!, process.env[`${prefix}_PASSWORD`]!);
+  await signInAs(page, prefix);
   return page;
 }
 

@@ -75,6 +75,15 @@ export function describeServices(): ServiceCheck[] {
           : "Aucun fournisseur : en développement, les e-mails sont affichés dans la console.",
     },
     {
+      // Inscription, confirmation, mot de passe oublié : envoyés par Supabase Auth, pas par la plateforme.
+      name: "E-mails de compte (Supabase Auth)",
+      status: env.EMAIL_PROVIDER !== "none" && env.EMAIL_API_KEY && env.EMAIL_FROM ? "partial" : "not_configured",
+      detail:
+        env.EMAIL_PROVIDER !== "none" && env.EMAIL_API_KEY && env.EMAIL_FROM
+          ? "Fournisseur prêt : appliquer à Supabase par `npm run db:auth-config` (SMTP et modèles français), puis tester une inscription."
+          : "Envoi par défaut de Supabase : 2 e-mails par heure, adresses de l’équipe du projet seulement. L’inscription publique est refusée avec un message explicite.",
+    },
+    {
       name: "SMS et push",
       status: "not_configured",
       detail: env.SMS_PROVIDER !== "none" ? `SMS : ${env.SMS_PROVIDER} déclaré, non intégré.` : "Aucun fournisseur.",

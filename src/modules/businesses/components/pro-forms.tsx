@@ -22,7 +22,7 @@ const decisionButton = "inline-flex h-11 items-center rounded-control px-4 text-
 const primary = `${decisionButton} bg-brand-600 text-white hover:bg-brand-700`;
 const secondary = `${decisionButton} border border-border-strong bg-surface hover:bg-sand-100`;
 
-export function CreateProPageForm({ categories }: { categories: { id: string; name: string }[] }) {
+export function CreateProPageForm({ categories, defaults }: { categories: { id: string; name: string }[]; defaults?: { nom: string; categorie: string } }) {
   const [state, action] = useActionState(createProPageAction, INITIAL_FORM_STATE);
   const errors = state.fieldErrors ?? {};
   return (
@@ -30,11 +30,11 @@ export function CreateProPageForm({ categories }: { categories: { id: string; na
       <FormStatus state={state} />
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Nom de l’activité" required error={errors.nom}>
-          {(props) => <Input {...props} name="nom" maxLength={120} defaultValue={state.values?.nom} />}
+          {(props) => <Input {...props} name="nom" maxLength={120} defaultValue={state.values?.nom ?? defaults?.nom} />}
         </Field>
         <Field label="Catégorie" required error={errors.categorie}>
           {(props) => (
-            <Select {...props} name="categorie" defaultValue={state.values?.categorie ?? ""}>
+            <Select {...props} name="categorie" defaultValue={state.values?.categorie ?? defaults?.categorie ?? ""}>
               <option value="">Choisir…</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>

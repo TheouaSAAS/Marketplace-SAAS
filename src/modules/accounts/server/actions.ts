@@ -10,7 +10,9 @@ import { formValues, invalidForm, type FormState } from "@/lib/form-state";
 import { logger } from "@/lib/logger";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createSessionSupabaseClient } from "@/lib/supabase/server";
-import { getSessionUser } from "@/server/auth";
+import { isBackOffice } from "@/domain/roles";
+import { logAdminAccess } from "@/server/admin-access";
+import { getCurrentAccount, getSessionUser } from "@/server/auth";
 import { isFeatureEnabled } from "@/server/features";
 import { consumeRateLimit } from "@/server/rate-limit";
 import {
@@ -51,6 +53,24 @@ async function sessionClientOrNull() {
 }
 
 const SIGNUP_SENT = "Si cette adresse peut être utilisée, vous allez recevoir un e-mail de confirmation. Ouvrez le lien qu’il contient pour activer votre compte.";
+const RESEND_SENT = "Si un compte en attente de confirmation est associé à cette adresse, un nouvel e-mail de confirmation vient de lui être envoyé.";
+/** Le fournisseur refuse d'envoyer : on ne prétend jamais qu'un e-mail est parti. */
+const EMAIL_SERVICE_CLOSED: FormState = {
+  status: "error",
+  message: "L’envoi des e-mails de confirmation n’est pas encore ouvert au public : votre compte ne peut pas être confirmé pour le moment. Réessayez après le lancement.",
+};
+const EMAIL_SATURATED: FormState = { status: "error", message: "Le service d’envoi d’e-mails est saturé. Réessayez dans une heure." };
+
+/** Erreurs d'envoi d'e-mail du fournisseur d'authentification (aucune ne révèle si l'adresse a un compte). */
+function emailDeliveryProblem(error: { code?: string; status?: number }): FormState | null {
+  if (error.code === "over_email_send_rate_limit" || error.status === 429) return EMAIL_SATURATED;
+  if (error.code === "email_address_not_authorized") return EMAIL_SERVICE_CLOSED;
+  if (error.code === "unexpected_failure" || (error.status ?? 0) >= 500) return EMAIL_SERVICE_CLOSED;
+  return null;
+}
+
+/** Lien de confirmation : aboutit sur /auth/confirmation, qui ouvre la session puis mène à la destination. */
+const confirmationLink = () => `${SITE.url}${href("authConfirm", { query: { suivant: href("profile") } })}`;
 const RESET_SENT = "Si un compte est associé à cette adresse, vous allez recevoir un e-mail pour choisir un nouveau mot de passe.";
 
 /** Défi anti-robot : un robot reçoit la même réponse qu'un humain (rien ne lui est révélé), rien n'est envoyé. */
@@ -71,14 +91,17 @@ export async function signUpAction(_previous: FormState, formData: FormData): Pr
   if (!supabase) return UNAVAILABLE;
   if (!(await consumeRateLimit("signUp", parsed.data.email))) return { ...TOO_MANY, values: formValues(formData) };
 
+  const professional = parsed.data.accountIntent === "professionnel";
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${SITE.url}${href("authConfirm", { query: { suivant: href("profile") } })}`,
+      emailRedirectTo: confirmationLink(),
+      // Aucun rôle ici : la base ignore toute autre clé et crée toujours un membre (handle_new_user).
       data: {
         display_name: parsed.data.displayName,
         account_intent: parsed.data.accountIntent,
+        ...(professional && { business: { name: parsed.data.businessName, category_id: parsed.data.businessCategory } }),
         consents: { terms: TERMS_VERSION, privacy: PRIVACY_VERSION, marketing_email: parsed.data.marketingEmail },
       },
     },
@@ -90,14 +113,16 @@ export async function signUpAction(_previous: FormState, formData: FormData): Pr
     if (error.code === "weak_password") {
       return { status: "error", fieldErrors: { password: "Ce mot de passe est trop faible ou trop courant." }, values: formValues(formData) };
     }
-    if (error.code === "over_email_send_rate_limit" || error.status === 429) {
-      log.warn("Envoi d'e-mails limité par Supabase", { code: error.code });
-      return { status: "error", message: "Le service d’envoi d’e-mails est saturé. Réessayez dans une heure.", values: formValues(formData) };
+    const delivery = emailDeliveryProblem(error);
+    if (delivery) {
+      log.warn("Inscription : e-mail de confirmation non envoyé", { code: error.code, status: error.status });
+      return { ...delivery, values: formValues(formData) };
     }
-    // Les autres erreurs (adresse déjà utilisée…) ne sont pas révélées.
+    // Les autres refus (adresse déjà utilisée…) ne sont pas révélés.
     log.warn("Inscription refusée", { code: error.code, status: error.status });
   }
-  return { status: "success", message: SIGNUP_SENT };
+  // L'adresse revient au formulaire pour proposer le renvoi de l'e-mail.
+  return { status: "success", message: SIGNUP_SENT, values: { email: parsed.data.email } };
 }
 
 export async function signInAction(_previous: FormState, formData: FormData): Promise<FormState> {
@@ -112,18 +137,45 @@ export async function signInAction(_previous: FormState, formData: FormData): Pr
     // Panne réseau : ne pas faire croire à un mot de passe erroné.
     if (isAuthRetryableFetchError(error)) return { ...UNAVAILABLE, values: formValues(formData) };
     if (error.code === "email_not_confirmed") {
+      // Le fournisseur ne renvoie cette erreur qu'avec le bon mot de passe : rien n'est révélé à un tiers.
       return {
         status: "error",
-        message: "Votre adresse e-mail n’est pas encore confirmée. Ouvrez le lien reçu par e-mail lors de l’inscription.",
-        values: formValues(formData),
+        message: "Votre adresse e-mail n’est pas encore confirmée. Ouvrez le lien reçu par e-mail lors de l’inscription, ou demandez-en un nouveau.",
+        values: { ...formValues(formData), nonConfirme: "1" },
       };
     }
     return { status: "error", message: "Adresse e-mail ou mot de passe incorrect.", values: formValues(formData) };
   }
-  redirect(safeRedirectPath(formData.get("suivant"), href("profile")));
+  const requested = formData.get("suivant");
+  if (typeof requested === "string" && requested && requested !== href("profile")) redirect(safeRedirectPath(requested, href("profile")));
+  // Sans destination demandée : l'équipe passe au second facteur, les membres vont à leur espace.
+  const { data: signedIn } = await supabase.auth.getUser();
+  const { data: profile } = signedIn.user ? await supabase.from("profiles").select("role").eq("id", signedIn.user.id).maybeSingle() : { data: null };
+  redirect(profile && isBackOffice(profile.role) ? href("adminVerify") : href("profile"));
+}
+
+/** Renvoi de l'e-mail de confirmation (inscription en attente) : réponse identique que l'adresse ait un compte ou non. */
+export async function resendConfirmationAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const parsed = emailOnlySchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return invalidForm(parsed.error, formData);
+  const supabase = await sessionClientOrNull();
+  if (!supabase) return UNAVAILABLE;
+  if (!(await consumeRateLimit("confirmationResend", parsed.data.email))) {
+    return { status: "error", message: "Vous avez déjà demandé plusieurs e-mails. Patientez une heure avant de réessayer.", values: formValues(formData) };
+  }
+  const { error } = await supabase.auth.resend({ type: "signup", email: parsed.data.email, options: { emailRedirectTo: confirmationLink() } });
+  if (error) {
+    if (isAuthRetryableFetchError(error)) return UNAVAILABLE;
+    const delivery = emailDeliveryProblem(error);
+    if (delivery) return delivery;
+    log.warn("Renvoi de confirmation refusé", { code: error.code, status: error.status });
+  }
+  return { status: "success", message: RESEND_SENT, values: { email: parsed.data.email } };
 }
 
 export async function signOutAction(): Promise<void> {
+  const account = await getCurrentAccount();
+  if (account && isBackOffice(account.storedRole)) await logAdminAccess("deconnexion", { userId: account.id });
   const supabase = await createSessionSupabaseClient();
   // « local » : ferme la session de cet appareil seulement, pas celles des autres appareils.
   await supabase?.auth.signOut({ scope: "local" });

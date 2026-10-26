@@ -76,6 +76,11 @@ export function closedFeatureMessage(key: FeatureKey): string {
   return CLOSED_MESSAGES[key] ?? "Cette fonctionnalité est momentanément indisponible.";
 }
 
+/** Fonctionnalité coupée volontairement par l'équipe (FEATURE_<CLÉ>=off), à distinguer d'un service indisponible. */
+export function isFeatureClosed(key: FeatureKey): boolean {
+  return !getFeatureStates()[key].requested;
+}
+
 export function isFeatureEnabled(key: FeatureKey): boolean {
   return getFeatureStates()[key].enabled;
 }

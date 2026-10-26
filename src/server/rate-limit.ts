@@ -28,6 +28,11 @@ export const RATE_RULES = {
   aiAssistant: { limit: 20, windowSeconds: 3600 },
   aiSearch: { limit: 40, windowSeconds: 86400 },
   siteAccess: { limit: 10, windowSeconds: 900 },
+  /** Renvoi de l'e-mail de confirmation : 3 par heure (le fournisseur limite aussi ses envois). */
+  confirmationResend: { limit: 3, windowSeconds: 3600 },
+  /** Connexion à l'administration : plus stricte que la connexion des membres. */
+  adminSignIn: { limit: 5, windowSeconds: 900 },
+  secondFactor: { limit: 10, windowSeconds: 900 },
 } as const satisfies Record<string, RateRule>;
 
 export type RateAction = keyof typeof RATE_RULES;
@@ -37,7 +42,8 @@ export async function clientIp(): Promise<string> {
   return store.get("x-forwarded-for")?.split(",")[0]?.trim() || store.get("x-real-ip")?.trim() || "inconnue";
 }
 
-function fingerprint(parts: string[]): string {
+/** Empreinte HMAC (clé secrète du serveur) : regroupe des événements sans conserver la donnée en clair. */
+export function fingerprint(parts: string[]): string {
   const secret = getServerEnv().SUPABASE_SECRET_KEY ?? "developpement-sans-cle";
   return createHmac("sha256", secret).update(parts.join("|")).digest("hex");
 }

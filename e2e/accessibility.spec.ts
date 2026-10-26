@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { HAS_DATABASE, NO_DATABASE } from "./env";
+import { signInAs } from "./sign-in";
 
 /**
  * Audit automatique WCAG 2.2 AA (axe-core) des interfaces principales, sur
@@ -31,6 +32,7 @@ const PAGES = [
   "/contact",
   "/offres",
   "/connexion",
+  "/admin/connexion",
   "/inscription",
   "/mot-de-passe-oublie",
   "/charte-de-confiance",
@@ -77,11 +79,7 @@ for (const { account, paths } of PRIVATE_PAGES) {
     test.skip(!process.env[`${account}_EMAIL`], "Comptes de test absents");
     test.skip(testInfo.project.name !== "desktop", "Comptes de test partagés entre projets");
     test.setTimeout(120_000);
-    await page.goto("/connexion");
-    await page.getByLabel("Adresse e-mail").fill(process.env[`${account}_EMAIL`]!);
-    await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(process.env[`${account}_PASSWORD`]!);
-    await page.getByRole("button", { name: "Se connecter" }).click();
-    await expect(page).toHaveURL(/\/profil$/, { timeout: 20_000 });
+    await signInAs(page, account);
     const problems: string[] = [];
     for (const path of paths) {
       await page.goto(path);

@@ -11,7 +11,7 @@ import {
   createSourceAction,
   handleReportAction,
   mergePlacesAction,
-  setAccountAction,
+  resetSecondFactorAction, setAccountAction,
   setAiKillSwitchAction,
   setCampaignStatusAction,
   setOrganizationAction,
@@ -241,5 +241,27 @@ export function AiKillSwitchForm({ disabled }: { disabled: boolean }) {
         </SubmitButton>
       </div>
     </form>
+  );
+}
+
+/** Réinitialisation du second facteur d'un compte de l'équipe (superadministrateurs). */
+export function ResetSecondFactorForm({ accountId }: { accountId: string }) {
+  const [state, action] = useActionState(resetSecondFactorAction, INITIAL_FORM_STATE);
+  return (
+    <details className="rounded-control bg-surface-muted p-3">
+      <summary className="cursor-pointer text-sm font-semibold">Réinitialiser le second facteur (téléphone perdu)</summary>
+      <form action={action} className="mt-3 flex flex-col gap-3">
+        <input type="hidden" name="compte" value={accountId} />
+        <FormStatus state={state} />
+        <Field label="Raison (journalisée) — identité vérifiée comment ?" required error={state.fieldErrors?.raison}>
+          {(props) => <Input {...props} name="raison" maxLength={1000} defaultValue={state.values?.raison} />}
+        </Field>
+        <div>
+          <SubmitButton variant="danger" fullWidth={false}>
+            Réinitialiser
+          </SubmitButton>
+        </div>
+      </form>
+    </details>
   );
 }

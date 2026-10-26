@@ -2,6 +2,17 @@
 
 État au **niveau 26** (24/10/2026). Les règles d'accès sont garanties par la base (RLS, fonctions à droits vérifiés) ; l'interface ne fait que masquer ce qui n'est pas permis. Matrice d'accès vérifiée par `supabase/tests/level26_security.sql` et les tests des niveaux précédents.
 
+## Connexion, inscription et administration
+
+- Mots de passe : jamais stockés ni journalisés par la plateforme (Supabase Auth) ; 10 caractères, une lettre et un chiffre ; affichage masquable.
+- Validation serveur (Zod) de chaque formulaire ; destinations de retour limitées aux chemins internes (`safeRedirectPath`), celles de l'administration à `/admin`.
+- Limitation : connexion 10 essais / 15 min, administration 5 / 15 min, second facteur 10 / 15 min, renvoi de confirmation 3 / heure (par IP et par adresse visée).
+- Anti-énumération : inscription, mot de passe oublié et renvoi répondent pareil que l'adresse existe ou non ; la connexion ne précise pas ce qui est faux (l'adresse non confirmée n'est signalée qu'avec le bon mot de passe).
+- Confirmation de l'adresse obligatoire (`mailer_autoconfirm` désactivé) : sans elle, aucune connexion ; liens à usage unique, valables une heure.
+- Sessions : cookies gérés par Supabase SSR (jetons signés vérifiés côté serveur, rotation des jetons de rafraîchissement) ; la déconnexion révoque la session de l'appareil.
+- Administration : connexion dédiée `/admin/connexion`, second facteur TOTP exigé par la base (D138), journal des accès (D139), réinitialisation d'un facteur perdu par un superadministrateur avec raison journalisée ; un facteur actif ne se remplace pas avec le seul mot de passe.
+- Aucun rôle par l'inscription publique : métadonnées ignorées par `handle_new_user`, rôle protégé par `protect_profile_privileges` (vérifié par `supabase/tests/auth_access.sql`).
+
 ## Accès réservé et environnements (niveau 28)
 
 - Préproduction et bêta privée : `SITE_ACCESS_CODE` (12 caractères minimum). Le proxy sert `/acces` (401, non indexée) sans cookie valide ; le cookie (`HttpOnly`, `SameSite=Lax`, `Secure` en HTTPS, 30 jours) contient une empreinte SHA-256 du code ; 10 essais par quart d'heure et par adresse. Changer le code révoque tous les accès.

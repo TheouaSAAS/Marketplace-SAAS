@@ -410,5 +410,17 @@ Journaux JSON masqués, erreurs serveur captées par `onRequestError` et envoyé
 ## D136 — Une fonctionnalité coupée ferme proprement
 Les drapeaux qui ferment une action (publication, pages professionnelles, messagerie) sont vérifiés côté serveur, dans chaque action concernée, avec un message explicite ; la consultation reste intacte. Le temps réel a son drapeau (`live_updates`) et se replie sur un rechargement périodique.
 
+## D137 — Le profil choisi à l'inscription n'accorde aucun droit
+« Profil utilisateur » ou « Profil professionnel » oriente le parcours ; le compte naît toujours membre (`user`), quelles que soient les métadonnées envoyées par le navigateur. Le professionnel déclare le nom et le secteur de son activité : ils préremplissent sa future page, qui reste privée jusqu'à complétude et modération. Aucun rôle d'administration n'est proposé ni accepté à l'inscription : les rôles de l'équipe s'attribuent dans `/admin/comptes` par un superadministrateur (règle en base).
+
+## D138 — Second facteur obligatoire pour le back-office, appliqué par la base
+Modération, édition locale et administration exigent une session « aal2 » (code TOTP vérifié par Supabase Auth). La règle est dans `current_user_role()`, par laquelle passent toutes les autorisations : sans second facteur, un compte de l'équipe agit comme un simple membre, partout. Réglage `security.backoffice_mfa` (activé). L'interface suit la même règle (rôle effectif) et conduit au second facteur ; un facteur perdu se réinitialise par un superadministrateur, jamais avec le seul mot de passe.
+
+## D139 — Une connexion propre à l'administration, journalisée
+`/admin/connexion` (signalée comme accès réservé) n'ouvre l'administration qu'aux comptes de l'équipe ; un autre compte est refusé et sa session fermée. Connexions, échecs, refus, second facteur et déconnexions sont journalisés dans `admin_access_log` (empreintes HMAC de l'adresse et de l'IP, jamais de mot de passe, de code ni de jeton), consultable par les administrateurs dans le journal, conservé un an.
+
+## D140 — Ne jamais annoncer un e-mail qui n'est pas parti
+La confirmation de l'adresse utilise le mécanisme de Supabase Auth (lien à usage unique valable une heure). Si le fournisseur refuse d'envoyer (service d'e-mails non ouvert au public, saturation, panne), l'inscription et le renvoi le disent au lieu d'afficher « e-mail envoyé ». Renvoi limité (60 s entre deux demandes à l'écran, 3 par heure et par adresse côté serveur), réponses identiques que l'adresse ait un compte ou non.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session), `@supabase/realtime-js` (temps réel des listes, chargé après l'affichage ; déjà dépendance de supabase-js) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `@axe-core/playwright` 4.13.0 (audit WCAG automatique, version exacte publiée depuis plus de deux mois, niveau 25), `@vitest/coverage-v8` 5.0.5 (couverture des tests ; version imposée, identique à celle de `vitest`, niveau 27), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

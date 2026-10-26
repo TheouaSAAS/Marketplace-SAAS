@@ -43,3 +43,20 @@ export function assignableRoles(actor: Actor): readonly UserRole[] {
   if (actor === "admin") return ["user", "professional", "local_editor", "moderator"];
   return [];
 }
+
+/** Rôles du back-office (modération, données locales, administration). */
+export const BACKOFFICE_ROLES: readonly UserRole[] = ["local_editor", "moderator", "admin", "superadmin"];
+
+export function isBackOffice(role: Actor): boolean {
+  return (BACKOFFICE_ROLES as readonly Actor[]).includes(role);
+}
+
+/**
+ * Rôle effectif (miroir de `public.current_user_role()`) : un rôle du
+ * back-office n'agit qu'après le second facteur (session « aal2 ») quand la
+ * plateforme l'exige ; avant, le compte agit comme un simple membre.
+ */
+export function effectiveRole(stored: UserRole, assurance: string | null | undefined, secondFactorRequired: boolean): UserRole {
+  if (isBackOffice(stored) && secondFactorRequired && assurance !== "aal2") return "user";
+  return stored;
+}

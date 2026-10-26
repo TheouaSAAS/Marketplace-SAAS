@@ -66,3 +66,28 @@ describe("redirection après connexion", () => {
     expect(safeRedirectPath(undefined, "/")).toBe("/");
   });
 });
+
+describe("inscription : choix du profil", () => {
+  const base = { displayName: "Awa", email: "awa@example.ci", password: "motdepasse1", acceptTerms: "on" };
+
+  it("un profil utilisateur ne demande que les informations du compte", () => {
+    const parsed = signUpSchema.safeParse({ ...base, accountIntent: "particulier", businessName: "", businessCategory: "" });
+    expect(parsed.success).toBe(true);
+  });
+
+  it("un profil professionnel exige le nom et le secteur de l'activité", () => {
+    const parsed = signUpSchema.safeParse({ ...base, accountIntent: "professionnel", businessName: "", businessCategory: "" });
+    expect(parsed.success).toBe(false);
+    const paths = parsed.error?.issues.map((issue) => issue.path[0]);
+    expect(paths).toEqual(expect.arrayContaining(["businessName", "businessCategory"]));
+    expect(
+      signUpSchema.safeParse({ ...base, accountIntent: "professionnel", businessName: "Salon Awa", businessCategory: "6f1c1c2e-8a1b-4c7d-9e2f-0a1b2c3d4e5f" }).success,
+    ).toBe(true);
+  });
+
+  it("n'accepte aucun autre type de profil (jamais d'administration)", () => {
+    for (const accountIntent of ["admin", "superadmin", "moderator", ""]) {
+      expect(signUpSchema.safeParse({ ...base, accountIntent }).success, accountIntent).toBe(false);
+    }
+  });
+});

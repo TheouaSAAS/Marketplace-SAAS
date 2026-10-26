@@ -15,14 +15,16 @@ export function SubmitButton({
   children,
   variant = "primary",
   fullWidth = true,
+  disabled = false,
 }: {
   children: ReactNode;
   variant?: ButtonVariant;
   fullWidth?: boolean;
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" variant={variant} loading={pending} fullWidth={fullWidth} size="lg">
+    <Button type="submit" variant={variant} loading={pending} disabled={disabled} fullWidth={fullWidth} size="lg">
       {children}
     </Button>
   );

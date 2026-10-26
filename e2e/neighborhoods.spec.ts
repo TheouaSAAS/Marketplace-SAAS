@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { HAS_DATABASE, NO_DATABASE } from "./env";
+import { signInAs } from "./sign-in";
 
 const NETWORK = 20_000;
 const ADMIN_HOOD = "zone-industrielle";
@@ -59,11 +60,7 @@ test.describe("Quartiers", () => {
     await resetBoundary(ADMIN_HOOD);
     try {
       const page = await (await browser.newContext()).newPage();
-      await page.goto("/connexion");
-      await page.getByLabel("Adresse e-mail").fill(process.env.E2E_ADMIN_EMAIL!);
-      await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(process.env.E2E_ADMIN_PASSWORD!);
-      await page.getByRole("button", { name: "Se connecter" }).click();
-      await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
+      await signInAs(page, "E2E_ADMIN");
       await page.goto("/admin");
       await page.getByRole("link", { name: "Gérer les quartiers et leurs périmètres" }).click();
       await page.getByRole("link", { name: "Zone industrielle" }).click();

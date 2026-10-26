@@ -15,7 +15,7 @@ begin
     perform set_config('request.jwt.claims', '{"role":"anon"}', true);
     execute 'set local role anon';
   else
-    perform set_config('request.jwt.claims', json_build_object('sub', p_uid, 'role', 'authenticated')::text, true);
+    perform set_config('request.jwt.claims', json_build_object('sub', p_uid, 'role', 'authenticated', 'aal', 'aal2')::text, true);
     execute 'set local role authenticated';
   end if;
 end $$;

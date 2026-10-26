@@ -108,7 +108,7 @@ test.describe("Formulaires de compte (sans envoi d'e-mail)", () => {
     test.skip(!HAS_DATABASE, NO_DATABASE);
     await page.goto("/auth/confirmation?token_hash=faux&type=email");
     await expect(page).toHaveURL(/\/connexion\?erreur=lien/);
-    await expect(page.getByText("Lien invalide ou expiré")).toBeVisible();
+    await expect(page.getByText("Lien invalide, expiré ou déjà utilisé")).toBeVisible();
   });
 
   test("les pages légales sont accessibles et signalées provisoires", async ({ page }) => {

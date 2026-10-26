@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { HAS_DATABASE, NO_DATABASE } from "./env";
+import { signInAs } from "./sign-in";
 
 const NETWORK = 20_000;
 
@@ -23,11 +24,7 @@ test.describe("Couche IA", () => {
   test("le pilotage de l'IA est réservé aux administrateurs et montre l'interrupteur", async ({ page }, testInfo) => {
     test.skip(!HAS_DATABASE || !process.env.E2E_ADMIN_EMAIL, NO_DATABASE);
     test.skip(testInfo.project.name !== "desktop", "Compte de test partagé entre projets");
-    await page.goto("/connexion");
-    await page.getByLabel("Adresse e-mail").fill(process.env.E2E_ADMIN_EMAIL!);
-    await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(process.env.E2E_ADMIN_PASSWORD!);
-    await page.getByRole("button", { name: "Se connecter" }).click();
-    await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
+    await signInAs(page, "E2E_ADMIN");
     await page.goto("/admin");
     await page.getByRole("link", { name: "Piloter l’intelligence artificielle" }).click();
     await expect(page.getByRole("heading", { name: "Interrupteur général" })).toBeVisible({ timeout: NETWORK });

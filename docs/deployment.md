@@ -37,6 +37,7 @@ Modèle complet : `.env.example`. `NEXT_PUBLIC_*` sont intégrées au build : le
 | `SUPABASE_SECRET_KEY` | facultatif | ✔ | ✔ | secret serveur |
 | `APP_ENV` | — | `preview` | — ou `production` | |
 | `SITE_ACCESS_CODE` | — | ✔ | bêta privée seulement | 12 caractères min. |
+| `AUTH_SMTP_*` (ou `EMAIL_*` avec Resend), `AUTH_REDIRECT_URLS` | — | ✔ | ✔ | appliqués à Supabase par `npm run db:auth-config` (e-mails de compte) |
 | `INTERNAL_STATUS_TOKEN` | — | ✔ | ✔ | 24 caractères min. |
 | `CRON_SECRET` | — | ✔ | ✔ | 24 caractères min. |
 | `EMAIL_PROVIDER`, `EMAIL_API_KEY`, `EMAIL_FROM` | simulés | ✔ | ✔ | domaine vérifié (SPF, DKIM) |

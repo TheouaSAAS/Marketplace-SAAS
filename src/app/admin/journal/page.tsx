@@ -10,6 +10,7 @@ import { EmptyState, ErrorState } from "@/components/ui/feedback";
 import { AccessDenied, AdminFrame, teamAccount } from "@/modules/admin/components/admin-frame";
 import { AUDIT_FILTERS, auditLabel, revisionChanges } from "@/modules/admin/domain/back-office";
 import { listAuditEntries, listRevisions, type AuditEntry, type Revision } from "@/modules/admin/server/back-office";
+import { ACCESS_EVENT_LABELS, listAdminAccess, type AccessEntry } from "@/modules/admin/server/access-log";
 
 export const metadata: Metadata = {
   title: "Journal et historique — administration",
@@ -137,9 +138,14 @@ async function Journal({ searchParams }: { searchParams: Promise<Raw> }) {
   const focused = Boolean(type && id);
   const admin = isAdmin(account.role);
   let entries: AuditEntry[] = [];
+  let accesses: AccessEntry[] = [];
   let revisions: Revision[];
   try {
-    [entries, revisions] = await Promise.all([admin && !focused ? listAuditEntries(action) : Promise.resolve([]), listRevisions({ type, id })]);
+    [entries, revisions, accesses] = await Promise.all([
+      admin && !focused ? listAuditEntries(action) : Promise.resolve([]),
+      listRevisions({ type, id }),
+      admin && !focused ? listAdminAccess() : Promise.resolve([]),
+    ]);
   } catch (error) {
     logger.error("Journal indisponible", { module: "administration", error });
     return <ErrorState title="Journal momentanément indisponible" description="Réessayez dans quelques instants." />;
@@ -169,6 +175,31 @@ async function Journal({ searchParams }: { searchParams: Promise<Raw> }) {
             ))}
           </nav>
           <AuditList entries={entries} />
+        </section>
+      )}
+      {admin && !focused && (
+        <section aria-labelledby="acces" className="flex flex-col gap-3">
+          <h2 id="acces" className="text-xl font-bold">
+            Accès à l’administration
+          </h2>
+          <p className="text-sm text-ink-muted">
+            Connexions, échecs, refus, second facteur et déconnexions, conservés un an. Ni mot de passe, ni code, ni adresse en clair : un échec
+            n’est rattaché à aucun compte, l’origine est une empreinte.
+          </p>
+          {accesses.length === 0 ? (
+            <p className="text-sm text-ink-muted">Aucun accès enregistré.</p>
+          ) : (
+            <ul className="flex flex-col divide-y divide-border rounded-card border border-border bg-surface">
+              {accesses.map((entry) => (
+                <li key={entry.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-sm">
+                  <span className="font-semibold">{ACCESS_EVENT_LABELS[entry.event]}</span>
+                  <span>{entry.profile?.display_name ?? (entry.event === "echec" ? "compte non identifié" : "compte supprimé")}</span>
+                  <span className="text-ink-muted">{formatDateTime(entry.created_at)}</span>
+                  {entry.ip_fingerprint && <code className="text-xs text-ink-subtle">origine {entry.ip_fingerprint.slice(0, 8)}</code>}
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       )}
       <section aria-labelledby="historique" className="flex flex-col gap-3">

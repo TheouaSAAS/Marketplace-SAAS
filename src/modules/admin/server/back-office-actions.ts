@@ -7,6 +7,7 @@ import { href } from "@/config/routes";
 import { USER_ROLES, type Actor } from "@/domain/roles";
 import { fieldErrorsFrom, formValues, type FormState } from "@/lib/form-state";
 import { logger } from "@/lib/logger";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createSessionSupabaseClient } from "@/lib/supabase/server";
 import { BUSINESSES_CACHE_TAG } from "@/modules/businesses/server/queries";
 import { EVENTS_CACHE_TAG } from "@/modules/events/server/queries";
@@ -96,6 +97,37 @@ export async function setAccountAction(_previous: FormState, formData: FormData)
   if (error) return databaseError(error, "Décision non enregistrée", formData);
   revalidatePath(href("adminAccounts"));
   return { status: "success", message: "Décision enregistrée et journalisée." };
+}
+
+/**
+ * Second facteur perdu (téléphone changé) : un superadministrateur — lui-même
+ * connecté avec son second facteur — supprime les facteurs d'un compte de
+ * l'équipe, qui en configurera un nouveau à sa prochaine connexion. Raison
+ * obligatoire, décision journalisée.
+ */
+export async function resetSecondFactorAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const parsed = z.object({ compte: z.uuid(), raison: reason }).safeParse({ compte: formData.get("compte"), raison: text(formData, "raison") });
+  if (!parsed.success) return { status: "error", fieldErrors: fieldErrorsFrom(parsed.error), values: formValues(formData) };
+  const account = await getCurrentAccount();
+  // Rôle effectif : un superadministrateur sans second facteur n'est pas habilité.
+  if (!account || account.role !== "superadmin") return DENIED;
+  if (parsed.data.compte === account.id) return { status: "error", message: "Votre propre second facteur ne se réinitialise pas d’ici." };
+  const admin = createAdminSupabaseClient();
+  if (!admin) return { status: "error", message: "Clé secrète du serveur absente : réinitialisation impossible." };
+  const { data, error } = await admin.auth.admin.mfa.listFactors({ userId: parsed.data.compte });
+  if (error) return databaseError({ code: error.code ?? "", message: error.message }, "Second facteur non réinitialisé", formData);
+  for (const factor of data.factors) {
+    const { error: deleteError } = await admin.auth.admin.mfa.deleteFactor({ userId: parsed.data.compte, id: factor.id });
+    if (deleteError) return databaseError({ code: deleteError.code ?? "", message: deleteError.message }, "Second facteur non réinitialisé", formData);
+  }
+  await admin.from("admin_audit_log").insert({
+    actor_id: account.id,
+    action: "compte.second_facteur_reinitialise",
+    entity_type: "profiles",
+    entity_id: parsed.data.compte,
+    details: { raison: parsed.data.raison, facteurs: data.factors.length, avant: "configuré", apres: "à configurer" },
+  });
+  return { status: "success", message: data.factors.length ? "Second facteur réinitialisé : le compte en configurera un nouveau à sa prochaine connexion." : "Ce compte n’avait aucun second facteur." };
 }
 
 export async function setOrganizationAction(_previous: FormState, formData: FormData): Promise<FormState> {

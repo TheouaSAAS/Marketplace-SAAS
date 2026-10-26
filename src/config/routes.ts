@@ -112,6 +112,8 @@ export const ROUTES = {
   proModeration: { path: "/espace-pro/[id]/verification", label: "Vérification et modération", level: 21, status: "live", private: true },
   proOffers: { path: "/espace-pro/[id]/offres", label: "Visibilité et offres", level: 21, status: "live", private: true },
   admin: { path: "/admin", label: "Administration", level: 22, status: "live", private: true },
+  adminLogin: { path: "/admin/connexion", label: "Connexion à l’administration", level: 29, status: "live", private: true },
+  adminVerify: { path: "/admin/verification", label: "Second facteur de l’administration", level: 29, status: "live", private: true },
   adminReports: { path: "/admin/signalements", label: "Signalements", level: 22, status: "live", private: true },
   adminAccounts: { path: "/admin/comptes", label: "Comptes et organisations", level: 22, status: "live", private: true },
   adminAudit: { path: "/admin/journal", label: "Journal et historique", level: 22, status: "live", private: true },

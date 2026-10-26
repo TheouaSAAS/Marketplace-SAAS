@@ -99,6 +99,8 @@ const PAGES = [
   // Disponibilité réelle (supervision externe) : 503 sans base.
   { path: "/api/health/ready", status: DB ? 200 : 503, includes: DB ? ['"database":"ok"'] : ['"status":"degraded"'], excludes: ["SUPABASE", "KEY"] },
   { path: "/acces", status: 200, includes: ["Accès réservé", "Code d’accès", "noindex"] },
+  { path: "/admin/connexion", status: 200, includes: ["Connexion à l’administration", "Votre ville, mille opportunités", "noindex"] },
+  { path: "/admin", status: 307, includes: [] },
   { path: "/connexion", status: 200, includes: DB ? ["Connexion", "Mot de passe oublié"] : ["Connexion", ...ACCOUNTS_DOWN] },
   { path: "/inscription", status: 200, includes: DB ? ["Créer un compte", "conditions d’utilisation"] : ACCOUNTS_DOWN },
   { path: "/mot-de-passe-oublie", status: 200, includes: ["Mot de passe oublié"] },

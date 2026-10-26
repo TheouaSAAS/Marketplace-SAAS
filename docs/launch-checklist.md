@@ -25,6 +25,14 @@
 - ☐ Vérifier les premières données locales (source, date, responsable) pour nourrir l’assistant et les badges « Vérifié ».
 - ☐ Quartiers et périmètres validés par l’équipe locale ; rubriques et sous-catégories relues dans `/admin/categories`.
 
+## Comptes et e-mails (bloquant pour l'inscription publique)
+
+- ☐ **SMTP personnalisé** pour Supabase Auth : renseigner `EMAIL_PROVIDER=resend`, `EMAIL_API_KEY`, `EMAIL_FROM` (domaine vérifié chez le fournisseur : SPF, DKIM) — ou `AUTH_SMTP_*` pour un autre fournisseur — puis `npm run db:auth-config` (`--dry-run` pour prévisualiser) : SMTP, modèles français (confirmation, mot de passe, changement d'adresse, alertes de second facteur), adresse du site et redirections. Sans lui, Supabase n'envoie que 2 e-mails par heure aux seules adresses de l'équipe du projet ; l'inscription publique est alors refusée avec un message explicite.
+- ✅ Confirmation de l'adresse obligatoire, liens à usage unique valables une heure, renvoi limité.
+- ✅ Second facteur TOTP exigé pour le back-office (activé chez Supabase et par la base). ☐ Chaque membre de l'équipe le configure à sa première connexion ; ☐ au moins deux superadministrateurs (réinitialisation d'un facteur perdu).
+- ☐ Premier superadministrateur : inscription sur le site puis `npm run db:promote -- <adresse> superadmin` (`docs/runbook.md`) ; jamais un rôle par l'inscription.
+- ☐ Envisager le CAPTCHA de Supabase Auth (Turnstile ou hCaptcha) si les inscriptions automatisées apparaissent : non configuré (défi anti-robot maison actif).
+
 ## Sécurité et conformité
 
 - ☐ Relecture juridique : mentions légales, conditions, confidentialité, charte de confiance, accord de transaction.

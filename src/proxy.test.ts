@@ -40,12 +40,26 @@ describe("proxy — maintenance", () => {
 });
 
 describe("proxy — espaces protégés", () => {
-  it.each(["/profil", "/favoris", "/espace-pro", "/admin/utilisateurs"])("redirige %s vers la connexion sans session", async (path) => {
+  it.each(["/profil", "/favoris", "/espace-pro"])("redirige %s vers la connexion sans session", async (path) => {
     const response = await proxy(request(path));
     expect(response.status).toBe(307);
     const location = new URL(response.headers.get("location")!);
     expect(location.pathname).toBe("/connexion");
     expect(location.searchParams.get("suivant")).toBe(path);
+  });
+
+  it.each(["/admin", "/admin/comptes"])("redirige %s vers la connexion de l'administration sans session", async (path) => {
+    const response = await proxy(request(path));
+    expect(response.status).toBe(307);
+    const location = new URL(response.headers.get("location")!);
+    expect(location.pathname).toBe("/admin/connexion");
+    expect(location.searchParams.get("suivant")).toBe(path);
+  });
+
+  it("laisse ouverte la page de connexion de l'administration", async () => {
+    const response = await proxy(request("/admin/connexion"));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
   });
 
   it("ne protège pas une page publique au nom proche", async () => {

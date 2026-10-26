@@ -39,18 +39,34 @@ const password = z.string({ error: "Choisissez un mot de passe." }).superRefine(
 /** Case cochée d'un formulaire HTML : « on » si cochée, absente sinon. */
 const checkbox = z.preprocess((value) => value === "on" || value === "true" || value === true, z.boolean());
 
-export const signUpSchema = z.object({
-  displayName: z
-    .string({ error: "Indiquez votre nom." })
-    .trim()
-    .min(2, "Votre nom doit contenir au moins 2 caractères.")
-    .max(80, "Votre nom est trop long."),
-  email,
-  password,
-  accountIntent: z.enum(["particulier", "professionnel"], { error: "Choisissez un type de compte." }),
-  acceptTerms: checkbox.refine((value) => value, "Vous devez accepter les conditions d’utilisation et la politique de confidentialité."),
-  marketingEmail: checkbox,
-});
+/** Champ facultatif d'un formulaire HTML : chaîne vide = absent. */
+const optionalText = (schema: z.ZodType) => z.preprocess((value) => (typeof value === "string" && value.trim() === "" ? undefined : value), schema.optional());
+
+/**
+ * Inscription. Le type de profil n'accorde aucun droit : il oriente le parcours
+ * et, pour un professionnel, préremplit sa future page (jamais publiée sans
+ * complétude ni modération). Aucun rôle d'administration n'est proposé.
+ */
+export const signUpSchema = z
+  .object({
+    displayName: z
+      .string({ error: "Indiquez votre nom." })
+      .trim()
+      .min(2, "Votre nom doit contenir au moins 2 caractères.")
+      .max(80, "Votre nom est trop long."),
+    email,
+    password,
+    accountIntent: z.enum(["particulier", "professionnel"], { error: "Choisissez un type de profil." }),
+    businessName: optionalText(z.string().trim().min(2, "Le nom de l’activité doit contenir au moins 2 caractères.").max(120, "Nom d’activité trop long.")),
+    businessCategory: optionalText(z.uuid("Choisissez le secteur de votre activité.")),
+    acceptTerms: checkbox.refine((value) => value, "Vous devez accepter les conditions d’utilisation et la politique de confidentialité."),
+    marketingEmail: checkbox,
+  })
+  .superRefine((data, context) => {
+    if (data.accountIntent !== "professionnel") return;
+    if (!data.businessName) context.addIssue({ code: "custom", path: ["businessName"], message: "Indiquez le nom de votre activité." });
+    if (!data.businessCategory) context.addIssue({ code: "custom", path: ["businessCategory"], message: "Choisissez le secteur de votre activité." });
+  });
 
 export const signInSchema = z.object({
   email,

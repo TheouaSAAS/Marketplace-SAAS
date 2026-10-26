@@ -20,6 +20,8 @@ import { hasSupabaseSessionCookie, refreshSupabaseSession } from "@/lib/supabase
  */
 
 const PROTECTED_PREFIXES = ["/profil", "/favoris", "/messages", "/devis", "/espace-pro", "/admin"];
+/** Pages de l'administration ouvertes sans session : sa propre page de connexion. */
+const ADMIN_LOGIN = "/admin/connexion";
 
 /** Chemins toujours servis, même en maintenance (supervision et page elle-même). */
 const MAINTENANCE_EXEMPT = ["/maintenance", "/interne", "/api/health", "/api/interne"];
@@ -55,9 +57,11 @@ export async function proxy(request: NextRequest) {
   }
 
   const hasSession = hasSupabaseSessionCookie(request);
-  const isProtected = PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+  const isProtected = pathname !== ADMIN_LOGIN && PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
   if (isProtected && !hasSession) {
-    const login = new URL("/connexion", request.url);
+    // L'administration a sa propre page de connexion.
+    const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
+    const login = new URL(isAdmin ? ADMIN_LOGIN : "/connexion", request.url);
     login.searchParams.set("suivant", `${pathname}${search}`);
     return NextResponse.redirect(login);
   }

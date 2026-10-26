@@ -277,6 +277,14 @@ export async function listPendingReviews() {
 }
 
 /** Catégories ouvertes aux pages professionnelles (référentiel), libellées « Rubrique › Métier ». */
+/** Activité déclarée à l'inscription (profil professionnel) : préremplit la création de la page, rien de plus. */
+export async function pendingBusiness(userId: string): Promise<{ nom: string; categorie: string } | null> {
+  const supabase = await createSessionSupabaseClient();
+  const { data } = (await supabase?.from("user_preferences").select("pending_business_name, pending_business_category").eq("user_id", userId).maybeSingle()) ?? { data: null };
+  if (!data?.pending_business_name) return null;
+  return { nom: data.pending_business_name, categorie: data.pending_business_category ?? "" };
+}
+
 export async function proCategories(): Promise<{ id: string; name: string }[]> {
   const all = await listCategories();
   const byId = new Map(all.map((category) => [category.id, category]));

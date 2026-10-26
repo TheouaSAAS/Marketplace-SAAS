@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { HAS_DATABASE, NO_DATABASE } from "./env";
+import { signInAs } from "./sign-in";
 
 // Compte administrateur dédié (E2E_ADMIN), créé et promu par global-setup.
 const email = process.env.E2E_ADMIN_EMAIL;
@@ -31,18 +32,14 @@ async function deleteTestCategories() {
 test.describe("Administration du référentiel", () => {
   test("sans compte, la page des catégories passe par la connexion", async ({ page }) => {
     await page.goto("/admin/categories");
-    await expect(page).toHaveURL(/\/connexion\?suivant=%2Fadmin%2Fcategories/);
+    await expect(page).toHaveURL(/\/admin\/connexion\?suivant=%2Fadmin%2Fcategories/);
   });
 
   test("un administrateur modifie les mots-clés d'un métier, aussitôt pris en compte par la recherche", async ({ page }, testInfo) => {
     test.skip(!HAS_DATABASE || !email || !password, NO_DATABASE);
     test.skip(testInfo.project.name !== "desktop", "Référentiel partagé : un seul projet le modifie");
     test.setTimeout(120_000);
-    await page.goto("/connexion");
-    await page.getByLabel("Adresse e-mail").fill(email!);
-    await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(password!);
-    await page.getByRole("button", { name: "Se connecter" }).click();
-    await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
+    await signInAs(page, "E2E_ADMIN");
     await page.goto("/admin");
     await page.getByRole("link", { name: "Gérer les catégories et métiers" }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catégories");
@@ -81,11 +78,7 @@ test.describe("Administration du référentiel", () => {
     test.skip(!HAS_DATABASE || !email || !password, NO_DATABASE);
     test.skip(testInfo.project.name !== "desktop", "Référentiel partagé : un seul projet le modifie");
     test.setTimeout(150_000);
-    await page.goto("/connexion");
-    await page.getByLabel("Adresse e-mail").fill(email!);
-    await page.getByRole("textbox", { name: "Mot de passe", exact: true }).fill(password!);
-    await page.getByRole("button", { name: "Se connecter" }).click();
-    await expect(page).toHaveURL(/\/profil$/, { timeout: NETWORK });
+    await signInAs(page, "E2E_ADMIN");
     try {
       await page.goto("/admin/categories");
       const row = page.getByRole("listitem").filter({ has: page.getByText("Meubles", { exact: true }) });

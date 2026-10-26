@@ -24,6 +24,7 @@
     "db:types": "node scripts/db.mjs types",
     "db:backups": "node scripts/db.mjs backups",
     "db:auth-config": "node scripts/db.mjs auth-config",
+    "db:promote": "node scripts/db.mjs promote",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build && npm run smoke && npm run e2e"
   },
   "dependencies": {

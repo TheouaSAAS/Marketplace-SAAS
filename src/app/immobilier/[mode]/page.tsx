@@ -89,7 +89,8 @@ export default async function RealEstateModePage({ params, searchParams }: Props
         <p className="max-w-2xl text-ink-muted">{info.description}</p>
       </div>
       <ModeNav current={mode} />
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-card" />}>
+      {/* Au moins un écran : le pied de page ne saute pas quand les résultats arrivent. */}
+      <Suspense fallback={<Skeleton className="min-h-svh w-full rounded-card" />}>
         <Results mode={mode} searchParams={searchParams} />
       </Suspense>
     </Container>
