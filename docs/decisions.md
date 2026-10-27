@@ -422,5 +422,17 @@ Modération, édition locale et administration exigent une session « aal2 » (c
 ## D140 — Ne jamais annoncer un e-mail qui n'est pas parti
 La confirmation de l'adresse utilise le mécanisme de Supabase Auth (lien à usage unique valable une heure). Si le fournisseur refuse d'envoyer (service d'e-mails non ouvert au public, saturation, panne), l'inscription et le renvoi le disent au lieu d'afficher « e-mail envoyé ». Renvoi limité (60 s entre deux demandes à l'écran, 3 par heure et par adresse côté serveur), réponses identiques que l'adresse ait un compte ou non.
 
+## D141 — La cabine reste en démonstration tant qu'aucun prestataire agréé n'est intégré
+Paiements, transferts et recharges exigent un prestataire agréé sous contrat, son intégration dans le code et ses clés sur le serveur. Sans les trois, toute opération est enregistrée comme démonstration et annulée : la base interdit qu'elle soit « réussie ». Aucune offre, aucun tarif ni aucun code de recharge n'est fabriqué.
+
+## D142 — Des frais calculés par la base, confirmés par le visiteur
+Le taux (points de base, 0,5 % par défaut) et l'arrondi au franc CFA le plus proche sont appliqués par `cabin_fee`. Le récapitulatif est signé par le serveur ; à la création, la base recalcule le total et refuse tout écart, ce qui impose une nouvelle confirmation. Aucun frais après confirmation.
+
+## D143 — Une confirmation, une opération
+Chaque confirmation porte une clé d'idempotence unique en base : double clic ou renvoi réseau renvoient la même opération. Un résultat incertain passe « en attente de confirmation » et n'est jamais relancé automatiquement ; une opération sans confirmation expire au bout d'une heure, sans relance.
+
+## D144 — Pas de PIN, pas de numéro en clair
+L'autorisation du paiement se fait dans le parcours du fournisseur ; la plateforme n'a aucun champ pour un code secret. Numéros et compteurs sont conservés masqués et sous forme d'empreinte ; le suivi passe par un jeton remis au seul navigateur qui a confirmé (cookie protégé) ; les opérations ne sont lisibles que par leur auteur connecté et les administrateurs.
+
 ## Dépendances (justification, §3.1)
 `@supabase/supabase-js`, `@supabase/ssr` (base, session), `@supabase/realtime-js` (temps réel des listes, chargé après l'affichage ; déjà dépendance de supabase-js) · `zod` (validation) · `@anthropic-ai/sdk` (assistant IA facultatif, SDK officiel, niveau 18) · `lucide-react` (icônes, import à l'unité) · `clsx` + `tailwind-merge` (classes) · `server-only` (protection des secrets) · `leaflet` 1.9.4 (carte OpenStreetMap, choix initial du projet). Dév. : `@types/leaflet`, `vitest`, `@testing-library/*`, `jsdom`, `@vitejs/plugin-react` (tests), `@playwright/test` (navigateur), `@axe-core/playwright` 4.13.0 (audit WCAG automatique, version exacte publiée depuis plus de deux mois, niveau 25), `@vitest/coverage-v8` 5.0.5 (couverture des tests ; version imposée, identique à celle de `vitest`, niveau 27), `libpg-query` (SQL), `pg` (outil de migration par connexion directe).

@@ -89,6 +89,7 @@ export const ADMIN_SECTIONS: { title: string; tools: AdminTool[] }[] = [
       { route: "adminAccounts", label: "Gérer les comptes et organisations", audience: "admin", description: "Rôles, suspensions et levées, toujours avec une raison." },
       { route: "adminAudit", label: "Consulter le journal et l’historique", audience: "team", description: "Qui a fait quoi, quand, pourquoi, avec l’avant et l’après." },
       { route: "adminPromotions", label: "Suivre les mises en avant et abonnements", audience: "admin", description: "Campagnes sponsorisées et abonnements : pause, arrêt ou refus, sans paiement en ligne." },
+      { route: "adminCabin", label: "Gérer la cabine en ligne", audience: "admin", description: "Services, réseaux, prestataires, frais, offres, opérations et rapprochements." },
       { route: "adminAi", label: "Piloter l’intelligence artificielle", audience: "admin", description: "Fonctions activées, interrupteur d’arrêt, consommation du mois, base de connaissances de l’assistant." },
     ],
   },

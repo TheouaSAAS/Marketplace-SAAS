@@ -33,6 +33,12 @@
 - ☐ Premier superadministrateur : inscription sur le site puis `npm run db:promote -- <adresse> superadmin` (`docs/runbook.md`) ; jamais un rôle par l'inscription.
 - ☐ Envisager le CAPTCHA de Supabase Auth (Turnstile ou hCaptcha) si les inscriptions automatisées apparaissent : non configuré (défi anti-robot maison actif).
 
+## Cabine en ligne
+
+- ✅ Démonstration clairement signalée, aucune opération réelle possible sans prestataire intégré.
+- ☐ Prestataire agréé (BCEAO) sous contrat, avis juridique sur le statut de la plateforme, accords de distribution (opérateurs, CIE), intégration et essais en préproduction (`docs/cabine.md`).
+- ☐ Catalogue d'offres Internet réel et tarifs vérifiés ; frais du fournisseur connus et affichés ; mentions légales et conditions de la cabine relues.
+
 ## Sécurité et conformité
 
 - ☐ Relecture juridique : mentions légales, conditions, confidentialité, charte de confiance, accord de transaction.

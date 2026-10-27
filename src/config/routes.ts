@@ -63,6 +63,7 @@ export const ROUTES = {
   professionalDetail: { path: "/professionnels/[slug]", label: "Fiche d’un professionnel", level: 10, status: "live" },
   quoteRequests: { path: "/devis", label: "Mes demandes de devis", level: 10, status: "live", private: true },
   pricing: { path: "/offres", label: "Offres et visibilité", level: 21, status: "live" },
+  cabin: { path: "/cabine", label: "Cabine en ligne", level: 28, status: "live" },
 
   // Découvrir & sortir
   discover: { path: "/decouvrir", label: "Découvrir et sortir", level: 12, status: "live" },
@@ -116,6 +117,7 @@ export const ROUTES = {
   adminVerify: { path: "/admin/verification", label: "Second facteur de l’administration", level: 29, status: "live", private: true },
   adminReports: { path: "/admin/signalements", label: "Signalements", level: 22, status: "live", private: true },
   adminAccounts: { path: "/admin/comptes", label: "Comptes et organisations", level: 22, status: "live", private: true },
+  adminCabin: { path: "/admin/cabine", label: "Cabine en ligne : services et opérations", level: 28, status: "live", private: true },
   adminAudit: { path: "/admin/journal", label: "Journal et historique", level: 22, status: "live", private: true },
   adminQuality: { path: "/admin/qualite", label: "Qualité des données", level: 22, status: "live", private: true },
   adminDuplicates: { path: "/admin/doublons", label: "Doublons de lieux", level: 22, status: "live", private: true },

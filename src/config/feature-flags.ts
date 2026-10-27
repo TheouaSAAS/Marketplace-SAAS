@@ -19,6 +19,7 @@ export const FEATURE_KEYS = [
   "map",
   "geolocation",
   "live_updates",
+  "cabin",
   "ai_search",
   "ai_assistant",
   "ai_publishing",
@@ -89,6 +90,12 @@ export const FEATURES: Record<FeatureKey, FeatureDefinition> = {
   live_updates: {
     label: "Annonces en temps réel",
     description: "Listes et fiches mises à jour sans rechargement (Supabase Realtime) ; coupé : rechargement chaque minute.",
+    defaultOn: true,
+    requires: ["database"],
+  },
+  cabin: {
+    label: "Cabine en ligne",
+    description: "Crédit, offres Internet, recharge CIE et transferts entre réseaux ; opérations réelles seulement avec un prestataire intégré.",
     defaultOn: true,
     requires: ["database"],
   },

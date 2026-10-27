@@ -12,6 +12,7 @@ import { signInAs } from "./sign-in";
 const PAGES = [
   "/",
   "/annonces",
+  "/cabine",
   "/annonces?categorie=voitures",
   "/immobilier",
   "/emploi",

@@ -33,6 +33,9 @@ export const RATE_RULES = {
   /** Connexion à l'administration : plus stricte que la connexion des membres. */
   adminSignIn: { limit: 5, windowSeconds: 900 },
   secondFactor: { limit: 10, windowSeconds: 900 },
+  /** Cabine : récapitulatifs (calcul des frais) et opérations confirmées (par IP et par destinataire). */
+  cabinQuote: { limit: 60, windowSeconds: 3600 },
+  cabinOperation: { limit: 10, windowSeconds: 3600 },
 } as const satisfies Record<string, RateRule>;
 
 export type RateAction = keyof typeof RATE_RULES;

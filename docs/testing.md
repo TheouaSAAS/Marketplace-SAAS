@@ -6,9 +6,9 @@ Rapport du **niveau 27** (24/10/2026). Toutes les suites se rejouent avec `npm r
 
 | Suite | Commande | Contenu | Résultat |
 | --- | --- | --- | --- |
-| Unitaires et intégration | `npm test` | Règles métier, filtres, statuts, droits par rôle, transformations IA (modèle simulé), composants | 546 tests, 64 fichiers |
+| Unitaires et intégration | `npm test` | Règles métier, filtres, statuts, droits par rôle, transformations IA (modèle simulé), composants | 561 tests, 66 fichiers |
 | Couverture | `npm run test:coverage` | Règles métier (`domain`), `lib`, configuration, composants | domaine 94,6 % des lignes, `lib` 79,9 %, configuration 100 %, composants 11,5 % (exercés par les tests de bout en bout) |
-| Base de données | `npm run db:verify` | RLS, fonctions, déclencheurs, modération, notifications, IA, sécurité, hygiène des données | 28 suites, 550 vérifications |
+| Base de données | `npm run db:verify` | RLS, fonctions, déclencheurs, modération, notifications, IA, sécurité, hygiène des données | 29 suites, 578 vérifications |
 | Statique SQL | `npm test` (`supabase/migrations.test.ts`) | Syntaxe SQL et PL/pgSQL de toutes les migrations et données de démonstration | — |
 | Smoke | `npm run smoke` | 44 pages (statut, contenu attendu), sitemap, absence de secret dans le code du navigateur | 44 pages |
 | Bout en bout | `npm run e2e` | Edge mobile (Pixel 7) et ordinateur, 30 fichiers ; comptes de test créés et supprimés automatiquement | ~320 réussis, 67 ignorés par conception |
@@ -34,6 +34,7 @@ Rapport du **niveau 27** (24/10/2026). Toutes les suites se rejouent avec `npm r
 | Toutes les annonces : rubriques, filtres par catégorie, tri, retour depuis une fiche, temps réel (publication, disponibilité, retrait sans rechargement) | ✅ | ✅ | `listings-browse.spec`, `browse.test`, `live.test`, `level28_listing_sections.sql` |
 | Rubriques administrables (création, quatre niveaux, suppression avec reprise) | — | ✅ | `admin.spec`, `categories.test` (admin), `level28_listing_sections.sql` |
 | Connexion, inscription (deux profils), adresse non confirmée, lien expiré, administration (connexion dédiée, refus, second facteur TOTP) | ✅ | ✅ | `auth-access.spec`, `accounts.spec`, `schemas.test`, `roles.test`, `auth_access.sql` ; le compte administrateur de test passe par un vrai second facteur dans tous les parcours |
+| Cabine en ligne : six étapes, frais de 0,5 % et total avant confirmation, démonstration jamais réussie, double clic sans double opération, offres et combinaisons non configurées signalées, administration réservée | ✅ | ✅ | `cabin.spec`, `cabin.test`, `quote.test`, `cabin.sql` |
 | Notifications, préférences, désabonnement | ✅ | ✅ | `notifications.spec`, `dashboard.spec`, `level24_notifications.sql`, `email.test` |
 
 Les parcours qui modifient des comptes partagés tournent sur le profil ordinateur ; leur rendu mobile est couvert par les tests de pages, l'audit d'accessibilité et le test de débordement à 360 px.

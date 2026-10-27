@@ -42,7 +42,7 @@ const PAGES = [
   {
     path: "/sitemap.xml",
     status: 200,
-    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces", "/guide", "/quartiers", "/carte", "/evenements", "/emploi", "/publier", "/professionnels", "/offres", "/annonces</loc>"],
+    includes: ["<loc>", "/aide", "/verification", "/decouvrir", "/tourisme", "/commerces", "/guide", "/quartiers", "/carte", "/evenements", "/emploi", "/publier", "/professionnels", "/offres", "/annonces</loc>", "/cabine</loc>"],
     // Ni pages privées, ni rubriques en préparation (contenu encore mince).
     excludes: ["/design-system", "/admin", "/interne", "/mes-annonces", "/tableau-de-bord", "/espace-pro", "/mes-pages-pro", "/publier/", "/profil", "/hors-ligne", "/tourisme/itineraire?"],
   },
@@ -99,6 +99,8 @@ const PAGES = [
   // Disponibilité réelle (supervision externe) : 503 sans base.
   { path: "/api/health/ready", status: DB ? 200 : 503, includes: DB ? ['"database":"ok"'] : ['"status":"degraded"'], excludes: ["SUPABASE", "KEY"] },
   { path: "/acces", status: 200, includes: ["Accès réservé", "Code d’accès", "noindex"] },
+  { path: "/cabine", status: 200, includes: DB ? ["Cabine en ligne", "Mode démonstration", "Transfert d’argent"] : ["Cabine en ligne", "Cabine indisponible"], excludes: ["noindex"] },
+  { path: "/admin/cabine", status: 307, includes: [] },
   { path: "/admin/connexion", status: 200, includes: ["Connexion à l’administration", "Votre ville, mille opportunités", "noindex"] },
   { path: "/admin", status: 307, includes: [] },
   { path: "/connexion", status: 200, includes: DB ? ["Connexion", "Mot de passe oublié"] : ["Connexion", ...ACCOUNTS_DOWN] },

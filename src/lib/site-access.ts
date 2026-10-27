@@ -11,7 +11,7 @@ export const SITE_ACCESS_COOKIE = "cdp_acces";
 export const SITE_ACCESS_MAX_AGE = 60 * 60 * 24 * 30;
 
 /** Chemins toujours servis : la page de saisie, la supervision et les tâches planifiées. */
-export const SITE_ACCESS_EXEMPT = ["/acces", "/maintenance", "/interne", "/api/health", "/api/interne", "/api/desabonnement", "/robots.txt"];
+export const SITE_ACCESS_EXEMPT = ["/acces", "/maintenance", "/interne", "/api/health", "/api/interne", "/api/desabonnement", "/api/cabine/notifications", "/robots.txt"];
 
 export async function siteAccessFingerprint(code: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`carrefour-des-possibles:acces:${code}`));

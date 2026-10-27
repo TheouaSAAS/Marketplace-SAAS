@@ -13,6 +13,10 @@
 - Administration : connexion dédiée `/admin/connexion`, second facteur TOTP exigé par la base (D138), journal des accès (D139), réinitialisation d'un facteur perdu par un superadministrateur avec raison journalisée ; un facteur actif ne se remplace pas avec le seul mot de passe.
 - Aucun rôle par l'inscription publique : métadonnées ignorées par `handle_new_user`, rôle protégé par `protect_profile_privileges` (vérifié par `supabase/tests/auth_access.sql`).
 
+## Cabine en ligne
+
+Voir `docs/cabine.md` : aucun PIN demandé ni stocké, clés côté serveur, récapitulatif signé, idempotence, limites par IP et par destinataire, réussite seulement confirmée par un prestataire réel, numéros masqués et empreintes, notifications signées, opérations réservées à leur auteur et aux administrateurs, rapprochements journalisés. Mode démonstration tant qu'aucun prestataire agréé n'est intégré.
+
 ## Accès réservé et environnements (niveau 28)
 
 - Préproduction et bêta privée : `SITE_ACCESS_CODE` (12 caractères minimum). Le proxy sert `/acces` (401, non indexée) sans cookie valide ; le cookie (`HttpOnly`, `SameSite=Lax`, `Secure` en HTTPS, 30 jours) contient une empreinte SHA-256 du code ; 10 essais par quart d'heure et par adresse. Changer le code révoque tous les accès.

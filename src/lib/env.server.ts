@@ -63,6 +63,7 @@ export const serverEnvSchema = z.object({
   FEATURE_MAP: flagOverride,
   FEATURE_GEOLOCATION: flagOverride,
   FEATURE_LIVE_UPDATES: flagOverride,
+  FEATURE_CABIN: flagOverride,
   FEATURE_AI_SEARCH: flagOverride,
   FEATURE_AI_ASSISTANT: flagOverride,
   FEATURE_AI_PUBLISHING: flagOverride,

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { href } from "@/config/routes";
 import { logger } from "@/lib/logger";
@@ -15,6 +16,8 @@ export const metadata: Metadata = {
 
 /** Secteurs proposés au profil professionnel : ceux de la création de page professionnelle (référentiel administrable). */
 async function SignupContent() {
+  // Rendu à la demande (données en cache) : une base injoignable au build ne fige pas une liste vide dans la page.
+  await connection();
   const categories = await proCategories().catch((error: unknown) => {
     logger.warn("Secteurs d'activité indisponibles à l'inscription", { module: "comptes", error });
     return [];

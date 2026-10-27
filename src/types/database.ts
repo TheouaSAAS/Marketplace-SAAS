@@ -473,6 +473,402 @@ export type Database = {
           },
         ]
       }
+      cabin_networks: {
+        Row: {
+          code: string
+          is_active: boolean
+          kind: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          code: string
+          is_active?: boolean
+          kind: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          code?: string
+          is_active?: boolean
+          kind?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      cabin_offers: {
+        Row: {
+          checked_on: string
+          created_by: string | null
+          data_volume: string | null
+          id: string
+          is_active: boolean
+          name: string
+          network_code: string
+          price_xof: number
+          source: string
+          updated_at: string
+          validity: string | null
+        }
+        Insert: {
+          checked_on?: string
+          created_by?: string | null
+          data_volume?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          network_code: string
+          price_xof: number
+          source: string
+          updated_at?: string
+          validity?: string | null
+        }
+        Update: {
+          checked_on?: string
+          created_by?: string | null
+          data_volume?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          network_code?: string
+          price_xof?: number
+          source?: string
+          updated_at?: string
+          validity?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_offers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_offers_network_code_fkey"
+            columns: ["network_code"]
+            isOneToOne: false
+            referencedRelation: "cabin_networks"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      cabin_operation_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          detail: string | null
+          from_status: Database["public"]["Enums"]["cabin_status"] | null
+          id: string
+          operation_id: string
+          source: string
+          to_status: Database["public"]["Enums"]["cabin_status"]
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          from_status?: Database["public"]["Enums"]["cabin_status"] | null
+          id?: string
+          operation_id: string
+          source: string
+          to_status: Database["public"]["Enums"]["cabin_status"]
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          from_status?: Database["public"]["Enums"]["cabin_status"] | null
+          id?: string
+          operation_id?: string
+          source?: string
+          to_status?: Database["public"]["Enums"]["cabin_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_operation_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_operation_events_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: false
+            referencedRelation: "cabin_operations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_operations: {
+        Row: {
+          amount_xof: number
+          completed_at: string | null
+          created_at: string
+          delivery_code: string | null
+          fee_bps: number
+          follow_token_hash: string
+          id: string
+          idempotency_key: string
+          mode: Database["public"]["Enums"]["cabin_mode"]
+          network_code: string
+          offer_id: string | null
+          provider_code: string | null
+          provider_fee_xof: number
+          provider_reference: string | null
+          quote_expires_at: string
+          recipient_fingerprint: string
+          recipient_masked: string
+          reference: string
+          service: Database["public"]["Enums"]["cabin_service"]
+          service_fee_xof: number
+          status: Database["public"]["Enums"]["cabin_status"]
+          status_reason: string | null
+          target_network_code: string | null
+          total_xof: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_xof: number
+          completed_at?: string | null
+          created_at?: string
+          delivery_code?: string | null
+          fee_bps: number
+          follow_token_hash: string
+          id?: string
+          idempotency_key: string
+          mode: Database["public"]["Enums"]["cabin_mode"]
+          network_code: string
+          offer_id?: string | null
+          provider_code?: string | null
+          provider_fee_xof?: number
+          provider_reference?: string | null
+          quote_expires_at: string
+          recipient_fingerprint: string
+          recipient_masked: string
+          reference?: string
+          service: Database["public"]["Enums"]["cabin_service"]
+          service_fee_xof: number
+          status?: Database["public"]["Enums"]["cabin_status"]
+          status_reason?: string | null
+          target_network_code?: string | null
+          total_xof: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_xof?: number
+          completed_at?: string | null
+          created_at?: string
+          delivery_code?: string | null
+          fee_bps?: number
+          follow_token_hash?: string
+          id?: string
+          idempotency_key?: string
+          mode?: Database["public"]["Enums"]["cabin_mode"]
+          network_code?: string
+          offer_id?: string | null
+          provider_code?: string | null
+          provider_fee_xof?: number
+          provider_reference?: string | null
+          quote_expires_at?: string
+          recipient_fingerprint?: string
+          recipient_masked?: string
+          reference?: string
+          service?: Database["public"]["Enums"]["cabin_service"]
+          service_fee_xof?: number
+          status?: Database["public"]["Enums"]["cabin_status"]
+          status_reason?: string | null
+          target_network_code?: string | null
+          total_xof?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_operations_network_code_fkey"
+            columns: ["network_code"]
+            isOneToOne: false
+            referencedRelation: "cabin_networks"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "cabin_operations_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "cabin_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_operations_provider_code_fkey"
+            columns: ["provider_code"]
+            isOneToOne: false
+            referencedRelation: "cabin_providers"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "cabin_operations_target_network_code_fkey"
+            columns: ["target_network_code"]
+            isOneToOne: false
+            referencedRelation: "cabin_networks"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "cabin_operations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_providers: {
+        Row: {
+          code: string
+          description: string | null
+          is_active: boolean
+          mode: Database["public"]["Enums"]["cabin_mode"]
+          name: string
+          services: Database["public"]["Enums"]["cabin_service"][]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          description?: string | null
+          is_active?: boolean
+          mode?: Database["public"]["Enums"]["cabin_mode"]
+          name: string
+          services?: Database["public"]["Enums"]["cabin_service"][]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          description?: string | null
+          is_active?: boolean
+          mode?: Database["public"]["Enums"]["cabin_mode"]
+          name?: string
+          services?: Database["public"]["Enums"]["cabin_service"][]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_providers_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_service_settings: {
+        Row: {
+          description: string
+          fee_bps: number
+          is_enabled: boolean
+          label: string
+          max_amount_xof: number
+          min_amount_xof: number
+          provider_code: string | null
+          service: Database["public"]["Enums"]["cabin_service"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          description: string
+          fee_bps?: number
+          is_enabled?: boolean
+          label: string
+          max_amount_xof: number
+          min_amount_xof: number
+          provider_code?: string | null
+          service: Database["public"]["Enums"]["cabin_service"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string
+          fee_bps?: number
+          is_enabled?: boolean
+          label?: string
+          max_amount_xof?: number
+          min_amount_xof?: number
+          provider_code?: string | null
+          service?: Database["public"]["Enums"]["cabin_service"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_service_settings_provider_code_fkey"
+            columns: ["provider_code"]
+            isOneToOne: false
+            referencedRelation: "cabin_providers"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "cabin_service_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_transfer_routes: {
+        Row: {
+          is_enabled: boolean
+          note: string | null
+          provider_code: string | null
+          source_code: string
+          target_code: string
+          updated_at: string
+        }
+        Insert: {
+          is_enabled?: boolean
+          note?: string | null
+          provider_code?: string | null
+          source_code: string
+          target_code: string
+          updated_at?: string
+        }
+        Update: {
+          is_enabled?: boolean
+          note?: string | null
+          provider_code?: string | null
+          source_code?: string
+          target_code?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_transfer_routes_provider_code_fkey"
+            columns: ["provider_code"]
+            isOneToOne: false
+            referencedRelation: "cabin_providers"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "cabin_transfer_routes_source_code_fkey"
+            columns: ["source_code"]
+            isOneToOne: false
+            referencedRelation: "cabin_networks"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "cabin_transfer_routes_target_code_fkey"
+            columns: ["target_code"]
+            isOneToOne: false
+            referencedRelation: "cabin_networks"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       candidate_profiles: {
         Row: {
           available: boolean
@@ -4089,6 +4485,32 @@ export type Database = {
           response_body: string
         }[]
       }
+      cabin_fee: { Args: { p_amount: number; p_bps: number }; Returns: number }
+      cabin_operation_status: {
+        Args: { p_reference: string; p_token_hash: string }
+        Returns: {
+          amount_xof: number
+          created_at: string
+          delivery_code: string
+          mode: Database["public"]["Enums"]["cabin_mode"]
+          provider_fee_xof: number
+          recipient_masked: string
+          reference: string
+          service: Database["public"]["Enums"]["cabin_service"]
+          service_fee_xof: number
+          status: Database["public"]["Enums"]["cabin_status"]
+          status_reason: string
+          total_xof: number
+          updated_at: string
+        }[]
+      }
+      cabin_transition_allowed: {
+        Args: {
+          p_from: Database["public"]["Enums"]["cabin_status"]
+          p_to: Database["public"]["Enums"]["cabin_status"]
+        }
+        Returns: boolean
+      }
       can_manage_content: {
         Args: { p_organization: string; p_owner: string }
         Returns: boolean
@@ -4170,6 +4592,31 @@ export type Database = {
           place_slug: string
         }[]
       }
+      create_cabin_operation: {
+        Args: {
+          p_amount: number
+          p_expected_total: number
+          p_follow_token_hash: string
+          p_idempotency_key: string
+          p_live_available: boolean
+          p_network: string
+          p_offer: string
+          p_quote_expires_at: string
+          p_recipient_fingerprint: string
+          p_recipient_masked: string
+          p_service: Database["public"]["Enums"]["cabin_service"]
+          p_target_network: string
+          p_user: string
+        }
+        Returns: {
+          created: boolean
+          id: string
+          mode: Database["public"]["Enums"]["cabin_mode"]
+          reference: string
+          status: Database["public"]["Enums"]["cabin_status"]
+          total_xof: number
+        }[]
+      }
       create_organization_invitation: {
         Args: {
           p_organization: string
@@ -4207,6 +4654,7 @@ export type Database = {
           location_precision: Database["public"]["Enums"]["location_precision"]
         }[]
       }
+      expire_cabin_operations: { Args: never; Returns: number }
       expire_listings: { Args: never; Returns: number }
       export_my_data: { Args: never; Returns: Json }
       fraud_review_queue: {
@@ -5032,6 +5480,17 @@ export type Database = {
         Args: { p_disabled: boolean; p_reason: string }
         Returns: undefined
       }
+      set_cabin_status: {
+        Args: {
+          p_delivery_code?: string
+          p_detail: string
+          p_operation: string
+          p_provider_reference?: string
+          p_source: string
+          p_status: Database["public"]["Enums"]["cabin_status"]
+        }
+        Returns: Database["public"]["Enums"]["cabin_status"]
+      }
       sponsored_shops: {
         Args: { p_categories?: string[]; p_city: string; p_limit?: number }
         Returns: {
@@ -5071,6 +5530,23 @@ export type Database = {
         | "withdrawn"
       availability_status: "available" | "reserved" | "unavailable" | "unknown"
       billing_period: "month" | "year" | "one_time"
+      cabin_mode: "demo" | "live"
+      cabin_service:
+        | "airtime"
+        | "airtime_transfer"
+        | "data"
+        | "electricity"
+        | "money_transfer"
+      cabin_status:
+        | "created"
+        | "pending"
+        | "processing"
+        | "awaiting_confirmation"
+        | "succeeded"
+        | "failed"
+        | "cancelled"
+        | "expired"
+        | "refunded"
       campaign_placement: "home" | "search" | "category" | "map"
       campaign_status:
         | "draft"
@@ -5303,6 +5779,25 @@ export const Constants = {
       ],
       availability_status: ["available", "reserved", "unavailable", "unknown"],
       billing_period: ["month", "year", "one_time"],
+      cabin_mode: ["demo", "live"],
+      cabin_service: [
+        "airtime",
+        "airtime_transfer",
+        "data",
+        "electricity",
+        "money_transfer",
+      ],
+      cabin_status: [
+        "created",
+        "pending",
+        "processing",
+        "awaiting_confirmation",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "expired",
+        "refunded",
+      ],
       campaign_placement: ["home", "search", "category", "map"],
       campaign_status: [
         "draft",
