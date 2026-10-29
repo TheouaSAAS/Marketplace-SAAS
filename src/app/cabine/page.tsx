@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { ShieldCheck } from "lucide-react";
 import { href } from "@/config/routes";
@@ -60,6 +61,8 @@ async function History() {
 }
 
 async function Cabin() {
+  // Configuration lue en direct (services suspendus aussitôt) : rendu à chaque requête, jamais figé au pré-rendu.
+  await connection();
   // Coupée par l'équipe (drapeau) ≠ indisponible (base injoignable) : chaque cas a son message.
   if (isFeatureClosed("cabin")) {
     return <Alert tone="warning" title="Cabine suspendue">La cabine est momentanément suspendue par l’équipe. Les autres rubriques restent accessibles.</Alert>;
