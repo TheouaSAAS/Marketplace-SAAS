@@ -150,6 +150,7 @@
 
 - **E-mails (16 novembre)** : SMTP Resend configuré dans Supabase Auth (`npm run db:auth-config`) avec le domaine d'envoi vérifié `mail.carrefourdespossible.com` (DKIM, SPF, MX de retour, DMARC `p=none` chez Hostinger) ; expéditeur `noreply@mail.carrefourdespossible.com`, modèles français, 30 e-mails par heure ; essai d'envoi livré. Reste : essai réel d'inscription et de mot de passe oublié, `EMAIL_FROM` à reporter dans les variables de l'hébergeur, DMARC à durcir après quelques semaines.
 - `SUPABASE_ACCESS_TOKEN` (accès à tout le compte Supabase) présent dans `.env.local` pour les migrations : **à révoquer** en fin de chantier. Idem pour `HOSTINGER_API_TOKEN` (zone DNS, 16 novembre) : à supprimer dans hPanel → API.
+- **En ligne (16 novembre)** : `https://carrefourdespossible.com` (Vercel, DNS chez Hostinger, HTTPS), bêta privée derrière le code d'accès ; même projet Supabase que le développement tant que la préproduction et la production séparées ne sont pas créées.
 - Accès PostgreSQL direct bloqué depuis le poste (bannissement réseau Supabase) : migrations via l'API d'administration.
 - `npm run db:verify` hors CI (pas d'identifiants en CI).
 - `npm audit` : 5 alertes dans l'outillage ESLint (développement uniquement) ; 0 en production.

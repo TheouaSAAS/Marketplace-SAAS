@@ -15,7 +15,8 @@
 - ☐ Projets Supabase de préproduction et de production distincts du développement.
 - ☐ **Sauvegardes** : forfait avec sauvegardes quotidiennes (PITR pour la production) ; `npm run db:backups` doit lister au moins une sauvegarde (aujourd’hui : aucune) ; une restauration testée dans un projet de test.
 - ☐ Hébergeur choisi, dépôt relié ; environnements GitHub `preproduction` et `production` (variables, secrets, approbation) ; branche `main` protégée par « Qualité ».
-- ☐ Domaine `carrefourdespossible.com` (Hostinger, acquis) : relier à l'hébergeur (DNS `@` et `www`), HTTPS, redirection `www` ; URL du site dans Supabase Authentication.
+- ✅ Domaine `carrefourdespossible.com` (Hostinger) relié à Vercel le 16/11/2026 : `A @ → 76.76.21.21`, `CNAME www → cname.vercel-dns.com`, HTTPS actif ; adresse du site et redirections dans Supabase Authentication (domaine, `www` et `localhost:3000`). Pour rejouer `npm run db:auth-config`, préfixer `NEXT_PUBLIC_SITE_URL=https://carrefourdespossible.com AUTH_REDIRECT_URLS=https://www.carrefourdespossible.com,http://localhost:3000` (sinon l'adresse repasse à `localhost`). ☐ Domaine principal sans `www` dans Vercel (aujourd'hui le domaine nu redirige vers `www`).
+- ✅ Variables de production sur Vercel (Supabase, e-mails, `NEXT_PUBLIC_SITE_URL`, `SITE_ACCESS_CODE`, `INTERNAL_STATUS_TOKEN`, `CRON_SECRET` propres à la production) ; `/api/health/ready` répond « ok » en production, accès réservé actif (bêta privée).
 - ✅ `npm run env:check -- preview|production` : contrôle sans afficher de valeur ; ☐ à passer sans erreur sur chaque environnement.
 - ✅ Préproduction non indexable, bandeau visible, code d’accès (`SITE_ACCESS_CODE`).
 
