@@ -15,7 +15,7 @@
 - ☐ Projets Supabase de préproduction et de production distincts du développement.
 - ☐ **Sauvegardes** : forfait avec sauvegardes quotidiennes (PITR pour la production) ; `npm run db:backups` doit lister au moins une sauvegarde (aujourd’hui : aucune) ; une restauration testée dans un projet de test.
 - ☐ Hébergeur choisi, dépôt relié ; environnements GitHub `preproduction` et `production` (variables, secrets, approbation) ; branche `main` protégée par « Qualité ».
-- ☐ Domaine, DNS, HTTPS, redirection `www` ; URL du site dans Supabase Authentication.
+- ☐ Domaine `carrefourdespossible.com` (Hostinger, acquis) : relier à l'hébergeur (DNS `@` et `www`), HTTPS, redirection `www` ; URL du site dans Supabase Authentication.
 - ✅ `npm run env:check -- preview|production` : contrôle sans afficher de valeur ; ☐ à passer sans erreur sur chaque environnement.
 - ✅ Préproduction non indexable, bandeau visible, code d’accès (`SITE_ACCESS_CODE`).
 
@@ -27,7 +27,7 @@
 
 ## Comptes et e-mails (bloquant pour l'inscription publique)
 
-- ☐ **SMTP personnalisé** pour Supabase Auth : renseigner `EMAIL_PROVIDER=resend`, `EMAIL_API_KEY`, `EMAIL_FROM` (domaine vérifié chez le fournisseur : SPF, DKIM) — ou `AUTH_SMTP_*` pour un autre fournisseur — puis `npm run db:auth-config` (`--dry-run` pour prévisualiser) : SMTP, modèles français (confirmation, mot de passe, changement d'adresse, alertes de second facteur), adresse du site et redirections. Sans lui, Supabase n'envoie que 2 e-mails par heure aux seules adresses de l'équipe du projet ; l'inscription publique est alors refusée avec un message explicite.
+- ✅ **SMTP personnalisé** configuré le 16/11/2026 : Resend, domaine d'envoi vérifié `mail.carrefourdespossible.com` (DNS chez Hostinger), expéditeur `noreply@mail.carrefourdespossible.com`, modèles français appliqués, 30 e-mails par heure. ☐ Essai réel (inscription, mot de passe oublié) et `EMAIL_FROM` dans les variables de l'hébergeur. Procédure : renseigner `EMAIL_PROVIDER=resend`, `EMAIL_API_KEY`, `EMAIL_FROM` (domaine vérifié chez le fournisseur : SPF, DKIM) — ou `AUTH_SMTP_*` pour un autre fournisseur — puis `npm run db:auth-config` (`--dry-run` pour prévisualiser) : SMTP, modèles français (confirmation, mot de passe, changement d'adresse, alertes de second facteur), adresse du site et redirections. Sans lui, Supabase n'envoie que 2 e-mails par heure aux seules adresses de l'équipe du projet ; l'inscription publique est alors refusée avec un message explicite.
 - ✅ Confirmation de l'adresse obligatoire, liens à usage unique valables une heure, renvoi limité.
 - ✅ Second facteur TOTP exigé pour le back-office (activé chez Supabase et par la base). ☐ Chaque membre de l'équipe le configure à sa première connexion ; ☐ au moins deux superadministrateurs (réinitialisation d'un facteur perdu).
 - ✅ Premier superadministrateur créé le 29/10/2026 (inscription confirmée, `npm run db:promote`, journalisé) et second facteur actif. ☐ Créer un second superadministrateur (réinitialisation d'un facteur perdu).
@@ -53,7 +53,7 @@
 
 ## Services externes (facultatifs : le site fonctionne sans)
 
-- ☐ E-mails : `EMAIL_PROVIDER=resend`, `EMAIL_API_KEY`, `EMAIL_FROM` (domaine vérifié, SPF, DKIM, DMARC) ; essai en préproduction ; `npm run db:auth-config` (modèles français).
+- ✅ E-mails : `EMAIL_PROVIDER=resend`, `EMAIL_API_KEY`, `EMAIL_FROM` (domaine vérifié, SPF, DKIM, DMARC) en local, `npm run db:auth-config` appliqué. ☐ Mêmes variables chez l'hébergeur ; essai en préproduction ; DMARC à passer de `p=none` à `p=quarantine` après quelques semaines sans incident.
 - ☐ Tâche planifiée : `CRON_SECRET` et appel de `/api/interne/notifications` toutes les 10 minutes.
 - ☐ IA : `AI_PROVIDER=anthropic`, `AI_API_KEY`, `AI_MONTHLY_BUDGET_EUR` ; essai encadré en préproduction ; interrupteur général dans `/admin/ia`.
 - ☐ Carte : fournisseur de tuiles dédié avant un trafic important.
