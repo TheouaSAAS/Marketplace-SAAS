@@ -7,6 +7,7 @@ import { SITE } from "@/config/site";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { HomeHero } from "@/components/home/home-hero";
+import { HomeMap, HomeMapSkeleton } from "@/components/home/home-map";
 import { HomeSections, HomeSectionsSkeleton } from "@/components/home/home-sections";
 import { QuickAccess } from "@/components/home/quick-access";
 
@@ -41,6 +42,10 @@ export default function HomePage() {
 
         <Suspense fallback={<HomeSectionsSkeleton />}>
           <HomeSections />
+        </Suspense>
+
+        <Suspense fallback={<HomeMapSkeleton />}>
+          <HomeMap />
         </Suspense>
 
         <section

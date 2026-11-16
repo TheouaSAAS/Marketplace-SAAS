@@ -52,6 +52,30 @@ test.describe("Accueil dynamique", () => {
     }
   });
 
+  test("l'aperçu de la carte montre les positions publiques et ouvre la carte filtrée", async ({ page }) => {
+    test.skip(!HAS_DATABASE, NO_DATABASE);
+    await page.goto("/");
+    const section = page.getByRole("region", { name: "Explorer San Pedro sur la carte" });
+    // Absente quand aucun élément n'a de position publique : jamais une carte vide.
+    test.skip((await section.count()) === 0, "aucune position publique dans la base");
+    await section.scrollIntoViewIfNeeded();
+    await expect(section.locator(".leaflet-overlay-pane path").first()).toBeVisible({ timeout: 20_000 });
+    // Aperçu non interactif : la page défile, l'exploration se fait sur la carte complète.
+    await expect(section.locator(".leaflet-control-zoom")).toHaveCount(0);
+    const layer = section.getByRole("list").getByRole("link").first();
+    await layer.click();
+    await expect(page).toHaveURL(/\/carte\?couches=[a-z]+$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Carte interactive");
+  });
+
+  test("la carte est accessible depuis la navigation principale", async ({ page, isMobile }) => {
+    test.skip(isMobile, "navigation principale sur ordinateur ; accès rapide « Carte » sur mobile");
+    await page.goto("/");
+    await page.getByRole("navigation", { name: "Navigation principale" }).getByRole("link", { name: "Carte", exact: true }).click();
+    await expect(page).toHaveURL(/\/carte$/);
+    await expect(page.getByRole("navigation", { name: "Navigation principale" }).getByRole("link", { name: "Carte", exact: true })).toHaveAttribute("aria-current", "page");
+  });
+
   test("chaque section explique sa règle de sélection", async ({ page }) => {
     test.skip(!HAS_DATABASE, NO_DATABASE);
     await page.goto("/");

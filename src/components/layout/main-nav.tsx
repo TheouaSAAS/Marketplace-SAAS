@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Compass } from "lucide-react";
+import { ArrowRight, Compass, Map as MapIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { NAV_SECTIONS, NEWCOMER_LINK, type NavSection } from "@/config/navigation";
 import { hasPage, href, ROUTES } from "@/config/routes";
@@ -29,6 +29,7 @@ export function MainNav({ className }: { className?: string }) {
  */
 export function MainNavView({ className, pathname }: { className?: string; pathname: string | null }) {
   const newcomerActive = pathname?.startsWith(ROUTES.newcomer.path) ?? false;
+  const mapActive = pathname === ROUTES.map.path;
 
   return (
     <nav aria-label="Navigation principale" className={cn("items-center gap-1", className)}>
@@ -63,6 +64,19 @@ export function MainNavView({ className, pathname }: { className?: string; pathn
           )}
         </Popover>
       ))}
+      {hasPage("map") && (
+        <Link
+          href={href("map")}
+          aria-current={mapActive ? "page" : undefined}
+          className={cn(
+            "inline-flex h-11 items-center gap-1.5 rounded-pill px-4 text-sm font-semibold transition-colors",
+            mapActive ? "bg-brand-600 text-white" : "text-ink hover:bg-brand-50 hover:text-brand-700",
+          )}
+        >
+          <MapIcon aria-hidden className="h-4 w-4" />
+          Carte
+        </Link>
+      )}
       <Link
         href={href(NEWCOMER_LINK.route)}
         aria-current={newcomerActive ? "page" : undefined}
